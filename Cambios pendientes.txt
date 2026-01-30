@@ -62,6 +62,7 @@ Anotaciones MARIO:
 	asociadas. 
 	o No puede dar de alta otros usuarios ni gestionar usuarios existentes.
 
+prueba 
 Anotaciones Dani:
 cambiar menu crear armas eleccion por numeros es más comodo
 
