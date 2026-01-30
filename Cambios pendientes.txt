@@ -62,7 +62,9 @@ Anotaciones MARIO:
 	asociadas. 
 	o No puede dar de alta otros usuarios ni gestionar usuarios existentes.
 
-prueba 
+DEBERIAMOS DE LISTAR UN REGISTRO DE LOS COMBATES EN LA BASE DE DATOS. (PENDIENTE)
+
+
 Anotaciones Dani:
 cambiar menu crear armas eleccion por numeros es más comodo
 

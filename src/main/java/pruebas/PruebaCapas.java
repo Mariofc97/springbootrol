@@ -2,9 +2,9 @@ package pruebas;
 
 import java.util.List;
 
-import dto.CriaturaDto;
-import dto.EquipamientoDto;
-import dto.UsuarioDto;
+import model.CriaturaDto;
+import model.EquipamientoDto;
+import model.UsuarioDto;
 import entities.Personaje;
 import entities.criatura.Criatura;
 import entities.equipo.Equipamiento;

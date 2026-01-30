@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import dto.EquipamientoDto;
+import model.EquipamientoDto;
 import entities.Personaje;
 import entities.equipo.Equipamiento;
 import entities.equipo.armas.Arco;

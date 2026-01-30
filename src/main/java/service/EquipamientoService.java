@@ -2,7 +2,7 @@ package service;
 
 import java.util.List;
 
-import dto.EquipamientoDto;
+import model.EquipamientoDto;
 import entities.equipo.Equipamiento;
 import exceptions.ReglaJuegoException;
 

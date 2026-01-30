@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import dao.PersonajeDao;
 import dao.impl.PersonajeDaoImpl;
-import dto.CriaturaDto;
-import dto.EquipamientoDto;
+import model.CriaturaDto;
+import model.EquipamientoDto;
 import entities.Personaje;
 import entities.criatura.Conejo;
 import entities.criatura.Criatura;
@@ -670,7 +670,7 @@ public class Utils {
 	        // 2) Pintamos menú
 	        System.out.println("\n--- CONSUMIBLES CURATIVOS ---");
 	        for (int i = 0; i < curativos.size(); i++) {
-	            dto.EquipamientoDto d = curativos.get(i);
+	            model.EquipamientoDto d = curativos.get(i);
 	            System.out.println((i + 1) + ") " + d.getNombre() + " (id=" + d.getId() + ")");
 	        }
 	        System.out.println((curativos.size() + 1) + ") Volver");

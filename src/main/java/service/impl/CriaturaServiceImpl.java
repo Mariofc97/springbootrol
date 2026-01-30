@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import dto.CriaturaDto;
+import model.CriaturaDto;
 import entities.Personaje;
 import entities.criatura.Conejo;
 import entities.criatura.Criatura;

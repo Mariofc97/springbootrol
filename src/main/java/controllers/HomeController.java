@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import dto.UsuarioDto;
+import model.UsuarioDto;
 import entities.Personaje;
 import exceptions.ReglaJuegoException;
 import service.EquipamientoService;

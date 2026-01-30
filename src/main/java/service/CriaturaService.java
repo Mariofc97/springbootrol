@@ -2,7 +2,7 @@ package service;
 
 import java.util.List;
 
-import dto.CriaturaDto;
+import model.CriaturaDto;
 import exceptions.ReglaJuegoException;
 
 public interface CriaturaService {

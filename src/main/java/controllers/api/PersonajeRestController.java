@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import dto.CriaturaDto;
-import dto.EquipamientoDto;
+import model.CriaturaDto;
+import model.EquipamientoDto;
 import entities.Personaje;
 import entities.equipo.Equipamiento;
 import exceptions.ReglaJuegoException;
