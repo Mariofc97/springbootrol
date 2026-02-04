@@ -3,6 +3,7 @@ package entities.equipo.armas;
 
 
 import entities.equipo.Equipamiento;
+import jakarta.persistence.Column;
 
 
 
@@ -10,15 +11,35 @@ public abstract class Armas extends Equipamiento {
 
 	
 
-	private String tipoDaño; // (fisico, fuego, hielo, etc)
+	public boolean isEquipada() {
+		return equipada;
+	}
 
+
+
+	public void setEquipada(boolean equipada) {
+		this.equipada = equipada;
+	}
+
+
+
+	@Column(name="tipo_danio")
+	private String tipoDaño;
+
+	@Column(name="alcance")
 	private int alcance;
 
+	@Column(name="precision")
 	private int precision;
 
+	@Column(name="puntos_danio")
 	private int puntosDaño;
 
+	@Column(name="prob_critico")
 	private int probCritico;
+	
+	@Column(name="equipada")
+	private boolean equipada;
 
 
 
@@ -69,6 +90,8 @@ public abstract class Armas extends Equipamiento {
 		this.probCritico = probCritico;
 
 	}
+	
+	
 
 
 
