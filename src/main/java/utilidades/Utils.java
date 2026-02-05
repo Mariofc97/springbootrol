@@ -12,8 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import dao.PersonajeDao;
 import dao.impl.PersonajeDaoImpl;
-import model.CriaturaDto;
-import model.EquipamientoDto;
 import entities.Personaje;
 import entities.criatura.Conejo;
 import entities.criatura.Criatura;
@@ -43,6 +41,8 @@ import entities.equipo.objetos.Palo;
 import entities.equipo.objetos.Piedra;
 import entities.equipo.objetos.Pocion;
 import exceptions.ReglaJuegoException;
+import model.CriaturaDto;
+import model.EquipamientoDto;
 import service.CriaturaService;
 import service.EquipamientoService;
 import service.PersonajeService;

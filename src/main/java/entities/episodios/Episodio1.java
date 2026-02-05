@@ -111,16 +111,17 @@ public class Episodio1 {
 		
 		do {
 			try {
-				LOGGER.info("Mostrando menú para personaje: " + personaje.getNombre());
+//				LOGGER.info("Mostrando menú para personaje: " + personaje.getNombre());
 				
 				System.out.println(
-						"\n1. Llorar de forma desconsolado \n2. Pensar en un compañero de vieje \n3. Salir de la cueva \n4. Dormir y recuperar vida \n5. Ver inventario/estado \n6. Buscar materiales");
+						"\n1. Llorar de forma desconsolado \n2. Pensar en un compañero de vieje \n3. Salir de la cueva \n4. Dormir y recuperar vida \n5. Buscar materiales");
 				System.out.println("dila opcion del menu");
 				int opcion;
 				try {
 					// Pedimos un número al usuario mediante utilidades comunes
-					opcion = Utils.pideDatoNumerico("Que quieres hacer?");
-					LOGGER.info("Opción elegida: " + opcion);
+					//opcion = Utils.pideDatoNumerico("Que quieres hacer?");
+					opcion = (int)Math.random()*6 + 1; // juega solo de froma aleatoria.
+//					LOGGER.info("Opción elegida: " + opcion);
 				} catch (InputMismatchException | NumberFormatException ex) {
 					// Si la entrada no es un número, informamos y volvemos a mostrar el menú
 					LOGGER.log(Level.WARNING, "Entrada numérica no válida", ex);
@@ -128,7 +129,7 @@ public class Episodio1 {
 					continue; // volver a mostrar menú
 				} catch (Exception ex) {
 					// Cualquier otro error al leer la opción lo registramos y reintentamos
-					LOGGER.log(Level.SEVERE, "Error obteniendo la opción del usuario", ex);
+//					LOGGER.log(Level.SEVERE, "Error obteniendo la opción del usuario", ex);
 					System.out.println("Se produjo un error al leer la opción. Inténtalo de nuevo.");
 					continue;
 				}
@@ -219,19 +220,10 @@ public class Episodio1 {
 				}
 					break;
 
-				case 5: {
-					// Caso 5: ver el estado del personaje
-					try {
-						Utils.menuInventario(personaje);
-						LOGGER.info("Mostrando inventario de: " + personaje.getNombre());
-					} catch (Exception e) {
-						LOGGER.log(Level.SEVERE, "Error al mostrar el inventario", e);
-						System.out.println("No se pudo mostrar el inventario.");
-					}
-				}
+				
 
 					break;
-				case 6: {
+				case 5: {
 					// Caso 6: buscar objeto
 					// hacer el control de exdesde aqui.
 					try {
