@@ -108,19 +108,19 @@ public class Episodio1 {
 		System.out.println("Despiertas en una cueva. No recuerdas tu nombre… pero tu olor sí");
 		System.out.println("Un eco te susurra: 'Para sobrevivir necesitas: llorar, pensar y NO morir.");
 		System.out.println();
-		
+
 		do {
 			try {
 //				LOGGER.info("Mostrando menú para personaje: " + personaje.getNombre());
-				
+
 				System.out.println(
 						"\n1. Llorar de forma desconsolado \n2. Pensar en un compañero de vieje \n3. Salir de la cueva \n4. Dormir y recuperar vida \n5. Buscar materiales");
-				System.out.println("dila opcion del menu");
 				int opcion;
 				try {
 					// Pedimos un número al usuario mediante utilidades comunes
-					//opcion = Utils.pideDatoNumerico("Que quieres hacer?");
-					opcion = (int)Math.random()*6 + 1; // juega solo de froma aleatoria.
+					// opcion = Utils.pideDatoNumerico("Que quieres hacer?");
+					opcion = (int) (Math.random() * 5) + 1; // genera entre 1 y 5
+					// juega solo de froma aleatoria.
 //					LOGGER.info("Opción elegida: " + opcion);
 				} catch (InputMismatchException | NumberFormatException ex) {
 					// Si la entrada no es un número, informamos y volvemos a mostrar el menú
@@ -139,44 +139,44 @@ public class Episodio1 {
 				case 1: {
 					// Caso 1: el personaje "llora" y obtiene una HojaParaLimpiar
 					try {
-					    int cantidad = Utils.contarHojas(personaje);
-					    if (cantidad >= 5) {
-					        System.out.println("Te dan un torta... LLORON DEJA DE LLORAR!!!!!");
-					        break;
-					    }
+						int cantidad = Utils.contarHojas(personaje);
+						if (cantidad >= 5) {
+							System.out.println("Te dan un torta... LLORON DEJA DE LLORAR!!!!!");
+							break;
+						}
 
-					    equipService.añadirAlInventario(personaje.getId(), new HojaParaLimpiar());
-					    personaje = Utils.recargarPersonaje(personaje.getId());
+						equipService.añadirAlInventario(personaje.getId(), new HojaParaLimpiar());
+						personaje = Utils.recargarPersonaje(personaje.getId());
 
-					    System.out.println("Has obtenido una Hoja de Ortiga.");
-					    key1 = true;
+						System.out.println("Has obtenido una Hoja de Ortiga.");
+						key1 = true;
 
 					} catch (ReglaJuegoException e) {
-					    System.out.println(e.getMessage());
+						System.out.println(e.getMessage());
 					}
 				}
 					break;
 
 				case 2: {
-				    try {
-				        int antes = personaje.getCriaturas().size();
-				        Utils.invocacionCompañeroCriatura(personaje);
-				        personaje = Utils.recargarPersonaje(personaje.getId());
-				        int despues = personaje.getCriaturas().size();
+					try {
+						int antes = personaje.getCriaturas().size();
+						Utils.invocacionCompañeroCriatura(personaje);
+						personaje = Utils.recargarPersonaje(personaje.getId());
+						int despues = personaje.getCriaturas().size();
 
-				        if (despues > antes) {
-				            key2 = true;
-				            System.out.println("Has invocado una criatura.");
-				        } else {
-				            System.out.println("No has conseguido invocar ninguna criatura. Inténtalo de nuevo.");
-				        }
+						if (despues > antes) {
+							key2 = true;
+							System.out.println("Has invocado una criatura.");
+						} else {
+							System.out.println("No has conseguido invocar ninguna criatura. Inténtalo de nuevo.");
+						}
 
-				    } catch (Exception e) {
-				        LOGGER.log(Level.SEVERE, "Error en invocacionCompañeroCriatura", e);
-				        System.out.println("Se produjo un error al invocar la criatura.");
-				    }
+					} catch (Exception e) {
+						LOGGER.log(Level.SEVERE, "Error en invocacionCompañeroCriatura", e);
+						System.out.println("Se produjo un error al invocar la criatura.");
+					}
 				}
-				break;
+					break;
 
 				case 3: {
 					// Caso 3: acción que reduce la vida del personaje a 1 (desgracia)
@@ -219,8 +219,6 @@ public class Episodio1 {
 
 				}
 					break;
-
-				
 
 					break;
 				case 5: {
@@ -265,5 +263,5 @@ public class Episodio1 {
 		} while (!salida);
 
 	}
-	
+
 }
