@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultado Episodio 1</title>
+</head>
+
+<body>
+
+<h1>Episodio 1 completado</h1>
+
+<h2>Acciones realizadas</h2>
+
+<div style="white-space: pre-line; background:#222; color:#eee; padding:15px; border-radius:8px;">
+    <span th:text="${acciones}"></span>
+</div>
+
+<br>
+
+<a th:href="@{/personaje/{id}(id=${personaje.id})}">Volver al personaje</a>
+
+</body>
+</html>
