@@ -4,13 +4,13 @@ import java.util.InputMismatchException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import entities.Personaje;
 import entities.equipo.objetos.HojaParaLimpiar;
 import exceptions.ReglaJuegoException;
 import service.CriaturaService;
 import service.EquipamientoService;
-import service.impl.CriaturaServiceImpl;
-import service.impl.EquipamientoServiceImpl;
 import utilidades.Utils;
 
 /**
@@ -26,6 +26,9 @@ public class Episodio1 {
 	static int contadorEpisodio1 = 0;
 	// Logger específico para esta clase
 	private static final Logger LOGGER = Logger.getLogger(Episodio1.class.getName());
+	@Autowired
+	private EquipamientoService equipService;
+	private CriaturaService criaturaService;
 
 	static {
 		LOGGER.setUseParentHandlers(false); // evita que el logger escriba en consola
@@ -34,17 +37,17 @@ public class Episodio1 {
 
 	/**
 	 * Método principal del episodio 1 que ejecuta un menú interactivo para el
-	 * personaje.
+	 * personaje. QUITO STATIC DEL METODO DA ERROR CON EQUIPSERVICE
 	 *
 	 * @param personaje instancia del personaje que participa en el episodio. Puede
 	 *                  ser null; en ese caso el método registrará y devolverá sin
 	 *                  ejecutar.
 	 */
-	public static void episodio1(Personaje personaje) { // personaje es el nombre del personaje.
+	public void episodio1(Personaje personaje) { // personaje es el nombre del personaje.
 		// Comprobación inicial: si no nos pasan un personaje, salimos con un mensaje de
 		// error
-		EquipamientoService equipService = new EquipamientoServiceImpl();
-		CriaturaService criaturaService = new CriaturaServiceImpl();
+		// EquipamientoService equipService = new EquipamientoServiceImpl();
+		// CriaturaService criaturaService = new CriaturaServiceImpl();
 
 		if (personaje == null) {
 			LOGGER.warning("Se llamó a episodio1 con Personaje null");
@@ -119,6 +122,7 @@ public class Episodio1 {
 				try {
 					// Pedimos un número al usuario mediante utilidades comunes
 					// opcion = Utils.pideDatoNumerico("Que quieres hacer?");
+
 					opcion = (int) (Math.random() * 5) + 1; // genera entre 1 y 5
 					// juega solo de froma aleatoria.
 //					LOGGER.info("Opción elegida: " + opcion);
@@ -220,7 +224,7 @@ public class Episodio1 {
 				}
 					break;
 
-					break;
+					
 				case 5: {
 					// Caso 6: buscar objeto
 					// hacer el control de exdesde aqui.
