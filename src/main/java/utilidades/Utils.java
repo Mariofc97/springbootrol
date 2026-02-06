@@ -5,13 +5,12 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dao.PersonajeDao;
-import dao.impl.PersonajeDaoImpl;
 import entities.Personaje;
 import entities.criatura.Conejo;
 import entities.criatura.Criatura;
@@ -73,54 +72,88 @@ public class Utils {
 	}
 
 	// invocacion();
-
-	public static Criatura invocacionCompañeroCriatura(Personaje person) {
+	public static Criatura invocacionCompañeroCriatura(Personaje person) throws ReglaJuegoException {
 
 	    if (person == null || person.getId() == null) {
-	        System.out.println("Error: personaje no válido o no persistido.");
-	        return null;
+	        throw new ReglaJuegoException("Personaje no válido o no persistido.");
 	    }
 
-	    // narrativa: “qué sale”
 	    Criatura compiRandom = randomizarCriatura();
 
-	    // tirada (90% éxito)
 	    boolean ok = dadoDiez() > 1;
 	    if (!ok) {
 	        System.out.println("No estás pensando en lo que debes, la criatura se ríe de ti y te ataca.");
 	        person.setPuntosVida(person.getPuntosVida() - compiRandom.getPuntosAtaque());
-	        System.out.println("Te ha quitado " + compiRandom.getPuntosAtaque() +
-	                " puntos de vida, te quedan " + person.getPuntosVida() + " puntos de vida.");
-	        return null;
+	        System.out.println("Te ha quitado " + compiRandom.getPuntosAtaque() + " puntos de vida, te quedan "
+	                + person.getPuntosVida() + " puntos de vida.");
+	        throw new ReglaJuegoException("La invocación ha fallado.");
 	    }
 
-	    System.out.println("Ahora tienes un compañero de viaje, ¿quieres ponerle un alias?:");
-	    String alias = pideDatoCadena("Introduce el alias deseado: ");
+	    // alias automático = nombre de la criatura
+	    String nombreCriatura = compiRandom.getClass().getSimpleName();
+	    compiRandom.setNombre(nombreCriatura);
+	    compiRandom.setAlias(nombreCriatura);
 
-	    // tipo para el service (MOSQUITO/CONEJO/...)
-	    String tipo = compiRandom.getClass().getSimpleName().toUpperCase();
+	    // id interno opcional
+	   // compiRandom.setId(generarIdInterno());
 
-	    try {
-	        CriaturaDto dto = criaturaService.invocarCompanero(person.getId(), tipo, alias);
+	   // person.addCriatura(compiRandom);
+	    person.getCriaturas().add(compiRandom);
+	    System.out.println("Has invocado una criatura: " 
+	            + compiRandom.getNombre() 
+	            + " alias=" + compiRandom.getAlias());
 
-	        System.out.println("Has invocado una criatura: " + dto.getTipo() + " alias=" + dto.getAlias());
+	    return compiRandom;
+	}
 
-	        // mantener coherencia en memoria también:
-	        compiRandom.setId(dto.getId());
-	        compiRandom.setNombre(dto.getNombre());
-	        compiRandom.setAlias(dto.getAlias());
-	        compiRandom.setNivel(dto.getNivel());
-	        compiRandom.setExperiencia(dto.getExperiencia());
-	        compiRandom.setPuntosVida(dto.getPuntosVida());
-	        compiRandom.setPuntosAtaque(dto.getPuntosAtaque());
-	        person.addCriatura(compiRandom);
 
-	        return compiRandom;
+	public static Criatura invocacionCompañeroCriaturaPersistente(Personaje person) {
 
-	    } catch (ReglaJuegoException e) {
-	        System.out.println("No se pudo invocar: " + e.getMessage());
-	        return null;
-	    }
+		if (person == null || person.getId() == null) {
+			System.out.println("Error: personaje no válido o no persistido.");
+			return null;
+		}
+
+		// narrativa: “qué sale”
+		Criatura compiRandom = randomizarCriatura();
+
+		// tirada (90% éxito)
+		boolean ok = dadoDiez() > 1;
+		if (!ok) {
+			System.out.println("No estás pensando en lo que debes, la criatura se ríe de ti y te ataca.");
+			person.setPuntosVida(person.getPuntosVida() - compiRandom.getPuntosAtaque());
+			System.out.println("Te ha quitado " + compiRandom.getPuntosAtaque() + " puntos de vida, te quedan "
+					+ person.getPuntosVida() + " puntos de vida.");
+			return null;
+		}
+
+		System.out.println("Ahora tienes un compañero de viaje, ¿quieres ponerle un alias?:");
+		String alias = pideDatoCadena("Introduce el alias deseado: ");
+
+		// tipo para el service (MOSQUITO/CONEJO/...)
+		String tipo = compiRandom.getClass().getSimpleName().toUpperCase();
+
+		try {
+			CriaturaDto dto = criaturaService.invocarCompanero(person.getId(), tipo, alias);
+
+			System.out.println("Has invocado una criatura: " + dto.getTipo() + " alias=" + dto.getAlias());
+
+			// mantener coherencia en memoria también:
+			compiRandom.setId(dto.getId());
+			compiRandom.setNombre(dto.getNombre());
+			compiRandom.setAlias(dto.getAlias());
+			compiRandom.setNivel(dto.getNivel());
+			compiRandom.setExperiencia(dto.getExperiencia());
+			compiRandom.setPuntosVida(dto.getPuntosVida());
+			compiRandom.setPuntosAtaque(dto.getPuntosAtaque());
+			person.addCriatura(compiRandom);
+
+			return compiRandom;
+
+		} catch (ReglaJuegoException e) {
+			System.out.println("No se pudo invocar: " + e.getMessage());
+			return null;
+		}
 	}
 
 	public static int contarHojas(Personaje personaje) {
@@ -217,15 +250,15 @@ public class Utils {
 			}
 		}
 	}
-	
+
 	private static void syncPersonaje(Personaje person, Personaje source) {
-	    person.setExperiencia(source.getExperiencia());
-	    person.setNivel(source.getNivel());
-	    person.setPuntosVidaMax(source.getPuntosVidaMax());
-	    person.setPuntosAtaque(source.getPuntosAtaque());
-	    person.setPuntosVida(source.getPuntosVida());   
-	    person.setEquipo(source.getEquipo());
-	    person.setCriaturas(source.getCriaturas());
+		person.setExperiencia(source.getExperiencia());
+		person.setNivel(source.getNivel());
+		person.setPuntosVidaMax(source.getPuntosVidaMax());
+		person.setPuntosAtaque(source.getPuntosAtaque());
+		person.setPuntosVida(source.getPuntosVida());
+		person.setEquipo(source.getEquipo());
+		person.setCriaturas(source.getCriaturas());
 	}
 
 	public static boolean combate(Personaje person, Criatura enemigo) {
@@ -284,16 +317,16 @@ public class Utils {
 				pausa(300);
 
 				if (!enemigo.estaVivo()) {
-				    try {
+					try {
 						Personaje actualizado = personajeService.sumarExperiencia(person.getId(), 10);
 						syncPersonaje(person, actualizado);
-				    } catch (ReglaJuegoException e) {
-				        System.out.println("No se pudo aplicar experiencia: " + e.getMessage());
-				        log.warn("Error sumarExperiencia", e);
-				    } 
-				    System.out.println(enemigo.getNombre() + " ha sido derrotado.");
-				    ganador = true;
-				    break;
+					} catch (ReglaJuegoException e) {
+						System.out.println("No se pudo aplicar experiencia: " + e.getMessage());
+						log.warn("Error sumarExperiencia", e);
+					}
+					System.out.println(enemigo.getNombre() + " ha sido derrotado.");
+					ganador = true;
+					break;
 				}
 
 				// Turno del compañero
@@ -305,16 +338,16 @@ public class Utils {
 					System.out.println("Vida del enemigo: " + enemigo.getPuntosVida());
 
 					if (!enemigo.estaVivo()) {
-					    try {
+						try {
 							Personaje actualizado = personajeService.sumarExperiencia(person.getId(), 10);
 							syncPersonaje(person, actualizado);
-					    } catch (ReglaJuegoException e) {
-					        System.out.println("No se pudo aplicar experiencia: " + e.getMessage());
-					        log.warn("Error sumarExperiencia", e);
-					    } 
-					    System.out.println(enemigo.getNombre() + " ha sido derrotado.");
-					    ganador = true;
-					    break;
+						} catch (ReglaJuegoException e) {
+							System.out.println("No se pudo aplicar experiencia: " + e.getMessage());
+							log.warn("Error sumarExperiencia", e);
+						}
+						System.out.println(enemigo.getNombre() + " ha sido derrotado.");
+						ganador = true;
+						break;
 					}
 				}
 			}
@@ -344,6 +377,79 @@ public class Utils {
 		return ganador;
 	}
 
+	public static void invocarTodasCriaturas(Personaje person) {
+
+		if (person == null || person.getId() == null) {
+			System.out.println("Error: personaje no válido o no persistido.");
+			return;
+		}
+
+		// 🔒 Lista local de criaturas permitidas
+		Set<String> criaturasPermitidas = Set.of("CONEJO", "GUSANO", "JABALI", "LOBO", "MOSQUITO",
+				"PEZ_PREISTORICO_GIGANTE", "RATON", "SILURO");
+
+		Lobo lobo = new Lobo();
+		Jabali jabali = new Jabali();
+
+		int tirada = dadoDiez();
+
+		if (tirada == 1) {
+			System.out.println(
+					"Mientras invocas al lobo un mosquito te pica y te distraes, el lobo se enfada y te ataca.");
+			combate(person, lobo);
+			return;
+		}
+
+		if (tirada == 9) {
+			System.out.println(
+					"Mientras invocas al jabalí un ratón te asusta y te distraes, el jabalí se enfada y te ataca.");
+			combate(person, jabali);
+			return;
+		}
+
+		String tipo;
+		String nombreDefault;
+
+		if (tirada > 1 && tirada < 5) {
+			tipo = "LOBO";
+			nombreDefault = "Lobo";
+			System.out.println("Has invocado correctamente a un lobo.");
+		} else {
+			tipo = "JABALI";
+			nombreDefault = "Jabali";
+			System.out.println("Has invocado correctamente a un jabalí.");
+		}
+
+		// ✅ Validación final
+		if (!criaturasPermitidas.contains(tipo)) {
+			System.out.println("Error: criatura no permitida por las reglas del juego.");
+			return;
+		}
+
+		String alias = pideDatoCadena("¿Quieres ponerle un alias? (Enter para dejar el nombre): ");
+		if (alias == null || alias.trim().isEmpty()) {
+			alias = nombreDefault;
+		}
+
+		try {
+			CriaturaDto dto = criaturaService.invocarCompanero(person.getId(), tipo, alias);
+
+			System.out.println("Criatura guardada en BD: " + dto.getTipo() + " alias=" + dto.getAlias());
+
+			Personaje rec = recargarPersonaje(person.getId());
+			if (rec != null) {
+				person.setCriaturas(rec.getCriaturas());
+				person.setEquipo(rec.getEquipo());
+				person.setPuntosVida(rec.getPuntosVida());
+				person.setExperiencia(rec.getExperiencia());
+				person.setNivel(rec.getNivel());
+			}
+
+		} catch (ReglaJuegoException e) {
+			System.out.println("No se pudo invocar: " + e.getMessage());
+		}
+	}
+
 	private static Criatura obtenerCompaneroActivo(Personaje person) {
 		if (person.getCriaturas() == null || person.getCriaturas().isEmpty())
 			return null;
@@ -358,43 +464,45 @@ public class Utils {
 	}
 
 	private static boolean consumirCurativoConService(Personaje person) {
-	    try {
-	        EquipamientoService es = new EquipamientoServiceImpl();
+		try {
+			EquipamientoService es = new EquipamientoServiceImpl();
 
-	        List<EquipamientoDto> curativos = es.listarConsumiblesCurativos(person.getId());
-	        if (curativos.isEmpty()) {
-	            System.out.println("No tienes consumibles curativos (Baya, CarneSeca o Pocion).");
-	            return false;
-	        }
+			List<EquipamientoDto> curativos = es.listarConsumiblesCurativos(person.getId());
+			if (curativos.isEmpty()) {
+				System.out.println("No tienes consumibles curativos (Baya, CarneSeca o Pocion).");
+				return false;
+			}
 
-	        System.out.println("\n--- CONSUMIBLES CURATIVOS ---");
-	        for (int i = 0; i < curativos.size(); i++) {
-	            EquipamientoDto d = curativos.get(i);
-	            System.out.println((i + 1) + ") " + d.getNombre() + " [id=" + d.getId() + "]"
-	                    + " durabilidad=" + d.getDurabilidad());
-	        }
-	        System.out.println((curativos.size() + 1) + ") Cancelar");
+			System.out.println("\n--- CONSUMIBLES CURATIVOS ---");
+			for (int i = 0; i < curativos.size(); i++) {
+				EquipamientoDto d = curativos.get(i);
+				System.out.println((i + 1) + ") " + d.getNombre() + " [id=" + d.getId() + "]" + " durabilidad="
+						+ d.getDurabilidad());
+			}
+			System.out.println((curativos.size() + 1) + ") Cancelar");
 
-	        int opcion = pideDatoNumerico("Elige: ");
-	        if (opcion < 1 || opcion > curativos.size()) return false;
+			int opcion = pideDatoNumerico("Elige: ");
+			if (opcion < 1 || opcion > curativos.size())
+				return false;
 
-	        EquipamientoDto elegido = curativos.get(opcion - 1);
+			EquipamientoDto elegido = curativos.get(opcion - 1);
 
-	        int antes = person.getPuntosVida();
-	        int despues = es.consumirCurativo(person.getId(), elegido.getId());
+			int antes = person.getPuntosVida();
+			int despues = es.consumirCurativo(person.getId(), elegido.getId());
 
-	        // IMPORTANTE: actualizar el objeto Personaje en memoria para que el combate muestre PV correcto
-	        person.setPuntosVida(despues);
+			// IMPORTANTE: actualizar el objeto Personaje en memoria para que el combate
+			// muestre PV correcto
+			person.setPuntosVida(despues);
 
-	        System.out.println("Has consumido " + elegido.getNombre() + ". PV: " + antes + " -> " + despues
-	                + " / " + person.getPuntosVidaMax());
+			System.out.println("Has consumido " + elegido.getNombre() + ". PV: " + antes + " -> " + despues + " / "
+					+ person.getPuntosVidaMax());
 
-	        return true;
+			return true;
 
-	    } catch (ReglaJuegoException e) {
-	        System.out.println("No puedes consumir: " + e.getMessage());
-	        return false;
-	    }
+		} catch (ReglaJuegoException e) {
+			System.out.println("No puedes consumir: " + e.getMessage());
+			return false;
+		}
 	}
 
 	private static void pausa(long ms) {
@@ -423,71 +531,70 @@ public class Utils {
 
 	public static void invocarLoboJabali(Personaje person) {
 
-	    if (person == null || person.getId() == null) {
-	        System.out.println("Error: personaje no válido o no persistido.");
-	        return;
-	    }
+		if (person == null || person.getId() == null) {
+			System.out.println("Error: personaje no válido o no persistido.");
+			return;
+		}
 
-	    Lobo lobo = new Lobo();
-	    Jabali jabali = new Jabali();
+		Lobo lobo = new Lobo();
+		Jabali jabali = new Jabali();
 
-	    int tirada = dadoDiez();
+		int tirada = dadoDiez();
 
-	    if (tirada == 1) {
-	        System.out.println(
-	            "Mientras invocas al lobo un mosquito te pica y te distraes, el lobo se enfada y te ataca."
-	        );
-	        combate(person, lobo);
-	        return;
-	    }
+		if (tirada == 1) {
+			System.out.println(
+					"Mientras invocas al lobo un mosquito te pica y te distraes, el lobo se enfada y te ataca.");
+			combate(person, lobo);
+			return;
+		}
 
-	    if (tirada == 9) {
-	        System.out.println(
-	            "Mientras invocas al jabalí un ratón te asusta y te distraes, el jabalí se enfada y te ataca."
-	        );
-	        combate(person, jabali);
-	        return;
-	    }
+		if (tirada == 9) {
+			System.out.println(
+					"Mientras invocas al jabalí un ratón te asusta y te distraes, el jabalí se enfada y te ataca.");
+			combate(person, jabali);
+			return;
+		}
 
-	    // Éxito: elegimos qué criatura se invoca según tirada
-	    String tipo;
-	    String nombreDefault;
+		// Éxito: elegimos qué criatura se invoca según tirada
+		String tipo;
+		String nombreDefault;
 
-	    if (tirada > 1 && tirada < 5) {
-	        System.out.println("Has invocado correctamente a un lobo.");
-	        tipo = "LOBO";
-	        nombreDefault = "Lobo";
-	    } else { // tirada >= 5 && tirada < 9
-	        System.out.println("Has invocado correctamente a un jabalí.");
-	        tipo = "JABALI";
-	        nombreDefault = "Jabali";
-	    }
+		if (tirada > 1 && tirada < 5) {
+			System.out.println("Has invocado correctamente a un lobo.");
+			tipo = "LOBO";
+			nombreDefault = "Lobo";
+		} else { // tirada >= 5 && tirada < 9
+			System.out.println("Has invocado correctamente a un jabalí.");
+			tipo = "JABALI";
+			nombreDefault = "Jabali";
+		}
 
-	    // Pedimos alias
-	    String alias = pideDatoCadena("¿Quieres ponerle un alias? (Enter para dejar el nombre): ");
-	    if (alias == null || alias.trim().isEmpty()) {
-	        alias = nombreDefault;
-	    }
+		// Pedimos alias
+		String alias = pideDatoCadena("¿Quieres ponerle un alias? (Enter para dejar el nombre): ");
+		if (alias == null || alias.trim().isEmpty()) {
+			alias = nombreDefault;
+		}
 
-	    try {
-	        // Persistimos criatura (FK personaje + save)
-	        CriaturaDto dto = criaturaService.invocarCompanero(person.getId(), tipo, alias);
+		try {
+			// Persistimos criatura (FK personaje + save)
+			CriaturaDto dto = criaturaService.invocarCompanero(person.getId(), tipo, alias);
 
-	        System.out.println("Criatura guardada en BD: " + dto.getTipo() + " alias=" + dto.getAlias());
+			System.out.println("Criatura guardada en BD: " + dto.getTipo() + " alias=" + dto.getAlias());
 
-	        // Muy importante: sincronizar el objeto en memoria para que el episodio lo vea al instante
-	        Personaje rec = recargarPersonaje(person.getId());
-	        if (rec != null) {
-	            person.setCriaturas(rec.getCriaturas());
-	            person.setEquipo(rec.getEquipo());
-	            person.setPuntosVida(rec.getPuntosVida());
-	            person.setExperiencia(rec.getExperiencia());
-	            person.setNivel(rec.getNivel());
-	        }
+			// Muy importante: sincronizar el objeto en memoria para que el episodio lo vea
+			// al instante
+			Personaje rec = recargarPersonaje(person.getId());
+			if (rec != null) {
+				person.setCriaturas(rec.getCriaturas());
+				person.setEquipo(rec.getEquipo());
+				person.setPuntosVida(rec.getPuntosVida());
+				person.setExperiencia(rec.getExperiencia());
+				person.setNivel(rec.getNivel());
+			}
 
-	    } catch (ReglaJuegoException e) {
-	        System.out.println("No se pudo invocar: " + e.getMessage());
-	    }
+		} catch (ReglaJuegoException e) {
+			System.out.println("No se pudo invocar: " + e.getMessage());
+		}
 	}
 
 	private static void mostrarEquipoCompleto(Personaje person) {
@@ -516,32 +623,28 @@ public class Utils {
 	}
 
 	private static void mostrarCompaneros(Personaje person) {
-	    if (person == null || person.getId() == null) {
-	        System.out.println("No hay personaje válido.");
-	        return;
-	    }
+		if (person == null || person.getId() == null) {
+			System.out.println("No hay personaje válido.");
+			return;
+		}
 
-	    try {
-	        List<CriaturaDto> lista = criaturaService.listarPorPersonaje(person.getId());
+		try {
+			List<CriaturaDto> lista = criaturaService.listarPorPersonaje(person.getId());
 
-	        if (lista.isEmpty()) {
-	            System.out.println("No tienes criaturas aliadas.");
-	            return;
-	        }
+			if (lista.isEmpty()) {
+				System.out.println("No tienes criaturas aliadas.");
+				return;
+			}
 
-	        for (CriaturaDto c : lista) {
-	            System.out.println("Criatura: " + c.getNombre()
-	                    + " | Tipo: " + c.getTipo()
-	                    + " | Alias: " + c.getAlias()
-	                    + " | PV: " + c.getPuntosVida()
-	                    + " | ATQ: " + c.getPuntosAtaque());
-	        }
+			for (CriaturaDto c : lista) {
+				System.out.println("Criatura: " + c.getNombre() + " | Tipo: " + c.getTipo() + " | Alias: "
+						+ c.getAlias() + " | PV: " + c.getPuntosVida() + " | ATQ: " + c.getPuntosAtaque());
+			}
 
-	    } catch (ReglaJuegoException e) {
-	        System.out.println("Error listando criaturas: " + e.getMessage());
-	    }
+		} catch (ReglaJuegoException e) {
+			System.out.println("Error listando criaturas: " + e.getMessage());
+		}
 	}
-
 
 	private static String obtenerTipoEquipamiento(Equipamiento e) {
 		if (e instanceof Armas) {
@@ -559,199 +662,195 @@ public class Utils {
 	// Equipar: mover el arma elegida al principio de la lista para que
 	// getArmaEquipada() pueda encontrarla primero.
 	private static void menuArmas(Personaje person) {
-	    List<Equipamiento> equipo = person.getEquipo();
-	    if (equipo == null || equipo.isEmpty()) {
-	        System.out.println("No llevas armas ni objetos");
-	        return;
-	    }
+		List<Equipamiento> equipo = person.getEquipo();
+		if (equipo == null || equipo.isEmpty()) {
+			System.out.println("No llevas armas ni objetos");
+			return;
+		}
 
-	    List<Armas> armas = new ArrayList<>();
-	    for (Equipamiento e : equipo) {
-	        if (e instanceof Armas) armas.add((Armas) e);
-	    }
+		List<Armas> armas = new ArrayList<>();
+		for (Equipamiento e : equipo) {
+			if (e instanceof Armas)
+				armas.add((Armas) e);
+		}
 
-	    if (armas.isEmpty()) {
-	        System.out.println("No tienes ninguna arma en el inventario");
-	        return;
-	    }
+		if (armas.isEmpty()) {
+			System.out.println("No tienes ninguna arma en el inventario");
+			return;
+		}
 
-	    System.out.println("\n--- ARMAS ---");
-	    for (int i = 0; i < armas.size(); i++) {
-	        Armas a = armas.get(i);
-	        System.out.println((i + 1) + ") " + a.getNombre() +
-	            " [id=" + a.getId() + "]" +
-	            " daño=" + a.getPuntosDaño() +
-	            " durabilidad=" + a.getDurabilidad() +
-	            " nivelReq=" + a.getNivelRequerido());
-	    }
+		System.out.println("\n--- ARMAS ---");
+		for (int i = 0; i < armas.size(); i++) {
+			Armas a = armas.get(i);
+			System.out.println((i + 1) + ") " + a.getNombre() + " [id=" + a.getId() + "]" + " daño=" + a.getPuntosDaño()
+					+ " durabilidad=" + a.getDurabilidad() + " nivelReq=" + a.getNivelRequerido());
+		}
 
-	    System.out.println((armas.size() + 1) + ") Volver");
-	    int opcion = pideDatoNumerico("Elige un arma para equipar:");
+		System.out.println((armas.size() + 1) + ") Volver");
+		int opcion = pideDatoNumerico("Elige un arma para equipar:");
 
-	    if (opcion < 1 || opcion > armas.size()) {
-	        System.out.println("Volviendo sin cambiar arma.");
-	        return;
-	    }
+		if (opcion < 1 || opcion > armas.size()) {
+			System.out.println("Volviendo sin cambiar arma.");
+			return;
+		}
 
-	    Armas seleccionada = armas.get(opcion - 1);
+		Armas seleccionada = armas.get(opcion - 1);
 
-	    try {
-	        EquipamientoService es = new EquipamientoServiceImpl();
-	        EquipamientoDto dto = es.equiparArma(person.getId(), seleccionada.getId());
-	        System.out.println("Arma equipada OK: " + dto.getNombre());
-	    } catch (ReglaJuegoException e) {
-	        System.out.println("No puedes equipar: " + e.getMessage());
-	    }
+		try {
+			EquipamientoService es = new EquipamientoServiceImpl();
+			EquipamientoDto dto = es.equiparArma(person.getId(), seleccionada.getId());
+			System.out.println("Arma equipada OK: " + dto.getNombre());
+		} catch (ReglaJuegoException e) {
+			System.out.println("No puedes equipar: " + e.getMessage());
+		}
 	}
-	
+
 	private static void menuEscudos(Personaje person) {
-	    List<Equipamiento> equipo = person.getEquipo();
-	    if (equipo == null || equipo.isEmpty()) {
-	        System.out.println("No llevas armas ni objetos");
-	        return;
-	    }
+		List<Equipamiento> equipo = person.getEquipo();
+		if (equipo == null || equipo.isEmpty()) {
+			System.out.println("No llevas armas ni objetos");
+			return;
+		}
 
-	    List<Escudos> escudos = new ArrayList<>();
-	    for (Equipamiento e : equipo) {
-	        if (e instanceof Escudos) escudos.add((Escudos) e);
-	    }
+		List<Escudos> escudos = new ArrayList<>();
+		for (Equipamiento e : equipo) {
+			if (e instanceof Escudos)
+				escudos.add((Escudos) e);
+		}
 
-	    if (escudos.isEmpty()) {
-	        System.out.println("No tienes ningun escudo en el inventario");
-	        return;
-	    }
+		if (escudos.isEmpty()) {
+			System.out.println("No tienes ningun escudo en el inventario");
+			return;
+		}
 
-	    System.out.println("\n--- ESCUDOS ---");
-	    for (int i = 0; i < escudos.size(); i++) {
-	        Escudos e = escudos.get(i);
-	        System.out.println((i + 1) + ") " + e.getNombre() +
-	            " [id=" + e.getId() + "]" +
-	            " Puntos Resistencia=" + e.getPuntosResistencia() +
-	            " durabilidad=" + e.getDurabilidad() +
-	            " nivelReq=" + e.getNivelRequerido());
-	    }
+		System.out.println("\n--- ESCUDOS ---");
+		for (int i = 0; i < escudos.size(); i++) {
+			Escudos e = escudos.get(i);
+			System.out.println((i + 1) + ") " + e.getNombre() + " [id=" + e.getId() + "]" + " Puntos Resistencia="
+					+ e.getPuntosResistencia() + " durabilidad=" + e.getDurabilidad() + " nivelReq="
+					+ e.getNivelRequerido());
+		}
 
-	    System.out.println((escudos.size() + 1) + ") Volver");
-	    int opcion = pideDatoNumerico("Elige un escudo para equipar:");
+		System.out.println((escudos.size() + 1) + ") Volver");
+		int opcion = pideDatoNumerico("Elige un escudo para equipar:");
 
-	    if (opcion < 1 || opcion > escudos.size()) {
-	        System.out.println("Volviendo sin cambiar arma.");
-	        return;
-	    }
+		if (opcion < 1 || opcion > escudos.size()) {
+			System.out.println("Volviendo sin cambiar arma.");
+			return;
+		}
 
-	    Escudos seleccionado = escudos.get(opcion - 1);
+		Escudos seleccionado = escudos.get(opcion - 1);
 
-	    try {
-	        EquipamientoService es = new EquipamientoServiceImpl();
-	        EquipamientoDto dto = es.equiparEscudo(person.getId(), seleccionado.getId());
-	        System.out.println("Escudo equipado OK: " + dto.getNombre());
-	    } catch (ReglaJuegoException e) {
-	        System.out.println("No puedes equipar: " + e.getMessage());
-	    }
+		try {
+			EquipamientoService es = new EquipamientoServiceImpl();
+			EquipamientoDto dto = es.equiparEscudo(person.getId(), seleccionado.getId());
+			System.out.println("Escudo equipado OK: " + dto.getNombre());
+		} catch (ReglaJuegoException e) {
+			System.out.println("No puedes equipar: " + e.getMessage());
+		}
 	}
 
 	private static void menuConsumir(Personaje person) {
-	    if (person == null || person.getId() == null) {
-	        System.out.println("No hay personaje válido seleccionado.");
-	        return;
-	    }
+		if (person == null || person.getId() == null) {
+			System.out.println("No hay personaje válido seleccionado.");
+			return;
+		}
 
-	    try {
-	        EquipamientoService es = new EquipamientoServiceImpl();
+		try {
+			EquipamientoService es = new EquipamientoServiceImpl();
 
-	        // 1) Pedimos al service los consumibles curativos (ya filtrados)
-	        List<EquipamientoDto> curativos = es.listarConsumiblesCurativos(person.getId());
+			// 1) Pedimos al service los consumibles curativos (ya filtrados)
+			List<EquipamientoDto> curativos = es.listarConsumiblesCurativos(person.getId());
 
-	        if (curativos == null || curativos.isEmpty()) {
-	            System.out.println("No tienes consumibles curativos (Baya, CarneSeca o Pocion).");
-	            return;
-	        }
+			if (curativos == null || curativos.isEmpty()) {
+				System.out.println("No tienes consumibles curativos (Baya, CarneSeca o Pocion).");
+				return;
+			}
 
-	        // 2) Pintamos menú
-	        System.out.println("\n--- CONSUMIBLES CURATIVOS ---");
-	        for (int i = 0; i < curativos.size(); i++) {
-	            model.EquipamientoDto d = curativos.get(i);
-	            System.out.println((i + 1) + ") " + d.getNombre() + " (id=" + d.getId() + ")");
-	        }
-	        System.out.println((curativos.size() + 1) + ") Volver");
+			// 2) Pintamos menú
+			System.out.println("\n--- CONSUMIBLES CURATIVOS ---");
+			for (int i = 0; i < curativos.size(); i++) {
+				model.EquipamientoDto d = curativos.get(i);
+				System.out.println((i + 1) + ") " + d.getNombre() + " (id=" + d.getId() + ")");
+			}
+			System.out.println((curativos.size() + 1) + ") Volver");
 
-	        int opcion = pideDatoNumerico("Elige un consumible: ");
+			int opcion = pideDatoNumerico("Elige un consumible: ");
 
-	        if (opcion == curativos.size() + 1) {
-	            return; // volver
-	        }
-	        if (opcion < 1 || opcion > curativos.size()) {
-	            System.out.println("Opción no válida.");
-	            return;
-	        }
+			if (opcion == curativos.size() + 1) {
+				return; // volver
+			}
+			if (opcion < 1 || opcion > curativos.size()) {
+				System.out.println("Opción no válida.");
+				return;
+			}
 
-	        EquipamientoDto elegido = curativos.get(opcion - 1);
+			EquipamientoDto elegido = curativos.get(opcion - 1);
 
-	        // 3) Consumir con service (cura + remove + persist)
-	        int vidaAntes = person.getPuntosVida();
-	        int vidaDespues = es.consumirCurativo(person.getId(), elegido.getId());
+			// 3) Consumir con service (cura + remove + persist)
+			int vidaAntes = person.getPuntosVida();
+			int vidaDespues = es.consumirCurativo(person.getId(), elegido.getId());
 
-	        // 4) Actualizamos el objeto en memoria para que se vea al instante
-	        person.setPuntosVida(vidaDespues);
+			// 4) Actualizamos el objeto en memoria para que se vea al instante
+			person.setPuntosVida(vidaDespues);
 
-	        System.out.println("Has consumido " + elegido.getNombre() +
-	                ". Vida actual (PV/PVMax): " + vidaAntes + " -> " +
-	                vidaDespues + "/" + person.getPuntosVidaMax());
+			System.out.println("Has consumido " + elegido.getNombre() + ". Vida actual (PV/PVMax): " + vidaAntes
+					+ " -> " + vidaDespues + "/" + person.getPuntosVidaMax());
 
-	    } catch (exceptions.ReglaJuegoException e) {
-	        System.out.println("No puedes consumir: " + e.getMessage());
-	    } catch (RuntimeException e) {
-	        System.out.println("Error general: " + e.getMessage());
-	    }
+		} catch (exceptions.ReglaJuegoException e) {
+			System.out.println("No puedes consumir: " + e.getMessage());
+		} catch (RuntimeException e) {
+			System.out.println("Error general: " + e.getMessage());
+		}
 	}
 
 	private static void menuTirarObjetoAlaMierda(Personaje person) {
-	    if (person == null || person.getId() == null) {
-	        System.out.println("No hay personaje válido.");
-	        return;
-	    }
+		if (person == null || person.getId() == null) {
+			System.out.println("No hay personaje válido.");
+			return;
+		}
 
-	    try {
-	        Personaje rec = recargarPersonaje(person.getId());
-	        List<Equipamiento> equipo = rec.getEquipo();
+		try {
+			Personaje rec = recargarPersonaje(person.getId());
+			List<Equipamiento> equipo = rec.getEquipo();
 
-	        if (equipo == null || equipo.isEmpty()) {
-	            System.out.println("No tienes nada que tirar.");
-	            return;
-	        }
+			if (equipo == null || equipo.isEmpty()) {
+				System.out.println("No tienes nada que tirar.");
+				return;
+			}
 
-	        System.out.println("\n--- TIRAR OBJETO  ---");
-	        for (int i = 0; i < equipo.size(); i++) {
-	            Equipamiento e = equipo.get(i);
-	            System.out.println((i + 1) + ") " + e.getNombre()
-	                    + " [id=" + e.getId() + "] durabilidad=" + e.getDurabilidad());
-	        }
-	        System.out.println((equipo.size() + 1) + ") Cancelar");
+			System.out.println("\n--- TIRAR OBJETO  ---");
+			for (int i = 0; i < equipo.size(); i++) {
+				Equipamiento e = equipo.get(i);
+				System.out.println(
+						(i + 1) + ") " + e.getNombre() + " [id=" + e.getId() + "] durabilidad=" + e.getDurabilidad());
+			}
+			System.out.println((equipo.size() + 1) + ") Cancelar");
 
-	        int opcion = pideDatoNumerico("Elige el objeto: ");
-	        if (opcion < 1 || opcion > equipo.size()) {
-	            System.out.println("Cancelado.");
-	            return;
-	        }
+			int opcion = pideDatoNumerico("Elige el objeto: ");
+			if (opcion < 1 || opcion > equipo.size()) {
+				System.out.println("Cancelado.");
+				return;
+			}
 
-	        Equipamiento elegido = equipo.get(opcion - 1);
-	        Long equipId = elegido.getId();
-	        String nombreObj = elegido.getNombre();
+			Equipamiento elegido = equipo.get(opcion - 1);
+			Long equipId = elegido.getId();
+			String nombreObj = elegido.getNombre();
 
-	        EquipamientoService es = new EquipamientoServiceImpl();
-	        es.eliminarDeInventario(person.getId(), equipId);
+			EquipamientoService es = new EquipamientoServiceImpl();
+			es.eliminarDeInventario(person.getId(), equipId);
 
+			Personaje rec2 = recargarPersonaje(person.getId());
+			System.out.println("El objeto " + nombreObj + " se ha eliminado correctamente!");
+			person.setEquipo(rec2.getEquipo());
 
-	        Personaje rec2 = recargarPersonaje(person.getId());
-	        System.out.println("El objeto " + nombreObj + " se ha eliminado correctamente!");
-	        person.setEquipo(rec2.getEquipo());
-
-	    } catch (ReglaJuegoException e) {
-	        System.out.println("No puedes tirar ese objeto: " + e.getMessage());
-	    } catch (Exception e) {
-	        System.out.println("Error inesperado al tirar objeto: " + e.getClass().getSimpleName() + " - " + e.getMessage());
-	        e.printStackTrace();
-	    }
+		} catch (ReglaJuegoException e) {
+			System.out.println("No puedes tirar ese objeto: " + e.getMessage());
+		} catch (Exception e) {
+			System.out.println(
+					"Error inesperado al tirar objeto: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 	public static int calcularPesoTotal(Personaje person) {
@@ -874,95 +973,94 @@ public class Utils {
 	}
 
 	public static Personaje buscarBaya(Personaje personaje) {
-	    if (personaje == null || personaje.getId() == null) {
-	        System.out.println("Personaje no válido.");
-	        return personaje;
-	    }
+		if (personaje == null || personaje.getId() == null) {
+			System.out.println("Personaje no válido.");
+			return personaje;
+		}
 
-	    EquipamientoService equipService = new EquipamientoServiceImpl();
+		EquipamientoService equipService = new EquipamientoServiceImpl();
 
-	    int tirada = Utils.dadoDiez();
+		int tirada = Utils.dadoDiez();
 
-	    // baya venenosa -> solo cambia PV en memoria (se guarda al final del episodio)
-	    if (tirada <= 3) {
-	        System.out.println("Te comes una baya venenosa... Pierdes 5 de vida.");
-	        personaje.setPuntosVida(personaje.getPuntosVida() - 5);
-	        return personaje;
-	    }
+		// baya venenosa -> solo cambia PV en memoria (se guarda al final del episodio)
+		if (tirada <= 3) {
+			System.out.println("Te comes una baya venenosa... Pierdes 5 de vida.");
+			personaje.setPuntosVida(personaje.getPuntosVida() - 5);
+			return personaje;
+		}
 
-	    try {
-	        if (tirada <= 7) {
-	            System.out.println("Has encontrado algunas bayas");
-	            equipService.añadirAlInventario(personaje.getId(), new Baya());
-	        } else {
-	            System.out.println("Has encontrado muchas bayas");
-	            equipService.añadirAlInventario(personaje.getId(), new Baya());
-	            equipService.añadirAlInventario(personaje.getId(), new Baya());
-	        }
+		try {
+			if (tirada <= 7) {
+				System.out.println("Has encontrado algunas bayas");
+				equipService.añadirAlInventario(personaje.getId(), new Baya());
+			} else {
+				System.out.println("Has encontrado muchas bayas");
+				equipService.añadirAlInventario(personaje.getId(), new Baya());
+				equipService.añadirAlInventario(personaje.getId(), new Baya());
+			}
 
-	        // recargar inventario actualizado
-	        return recargarPersonaje(personaje.getId());
+			// recargar inventario actualizado
+			return recargarPersonaje(personaje.getId());
 
-	    } catch (ReglaJuegoException e) {
-	        System.out.println("No puedes añadir bayas: " + e.getMessage());
-	        return personaje;
-	    }
+		} catch (ReglaJuegoException e) {
+			System.out.println("No puedes añadir bayas: " + e.getMessage());
+			return personaje;
+		}
 	}
-	
+
 	public static boolean fueUltimaCazaExitosa() {
 		return ultimaCazaExitosa;
 	}
 
 	public static Personaje cazar(Personaje person) {
 		ultimaCazaExitosa = false;
-		
-	    if (person == null || person.getId() == null) {
-	        System.out.println("Personaje no válido.");
-	        return person;
-	    }
 
-	    if (person.getCriaturas() == null || person.getCriaturas().isEmpty()) {
-	        System.out.println("No puedes cazar sin un compañero criatura, primero invoca uno.");
-	        return person;
-	    }
+		if (person == null || person.getId() == null) {
+			System.out.println("Personaje no válido.");
+			return person;
+		}
 
-	    EquipamientoService equipService = new EquipamientoServiceImpl();
+		if (person.getCriaturas() == null || person.getCriaturas().isEmpty()) {
+			System.out.println("No puedes cazar sin un compañero criatura, primero invoca uno.");
+			return person;
+		}
 
-	    boolean exito = dadoDiez() > 3; // 70%
-	    Criatura presa = randomizarCriatura();
+		EquipamientoService equipService = new EquipamientoServiceImpl();
 
-	    if (exito) {
-	        boolean ganado = Utils.combate(person, presa);
+		boolean exito = dadoDiez() > 3; // 70%
+		Criatura presa = randomizarCriatura();
 
-	        if (ganado) {
-	            ultimaCazaExitosa = true;
-	            try {
-	                System.out.println("Has cazado un " + presa.getNombre() + ", consigues carne seca.");
-	                equipService.añadirAlInventario(person.getId(), new CarneSeca());
-	                return recargarPersonaje(person.getId());
-	            } catch (ReglaJuegoException e) {
-	                System.out.println("No puedes añadir carne seca: " + e.getMessage());
-	                return person;
-	            }
-	        } else {
-	            return person;
-	        }
+		if (exito) {
+			boolean ganado = Utils.combate(person, presa);
 
-	    } else {
-	        int danioHecho = presa.atacar(person);
-	        person.setPuntosVida(person.getPuntosVida() - danioHecho);
-	        System.out.println("La presa te hace " + danioHecho + " de daño y huyes llorando.");
-	        return person;
-	    }
+			if (ganado) {
+				ultimaCazaExitosa = true;
+				try {
+					System.out.println("Has cazado un " + presa.getNombre() + ", consigues carne seca.");
+					equipService.añadirAlInventario(person.getId(), new CarneSeca());
+					return recargarPersonaje(person.getId());
+				} catch (ReglaJuegoException e) {
+					System.out.println("No puedes añadir carne seca: " + e.getMessage());
+					return person;
+				}
+			} else {
+				return person;
+			}
+
+		} else {
+			int danioHecho = presa.atacar(person);
+			person.setPuntosVida(person.getPuntosVida() - danioHecho);
+			System.out.println("La presa te hace " + danioHecho + " de daño y huyes llorando.");
+			return person;
+		}
 	}
 
 	public static Personaje buscarObjeto(Personaje personaje) {
-	    if (personaje == null || personaje.getId() == null) {
+
+	    if (personaje == null) {
 	        System.out.println("Personaje no válido.");
 	        return personaje;
 	    }
-
-	    EquipamientoService equipService = new EquipamientoServiceImpl();
 
 	    int tirada = Utils.dadoDiez();
 
@@ -970,126 +1068,164 @@ public class Utils {
 	    if (tirada <= 2) {
 	        System.out.println("Metes la mano en un agujero... es un nido de serpiente y te muerde.");
 	        personaje.setPuntosVida(personaje.getPuntosVida() - 5);
-	        return personaje; // esto se guarda al final del episodio por EpisodioService
+	        return personaje;
 	    }
 
 	    // Caso bueno: encontramos un material
 	    int tirada2 = Utils.dadoDiez();
+	    String nombreEncontrado;
 
-	    String nombreEncontrado = null;
-	    
-	    try {
-	        if (tirada2 == 1 || tirada2 == 2) {
-	        	nombreEncontrado = "Mojon Seco";
-	            System.out.println("Encuentras un objeto muy útil: Mojon Seco");
-	            equipService.añadirAlInventario(personaje.getId(), new MojonSeco());
-	        } else if (tirada2 == 3 || tirada2 == 4) {
-	        	nombreEncontrado = "Cuerda";
-	            System.out.println("Encuentras un objeto muy útil: Cuerda");
-	            equipService.añadirAlInventario(personaje.getId(), new Cuerda());
-	        } else if (tirada2 == 5 || tirada2 == 6) {
-	        	nombreEncontrado = "Piedra";
-	            System.out.println("Encuentras un objeto muy útil: Piedra");
-	            equipService.añadirAlInventario(personaje.getId(), new Piedra());
-	        } else if (tirada2 == 7 || tirada2 == 8) {
-	        	nombreEncontrado = "Palo";
-	            System.out.println("Encuentras un objeto muy útil: Palo");
-	            equipService.añadirAlInventario(personaje.getId(), new Palo());
-	        } else {
-	        	nombreEncontrado = "Hoja Para Limpiar";
-	            System.out.println("Encuentras un objeto muy útil: Hoja Para Limpiar");
-	            equipService.añadirAlInventario(personaje.getId(), new HojaParaLimpiar());
-	        }
+	    if (tirada2 == 1 || tirada2 == 2) {
+	        nombreEncontrado = "Mojon Seco";
+	        System.out.println("Encuentras un objeto muy útil: Mojon Seco");
+	        personaje.getEquipo().add(new MojonSeco());
 
-	        // IMPORTANTÍSIMO: recargamos desde BD para traer el inventario actualizado
-	        Personaje rec =  Utils.recargarPersonaje(personaje.getId());
-	        System.out.println("\nHas encontrado el objeto: " + nombreEncontrado);
-	        
-	        return rec;
+	    } else if (tirada2 == 3 || tirada2 == 4) {
+	        nombreEncontrado = "Cuerda";
+	        System.out.println("Encuentras un objeto muy útil: Cuerda");
+	        personaje.getEquipo().add(new Cuerda());
 
-	    } catch (ReglaJuegoException e) {
-	        System.out.println("No puedes añadir el objeto al inventario: " + e.getMessage());
-	        return personaje;
+	    } else if (tirada2 == 5 || tirada2 == 6) {
+	        nombreEncontrado = "Piedra";
+	        System.out.println("Encuentras un objeto muy útil: Piedra");
+	        personaje.getEquipo().add(new Piedra());
+
+	    } else if (tirada2 == 7 || tirada2 == 8) {
+	        nombreEncontrado = "Palo";
+	        System.out.println("Encuentras un objeto muy útil: Palo");
+	        personaje.getEquipo().add(new Palo());
+
+	    } else {
+	        nombreEncontrado = "Hoja Para Limpiar";
+	        System.out.println("Encuentras un objeto muy útil: Hoja Para Limpiar");
+	        personaje.getEquipo().add(new HojaParaLimpiar());
 	    }
+
+	    System.out.println("\nHas encontrado el objeto: " + nombreEncontrado);
+	    return personaje;
+	}
+
+	public static Personaje buscarObjetoPersistido(Personaje personaje) {
+		if (personaje == null || personaje.getId() == null) {
+			System.out.println("Personaje no válido.");
+			return personaje;
+		}
+
+		EquipamientoService equipService = new EquipamientoServiceImpl();
+
+		int tirada = Utils.dadoDiez();
+
+		// Caso malo: serpiente
+		if (tirada <= 2) {
+			System.out.println("Metes la mano en un agujero... es un nido de serpiente y te muerde.");
+			personaje.setPuntosVida(personaje.getPuntosVida() - 5);
+			return personaje; // esto se guarda al final del episodio por EpisodioService
+		}
+
+		// Caso bueno: encontramos un material
+		int tirada2 = Utils.dadoDiez();
+
+		String nombreEncontrado = null;
+
+		try {
+			if (tirada2 == 1 || tirada2 == 2) {
+				nombreEncontrado = "Mojon Seco";
+				System.out.println("Encuentras un objeto muy útil: Mojon Seco");
+				equipService.añadirAlInventario(personaje.getId(), new MojonSeco());
+			} else if (tirada2 == 3 || tirada2 == 4) {
+				nombreEncontrado = "Cuerda";
+				System.out.println("Encuentras un objeto muy útil: Cuerda");
+				equipService.añadirAlInventario(personaje.getId(), new Cuerda());
+			} else if (tirada2 == 5 || tirada2 == 6) {
+				nombreEncontrado = "Piedra";
+				System.out.println("Encuentras un objeto muy útil: Piedra");
+				equipService.añadirAlInventario(personaje.getId(), new Piedra());
+			} else if (tirada2 == 7 || tirada2 == 8) {
+				nombreEncontrado = "Palo";
+				System.out.println("Encuentras un objeto muy útil: Palo");
+				equipService.añadirAlInventario(personaje.getId(), new Palo());
+			} else {
+				nombreEncontrado = "Hoja Para Limpiar";
+				System.out.println("Encuentras un objeto muy útil: Hoja Para Limpiar");
+				equipService.añadirAlInventario(personaje.getId(), new HojaParaLimpiar());
+			}
+
+			// IMPORTANTÍSIMO: recargamos desde BD para traer el inventario actualizado
+			Personaje rec = Utils.recargarPersonaje(personaje.getId());
+			System.out.println("\nHas encontrado el objeto: " + nombreEncontrado);
+
+			return rec;
+
+		} catch (ReglaJuegoException e) {
+			System.out.println("No puedes añadir el objeto al inventario: " + e.getMessage());
+			return personaje;
+		}
 	}
 
 	public static void menuFabricar(Personaje personaje) {
-	    if (personaje == null || personaje.getId() == null) {
-	        System.out.println("Debes tener un personaje válido.");
-	        return;
-	    }
+		if (personaje == null || personaje.getId() == null) {
+			System.out.println("Debes tener un personaje válido.");
+			return;
+		}
 
-	    catalogoFabricacionArmasEscudos();
-	    
-	    String tipo = pideDatoCadena(
-	        "/n¿Qué quieres fabricar? Escribe la que desees (ARCO, BUMERAN, CAZAMARIPOSAS, LANZA, HONDA, CAÑA PESCA, TRAMPA, ESCUDO MADERA, ESCUDO PIEDRA)"
-	    );
+		catalogoFabricacionArmasEscudos();
 
-	    try {
-	        EquipamientoService es = new EquipamientoServiceImpl();
-	        EquipamientoDto dto = es.fabricar(personaje.getId(), tipo);
+		String tipo = pideDatoCadena(
+				"/n¿Qué quieres fabricar? Escribe la que desees (ARCO, BUMERAN, CAZAMARIPOSAS, LANZA, HONDA, CAÑA PESCA, TRAMPA, ESCUDO MADERA, ESCUDO PIEDRA)");
 
-	        System.out.println("Fabricado OK: " + dto.getNombre() +
-	            " | durabilidad=" + dto.getDurabilidad() +
-	            " | nivel requerido=" + dto.getNivelRequerido());
-	    } catch (ReglaJuegoException e) {
-	        System.out.println("No puedes fabricar: " + e.getMessage());
-	    }
+		try {
+			EquipamientoService es = new EquipamientoServiceImpl();
+			EquipamientoDto dto = es.fabricar(personaje.getId(), tipo);
+
+			System.out.println("Fabricado OK: " + dto.getNombre() + " | durabilidad=" + dto.getDurabilidad()
+					+ " | nivel requerido=" + dto.getNivelRequerido());
+		} catch (ReglaJuegoException e) {
+			System.out.println("No puedes fabricar: " + e.getMessage());
+		}
 	}
-	
+
 	public static Personaje recargarPersonaje(Long personajeId) {
-	    PersonajeDao personajeDao = new PersonajeDaoImpl();
-	    return personajeDao.findByIdFetchAll(personajeId);
+		PersonajeDao personajeDao = new PersonajeDaoImpl();
+		return personajeDao.findByIdFetchAll(personajeId);
 	}
-	
+
 	public static void catalogoFabricacionArmasEscudos() {
 
-	    Arco arco = new Arco();
-	    Bumeran bumeran = new Bumeran();
-	    CanaPescar cana = new CanaPescar();
-	    Honda honda = new Honda();
-	    Lanza lanza = new Lanza();
-	    Trampa trampa = new Trampa();
-	    Cazamariposas caz = new Cazamariposas();
-	    EscudoMadera emad = new EscudoMadera();
-	    EscudoPiedra epie = new EscudoPiedra();
-	    // ... añade el resto
+		Arco arco = new Arco();
+		Bumeran bumeran = new Bumeran();
+		CanaPescar cana = new CanaPescar();
+		Honda honda = new Honda();
+		Lanza lanza = new Lanza();
+		Trampa trampa = new Trampa();
+		Cazamariposas caz = new Cazamariposas();
+		EscudoMadera emad = new EscudoMadera();
+		EscudoPiedra epie = new EscudoPiedra();
+		// ... añade el resto
 
-	    System.out.println("\n=== CATÁLOGO DE ARMAS/ESCUDOS ===");
+		System.out.println("\n=== CATÁLOGO DE ARMAS/ESCUDOS ===");
 
-	    imprimirArma(arco);
-	    imprimirArma(bumeran);
-	    imprimirArma(cana);
-	    imprimirArma(honda);
-	    imprimirArma(lanza);
-	    imprimirArma(trampa);
-	    imprimirArma(caz);
-	    imprimirEscudo(emad);
-	    imprimirEscudo(epie);
+		imprimirArma(arco);
+		imprimirArma(bumeran);
+		imprimirArma(cana);
+		imprimirArma(honda);
+		imprimirArma(lanza);
+		imprimirArma(trampa);
+		imprimirArma(caz);
+		imprimirEscudo(emad);
+		imprimirEscudo(epie);
 	}
-	
+
 	private static void imprimirArma(Armas a) {
-	    System.out.println(
-	        "- " + a.getNombre()
-	        + " | NivelReq: " + a.getNivelRequerido()
-	        + " | Daño: " + a.getPuntosDaño()
-	        + " | Durabilidad: " + a.getDurabilidad()
-	        + " | Peso: " + a.getPeso()
-	        + " | TipoDaño: " + a.getTipoDaño()
-	        + " | Alcance: " + a.getAlcance()
-	        + " | Precisión: " + a.getPrecision()
-	        + " | Crit%: " + a.getProbCritico()
-	    );
+		System.out.println("- " + a.getNombre() + " | NivelReq: " + a.getNivelRequerido() + " | Daño: "
+				+ a.getPuntosDaño() + " | Durabilidad: " + a.getDurabilidad() + " | Peso: " + a.getPeso()
+				+ " | TipoDaño: " + a.getTipoDaño() + " | Alcance: " + a.getAlcance() + " | Precisión: "
+				+ a.getPrecision() + " | Crit%: " + a.getProbCritico());
 	}
-	
+
 	private static void imprimirEscudo(Escudos e) {
-	    System.out.println(
-	        "- " + e.getNombre()
-	        + " | NivelReq: " + e.getNivelRequerido()
-	        + " | Durabilidad: " + e.getDurabilidad()
-	        + " | Peso: " + e.getPeso()
-	        + " | Puntos Resistencia: " + e.getPuntosResistencia()
-	    );
+		System.out.println(
+				"- " + e.getNombre() + " | NivelReq: " + e.getNivelRequerido() + " | Durabilidad: " + e.getDurabilidad()
+						+ " | Peso: " + e.getPeso() + " | Puntos Resistencia: " + e.getPuntosResistencia());
 	}
 
 }

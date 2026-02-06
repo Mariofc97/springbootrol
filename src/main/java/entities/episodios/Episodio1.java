@@ -5,12 +5,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import entities.Personaje;
 import entities.equipo.objetos.HojaParaLimpiar;
-import exceptions.ReglaJuegoException;
-import service.CriaturaService;
-import service.EquipamientoService;
+import service.PersonajeService;
 import utilidades.Utils;
 
 /**
@@ -22,13 +21,13 @@ import utilidades.Utils;
  * El logger se configura en un bloque estático para escribir en
  * "episodio1.log".
  */
+@Service
 public class Episodio1 {
-	static int contadorEpisodio1 = 0;
 	// Logger específico para esta clase
 	private static final Logger LOGGER = Logger.getLogger(Episodio1.class.getName());
-	@Autowired
-	private EquipamientoService equipService;
-	private CriaturaService criaturaService;
+
+	@Autowired 
+	private PersonajeService personajeService;
 
 	static {
 		LOGGER.setUseParentHandlers(false); // evita que el logger escriba en consola
@@ -61,7 +60,7 @@ public class Episodio1 {
 				// Inicializamos una lista vacía si no existe
 				java.util.List<entities.equipo.Equipamiento> equipoList = new java.util.ArrayList<>();
 				personaje.setEquipo(equipoList);
-				LOGGER.info("Se inicializó la lista de equipo para el personaje: " + personaje.getNombre());
+				//LOGGER.info("Se inicializó la lista de equipo para el personaje: " + personaje.getNombre());
 			} catch (Exception e) {
 				// Si falla la inicialización la registramos pero no abortamos el episodio
 				LOGGER.log(Level.WARNING, "No se pudo inicializar la lista de equipo", e);
@@ -74,12 +73,11 @@ public class Episodio1 {
 			try {
 				java.util.List<entities.criatura.Criatura> criaturasList = new java.util.ArrayList<>();
 				personaje.setCriaturas(criaturasList);
-				LOGGER.info("Se inicializó la lista de criaturas para el personaje: " + personaje.getNombre());
+				//LOGGER.info("Se inicializó la lista de criaturas para el personaje: " + personaje.getNombre());
 			} catch (Exception e) {
 				LOGGER.log(Level.WARNING, "No se pudo inicializar la lista de criaturas", e);
 			}
 		}
-		// FIXME: hay que declarar las keys como static para que se mantengan entre
 		// llamadas!!!!!!!!
 
 		// Flags que representan si el personaje ya ha realizado ciertas acciones
@@ -90,16 +88,7 @@ public class Episodio1 {
 		boolean key1 = false;
 		boolean key2 = false;
 		boolean key3 = false;
-		if (contadorEpisodio1 == 0) {
-
-			key1 = false;
-			key2 = false;
-			key3 = false;
-		} else {
-			key1 = true;
-			key2 = true;
-			key3 = true;
-		}
+		
 		boolean salida = false; // control del bucle principal
 		// contador de fallos consecutivos para evitar bucle infinito
 		int errorCount = 0;
@@ -141,23 +130,18 @@ public class Episodio1 {
 				switch (opcion) {
 
 				case 1: {
-					// Caso 1: el personaje "llora" y obtiene una HojaParaLimpiar
-					try {
-						int cantidad = Utils.contarHojas(personaje);
-						if (cantidad >= 5) {
-							System.out.println("Te dan un torta... LLORON DEJA DE LLORAR!!!!!");
-							break;
-						}
-
-						equipService.añadirAlInventario(personaje.getId(), new HojaParaLimpiar());
-						personaje = Utils.recargarPersonaje(personaje.getId());
-
-						System.out.println("Has obtenido una Hoja de Ortiga.");
-						key1 = true;
-
-					} catch (ReglaJuegoException e) {
-						System.out.println(e.getMessage());
+					// quito control de exceptions porque no hay nada que pueda fallar realmente.
+					int cantidad = Utils.contarHojas(personaje);
+					if (cantidad >= 5) {
+						System.out.println("Te dan un torta... LLORON DEJA DE LLORAR!!!!!");
+						break;
 					}
+//TODO: TENEMOS QUE VOLVER AL METODO ANTIGURO Y HACERLO PERSISTENTE AL FINAL DEL EPISODIO.
+					//equipService.añadirAlInventario(personaje.getId(), new HojaParaLimpiar());
+					//personaje = Utils.recargarPersonaje(personaje.getId());
+					personaje.getEquipo().add(new HojaParaLimpiar());
+					System.out.println("Has obtenido una Hoja de Ortiga.");
+					key1 = true;
 				}
 					break;
 
@@ -165,7 +149,7 @@ public class Episodio1 {
 					try {
 						int antes = personaje.getCriaturas().size();
 						Utils.invocacionCompañeroCriatura(personaje);
-						personaje = Utils.recargarPersonaje(personaje.getId());
+						//personaje = Utils.recargarPersonaje(personaje.getId());
 						int despues = personaje.getCriaturas().size();
 
 						if (despues > antes) {
@@ -176,42 +160,46 @@ public class Episodio1 {
 						}
 
 					} catch (Exception e) {
-						LOGGER.log(Level.SEVERE, "Error en invocacionCompañeroCriatura", e);
+						//LOGGER.log(Level.SEVERE, "Error en invocacionCompañeroCriatura", e);
 						System.out.println("Se produjo un error al invocar la criatura.");
 					}
 				}
 					break;
 
 				case 3: {
-					// Caso 3: acción que reduce la vida del personaje a 1 (desgracia)
-					try {
-						int cantidad = personaje.getPuntosVida();
-						if (cantidad <= 1) {
-							System.out.println(
-									"No se puede salir de la cueva con 1 de vida, duerme un poco y prueba de nuevo suicida!!!!");
-							break;
-						}
-						if (key1 && key2 && key3) {
+				    try {
+				        int cantidad = personaje.getPuntosVida();
+				        if (cantidad <= 1) {
+				            System.out.println(
+				                "No se puede salir de la cueva con 1 de vida, duerme un poco y prueba de nuevo suicida!!!!");
+				            break;
+				        }
 
-							String msg = " Saliendo del fuera de la cueva...";
-							System.out.println(msg);
-							LOGGER.info(msg + " Personaje: " + personaje.getNombre());
-							salida = true;
-							break;
-						}
-						personaje.setPuntosVida(1);
-//						String consecuencia = Utils.desgraciaAleatorio() + personaje.getPuntosVida();
-						System.out.println(Utils.desgraciaAleatorio() + " Tu vida ahora es: "
-								+ personaje.getPuntosVida() + " y vuelves a la cueva, llorando...");
-						key3 = true; // necesario para poder salir del episodio
-						LOGGER.info("Mostrando menú para personaje: " + personaje.getNombre());
+				        // Si ya cumplió las 3 claves → puede salir
+				        if (key1 && key2 && key3) {
 
-					} catch (Exception e) {
-						LOGGER.log(Level.SEVERE, "Error al ejecutar opción 3", e);
-						System.out.println("No se pudo realizar la acción de la opción 3.");
-					}
+				            // Persistimos el personaje ANTES de salir del episodio
+				            personajeService.actualizar(personaje);
+
+				            String msg = " Saliendo del fuera de la cueva...";
+				            System.out.println(msg);
+				            LOGGER.info(msg + " Personaje: " + personaje.getNombre());
+				            salida = true;
+				            break;
+				        }
+
+				        // Si aún no puede salir → desgracia
+				        personaje.setPuntosVida(1);
+				        System.out.println(Utils.desgraciaAleatorio() + " Tu vida ahora es: "
+				                + personaje.getPuntosVida() + " y vuelves a la cueva, llorando...");
+				        key3 = true;
+
+				    } catch (Exception e) {
+				        System.out.println("No se pudo realizar la acción de la opción 3.");
+				    }
 				}
-					break;
+				break;
+
 
 				case 4: {
 					// Caso 4: dormir y recuperar toda la vida
@@ -219,7 +207,7 @@ public class Episodio1 {
 					String msg = "Has dormido y recuperado toda la vida.";
 					System.out.println(msg);
 					key3 = true; // dormir también cuenta como requisito para poder salir
-					LOGGER.info(msg + " Personaje: " + personaje.getNombre());
+					//LOGGER.info(msg + " Personaje: " + personaje.getNombre());
 
 				}
 					break;
@@ -230,9 +218,9 @@ public class Episodio1 {
 					// hacer el control de exdesde aqui.
 					try {
 						personaje = Utils.buscarObjeto(personaje);
-						LOGGER.info("El personaje " + personaje.getNombre() + " ha buscado un objeto.");
+					//	LOGGER.info("El personaje " + personaje.getNombre() + " ha buscado un objeto.");
 					} catch (Exception e) {
-						LOGGER.log(Level.SEVERE, "Error al buscar objeto", e);
+					//	LOGGER.log(Level.SEVERE, "Error al buscar objeto", e);
 						System.out.println("No se pudo buscar el objeto.");
 					}
 
@@ -252,7 +240,7 @@ public class Episodio1 {
 
 			} catch (Throwable t) {
 				// Capturamos Throwable para evitar salidas inesperadas y lo registramos
-				LOGGER.log(Level.SEVERE, "Excepción inesperada en episodio1", t);
+				//LOGGER.log(Level.SEVERE, "Excepción inesperada en episodio1", t);
 				System.out.println("Se ha producido un error inesperado. Reintentando...");
 				// Mostrar traza en consola para diagnóstico (ayuda a ver el stacktrace real)
 				t.printStackTrace();
@@ -260,11 +248,13 @@ public class Episodio1 {
 				if (errorCount >= MAX_ERRORS) {
 					String msg = "Se han producido varios errores consecutivos. Abortando episodio para evitar bucle infinito.";
 					System.out.println(msg);
-					LOGGER.severe(msg);
+					//LOGGER.severe(msg);
 					salida = true; // forzamos salida del bucle
 				}
 			}
 		} while (!salida);
+		// Guardar personaje al final del episodio por seguridad 
+		personajeService.actualizar(personaje);
 
 	}
 
