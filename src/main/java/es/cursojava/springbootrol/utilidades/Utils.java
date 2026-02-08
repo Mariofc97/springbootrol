@@ -82,10 +82,10 @@ public class Utils {
 
 	    boolean ok = dadoDiez() > 1;
 	    if (!ok) {
-	        System.out.println("No estás pensando en lo que debes, la criatura se ríe de ti y te ataca.");
+	       // System.out.println("No estás pensando en lo que debes, la criatura se ríe de ti y te ataca.");
 	        person.setPuntosVida(person.getPuntosVida() - compiRandom.getPuntosAtaque());
-	        System.out.println("Te ha quitado " + compiRandom.getPuntosAtaque() + " puntos de vida, te quedan "
-	                + person.getPuntosVida() + " puntos de vida.");
+//	        System.out.println("Te ha quitado " + compiRandom.getPuntosAtaque() + " puntos de vida, te quedan "
+//	                + person.getPuntosVida() + " puntos de vida.");
 	        throw new ReglaJuegoException("La invocación ha fallado.");
 	    }
 
@@ -99,9 +99,9 @@ public class Utils {
 
 	   // person.addCriatura(compiRandom);
 	    person.getCriaturas().add(compiRandom);
-	    System.out.println("Has invocado una criatura: " 
-	            + compiRandom.getNombre() 
-	            + " alias=" + compiRandom.getAlias());
+//	    System.out.println("Has invocado una criatura: " 
+//	            + compiRandom.getNombre() 
+//	            + " alias=" + compiRandom.getAlias());
 
 	    return compiRandom;
 	}

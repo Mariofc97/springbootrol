@@ -1,6 +1,5 @@
 package es.cursojava.springbootrol.entities.episodios;
 
-import java.util.InputMismatchException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -85,7 +84,7 @@ public class Episodio1 {
 						int despues = personaje.getCriaturas().size();
 
 						if (despues > antes) {
-							acciones.add("Invocaste con éxito un compañero de viaje.");
+							acciones.add("Invocaste con éxito un compañero de viaje." );
 							key2 = true;
 						} else {
 							acciones.add("Intentaste invocar una criatura, pero fallaste.");
