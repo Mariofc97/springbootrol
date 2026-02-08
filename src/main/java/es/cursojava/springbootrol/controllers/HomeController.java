@@ -36,6 +36,26 @@ public class HomeController {
         model.addAttribute("usuarios", usuarios);
         return "index";
     }
+    
+    @GetMapping("/registro")
+    public String registroForm() {
+        return "registro";
+    }
+
+    @PostMapping("/registro")
+    public String registrar(@RequestParam String username,
+                            @RequestParam String email,
+                            @RequestParam String password,
+                            @RequestParam String rol,
+                            Model model) {
+        try {
+            usuarioService.registrar(username, email, password, rol); // lo creas en el service
+            return "redirect:/?registroOk";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "registro";
+        }
+    }
 
     @PostMapping("/login")
     public String login(@RequestParam String username, @RequestParam String password, Model model) {
