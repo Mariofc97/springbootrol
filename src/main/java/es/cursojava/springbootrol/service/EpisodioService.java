@@ -1,8 +1,9 @@
 package es.cursojava.springbootrol.service;
 
 import es.cursojava.springbootrol.entities.Personaje;
+import es.cursojava.springbootrol.entities.episodios.AccionesEpisodio;
 
 public interface EpisodioService {
 
-	Personaje jugarEpisodioActual (Long personajeId);
+	AccionesEpisodio jugarEpisodioActual (Long personajeId);
 }

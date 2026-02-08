@@ -11,13 +11,12 @@ import es.cursojava.springbootrol.entities.equipo.objetos.HojaParaLimpiar;
 import es.cursojava.springbootrol.service.PersonajeService;
 import es.cursojava.springbootrol.utilidades.Utils;
 
-@Service
 public class Episodio1Prueba {
 
     private static final Logger LOGGER = Logger.getLogger(Episodio1Prueba.class.getName());
 
-    @Autowired
-    private PersonajeService personajeService;
+//    @Autowired
+//    private PersonajeService personajeService;
 
     static {
         LOGGER.setUseParentHandlers(false);
@@ -72,7 +71,7 @@ public class Episodio1Prueba {
                         break;
                     }
 
-                    personaje.getEquipo().add(new HojaParaLimpiar());
+                    personaje.addEquipamiento(new HojaParaLimpiar());
                     acciones.add("Lloraste desconsoladamente y obtuviste una Hoja de Ortiga.");
                     key1 = true;
                 }
@@ -80,9 +79,9 @@ public class Episodio1Prueba {
 
                 case 2: {
                     try {
-                        int antes = personaje.getCriaturas().size();
-                        Utils.invocacionCompañeroCriatura(personaje);
-                        int despues = personaje.getCriaturas().size();
+                    	int antes = (personaje.getCriaturas() == null) ? 0 : personaje.getCriaturas().size();
+                        Utils.invocacionCompañeroCriatura(personaje); 
+                        int despues = (personaje.getCriaturas() == null) ? 0 : personaje.getCriaturas().size();
 
                         if (despues > antes) {
                             acciones.add("Invocaste con éxito un compañero de viaje.");
@@ -106,7 +105,6 @@ public class Episodio1Prueba {
                         }
 
                         if (key1 && key2 && key3) {
-                            personajeService.actualizar(personaje);
                             acciones.add("Has cumplido todos los requisitos. Sales de la cueva.");
                             salida = true;
                             break;
@@ -133,8 +131,8 @@ public class Episodio1Prueba {
 
                 case 5: {
                     try {
-                        personaje = Utils.buscarObjeto(personaje);
-                        acciones.add("Buscaste materiales en la cueva.");
+                    	String msg = Utils.buscarObjeto(personaje);
+                    	acciones.add("Buscaste materiales en la cueva. " + msg);
                     } catch (Exception e) {
                         acciones.add("Error al buscar materiales.");
                     }
@@ -161,6 +159,6 @@ public class Episodio1Prueba {
         } while (!salida);
 
         acciones.add("Fin del episodio 1.");
-        personajeService.actualizar(personaje);
+//        personajeService.actualizar(personaje);
     }
 }

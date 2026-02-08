@@ -12,6 +12,7 @@ import es.cursojava.springbootrol.entities.Personaje;
 import es.cursojava.springbootrol.entities.episodios.AccionesEpisodio;
 import es.cursojava.springbootrol.entities.episodios.Episodio1Prueba;
 import es.cursojava.springbootrol.exceptions.ReglaJuegoException;
+import es.cursojava.springbootrol.service.EpisodioService;
 import es.cursojava.springbootrol.service.PersonajeService;
 
 @Controller
@@ -21,8 +22,7 @@ public class ControllerPrueba {
 	private PersonajeService personajeService;
 
 	@Autowired
-	private Episodio1Prueba episodio1Prueba;
-
+	private EpisodioService episodioService;
 	// Mostrar pantalla previa del episodio (opcional)
 	@GetMapping("/episodio1/{id}")
 	public String mostrarPantallaEpisodio(@PathVariable Long id,
@@ -54,10 +54,10 @@ public class ControllerPrueba {
 	                               @RequestParam(required=false) Long uid,
 	                               Model model) throws ReglaJuegoException {
 
-	    Personaje p = personajeService.cargarParaJuego(id);
+	    AccionesEpisodio acciones = episodioService.jugarEpisodioActual(id);
 
-	    AccionesEpisodio acciones = new AccionesEpisodio();
-	    episodio1Prueba.episodio1(p, acciones);
+	    // Si quieres recargar el personaje actualizado para mostrarlo:
+	    Personaje p = personajeService.cargarParaJuego(id);
 
 	    model.addAttribute("personaje", p);
 	    model.addAttribute("acciones", acciones.getLog());

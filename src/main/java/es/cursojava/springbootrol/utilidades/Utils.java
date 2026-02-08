@@ -8,8 +8,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import es.cursojava.springbootrol.entities.Personaje;
 import es.cursojava.springbootrol.entities.criatura.Conejo;
@@ -42,18 +41,12 @@ import es.cursojava.springbootrol.entities.equipo.objetos.Pocion;
 import es.cursojava.springbootrol.exceptions.ReglaJuegoException;
 import es.cursojava.springbootrol.model.CriaturaDto;
 import es.cursojava.springbootrol.model.EquipamientoDto;
-import es.cursojava.springbootrol.service.CriaturaService;
 import es.cursojava.springbootrol.service.EquipamientoService;
-import es.cursojava.springbootrol.service.PersonajeService;
-import es.cursojava.springbootrol.service.impl.CriaturaServiceImpl;
 import es.cursojava.springbootrol.service.impl.EquipamientoServiceImpl;
-import es.cursojava.springbootrol.service.impl.PersonajeServiceImpl;
+
 
 public class Utils {
 
-	private static final PersonajeService personajeService = new PersonajeServiceImpl();
-	private static final CriaturaService criaturaService = new CriaturaServiceImpl();
-	protected static final Logger log = LoggerFactory.getLogger(Utils.class);
 	private static boolean ultimaCazaExitosa = false;
 	// TODO
 	// Metodos
@@ -71,90 +64,111 @@ public class Utils {
 
 	}
 
-	// invocacion();
+
 	public static Criatura invocacionCompañeroCriatura(Personaje person) throws ReglaJuegoException {
 
-	    if (person == null || person.getId() == null) {
-	        throw new ReglaJuegoException("Personaje no válido o no persistido.");
-	    }
+	    if (person == null) throw new ReglaJuegoException("Personaje no válido.");
 
-	    Criatura compiRandom = randomizarCriatura();
+	    Criatura compi = randomizarCriatura();
 
 	    boolean ok = dadoDiez() > 1;
 	    if (!ok) {
-	        System.out.println("No estás pensando en lo que debes, la criatura se ríe de ti y te ataca.");
-	        person.setPuntosVida(person.getPuntosVida() - compiRandom.getPuntosAtaque());
-	        System.out.println("Te ha quitado " + compiRandom.getPuntosAtaque() + " puntos de vida, te quedan "
-	                + person.getPuntosVida() + " puntos de vida.");
+	        person.setPuntosVida(person.getPuntosVida() - compi.getPuntosAtaque());
 	        throw new ReglaJuegoException("La invocación ha fallado.");
 	    }
 
-	    // alias automático = nombre de la criatura
-	    String nombreCriatura = compiRandom.getClass().getSimpleName();
-	    compiRandom.setNombre(nombreCriatura);
-	    compiRandom.setAlias(nombreCriatura);
+	    String nombre = compi.getClass().getSimpleName();
+	    compi.setNombre(nombre);
+	    compi.setAlias(nombre);
 
-	    // id interno opcional
-	   // compiRandom.setId(generarIdInterno());
+	    person.addCriatura(compi);
 
-	   // person.addCriatura(compiRandom);
-	    person.getCriaturas().add(compiRandom);
-	    System.out.println("Has invocado una criatura: " 
-	            + compiRandom.getNombre() 
-	            + " alias=" + compiRandom.getAlias());
-
-	    return compiRandom;
+	    return compi;
 	}
 
+//	public static Criatura invocacionCompañeroCriatura(Personaje person) throws ReglaJuegoException {
+//
+//	    if (person == null || person.getId() == null) {
+//	        throw new ReglaJuegoException("Personaje no válido o no persistido.");
+//	    }
+//
+//	    Criatura compiRandom = randomizarCriatura();
+//
+//	    boolean ok = dadoDiez() > 1;
+//	    if (!ok) {
+//	        System.out.println("No estás pensando en lo que debes, la criatura se ríe de ti y te ataca.");
+//	        person.setPuntosVida(person.getPuntosVida() - compiRandom.getPuntosAtaque());
+//	        System.out.println("Te ha quitado " + compiRandom.getPuntosAtaque() + " puntos de vida, te quedan "
+//	                + person.getPuntosVida() + " puntos de vida.");
+//	        throw new ReglaJuegoException("La invocación ha fallado.");
+//	    }
+//
+//	    // alias automático = nombre de la criatura
+//	    String nombreCriatura = compiRandom.getClass().getSimpleName();
+//	    compiRandom.setNombre(nombreCriatura);
+//	    compiRandom.setAlias(nombreCriatura);
+//
+//	    // id interno opcional
+//	   // compiRandom.setId(generarIdInterno());
+//
+//	   // person.addCriatura(compiRandom);
+//	    person.getCriaturas().add(compiRandom);
+//	    System.out.println("Has invocado una criatura: " 
+//	            + compiRandom.getNombre() 
+//	            + " alias=" + compiRandom.getAlias());
+//
+//	    return compiRandom;
+//	}
 
-	public static Criatura invocacionCompañeroCriaturaPersistente(Personaje person) {
 
-		if (person == null || person.getId() == null) {
-			System.out.println("Error: personaje no válido o no persistido.");
-			return null;
-		}
-
-		// narrativa: “qué sale”
-		Criatura compiRandom = randomizarCriatura();
-
-		// tirada (90% éxito)
-		boolean ok = dadoDiez() > 1;
-		if (!ok) {
-			System.out.println("No estás pensando en lo que debes, la criatura se ríe de ti y te ataca.");
-			person.setPuntosVida(person.getPuntosVida() - compiRandom.getPuntosAtaque());
-			System.out.println("Te ha quitado " + compiRandom.getPuntosAtaque() + " puntos de vida, te quedan "
-					+ person.getPuntosVida() + " puntos de vida.");
-			return null;
-		}
-
-		System.out.println("Ahora tienes un compañero de viaje, ¿quieres ponerle un alias?:");
-		String alias = pideDatoCadena("Introduce el alias deseado: ");
-
-		// tipo para el service (MOSQUITO/CONEJO/...)
-		String tipo = compiRandom.getClass().getSimpleName().toUpperCase();
-
-		try {
-			CriaturaDto dto = criaturaService.invocarCompanero(person.getId(), tipo, alias);
-
-			System.out.println("Has invocado una criatura: " + dto.getTipo() + " alias=" + dto.getAlias());
-
-			// mantener coherencia en memoria también:
-			compiRandom.setId(dto.getId());
-			compiRandom.setNombre(dto.getNombre());
-			compiRandom.setAlias(dto.getAlias());
-			compiRandom.setNivel(dto.getNivel());
-			compiRandom.setExperiencia(dto.getExperiencia());
-			compiRandom.setPuntosVida(dto.getPuntosVida());
-			compiRandom.setPuntosAtaque(dto.getPuntosAtaque());
-			person.addCriatura(compiRandom);
-
-			return compiRandom;
-
-		} catch (ReglaJuegoException e) {
-			System.out.println("No se pudo invocar: " + e.getMessage());
-			return null;
-		}
-	}
+//	public static Criatura invocacionCompañeroCriaturaPersistente(Personaje person) {
+//
+//		if (person == null || person.getId() == null) {
+//			System.out.println("Error: personaje no válido o no persistido.");
+//			return null;
+//		}
+//
+//		// narrativa: “qué sale”
+//		Criatura compiRandom = randomizarCriatura();
+//
+//		// tirada (90% éxito)
+//		boolean ok = dadoDiez() > 1;
+//		if (!ok) {
+//			System.out.println("No estás pensando en lo que debes, la criatura se ríe de ti y te ataca.");
+//			person.setPuntosVida(person.getPuntosVida() - compiRandom.getPuntosAtaque());
+//			System.out.println("Te ha quitado " + compiRandom.getPuntosAtaque() + " puntos de vida, te quedan "
+//					+ person.getPuntosVida() + " puntos de vida.");
+//			return null;
+//		}
+//
+//		System.out.println("Ahora tienes un compañero de viaje, ¿quieres ponerle un alias?:");
+//		String alias = pideDatoCadena("Introduce el alias deseado: ");
+//
+//		// tipo para el service (MOSQUITO/CONEJO/...)
+//		String tipo = compiRandom.getClass().getSimpleName().toUpperCase();
+//
+//		try {
+//			CriaturaDto dto = criaturaService.invocarCompanero(person.getId(), tipo, alias);
+//
+//			System.out.println("Has invocado una criatura: " + dto.getTipo() + " alias=" + dto.getAlias());
+//
+//			// mantener coherencia en memoria también:
+//			compiRandom.setId(dto.getId());
+//			compiRandom.setNombre(dto.getNombre());
+//			compiRandom.setAlias(dto.getAlias());
+//			compiRandom.setNivel(dto.getNivel());
+//			compiRandom.setExperiencia(dto.getExperiencia());
+//			compiRandom.setPuntosVida(dto.getPuntosVida());
+//			compiRandom.setPuntosAtaque(dto.getPuntosAtaque());
+//			person.addCriatura(compiRandom);
+//
+//			return compiRandom;
+//
+//		} catch (ReglaJuegoException e) {
+//			System.out.println("No se pudo invocar: " + e.getMessage());
+//			return null;
+//		}
+//	}
 
 	public static int contarHojas(Personaje personaje) {
 		int contador = 0;
@@ -1054,56 +1068,86 @@ public class Utils {
 			return person;
 		}
 	}
+	
+	public static String buscarObjeto(Personaje personaje) {
 
-	public static Personaje buscarObjeto(Personaje personaje) {
+	    int tirada = dadoDiez();
 
-	    if (personaje == null) {
-	        System.out.println("Personaje no válido.");
-	        return personaje;
-	    }
-
-	    int tirada = Utils.dadoDiez();
-
-	    // Caso malo: serpiente
 	    if (tirada <= 2) {
-	        System.out.println("Metes la mano en un agujero... es un nido de serpiente y te muerde.");
 	        personaje.setPuntosVida(personaje.getPuntosVida() - 5);
-	        return personaje;
+	        return "Metiste la mano en un agujero... era una serpiente. Pierdes 5 PV.";
 	    }
 
-	    // Caso bueno: encontramos un material
-	    int tirada2 = Utils.dadoDiez();
-	    String nombreEncontrado;
+	    int tirada2 = dadoDiez();
 
-	    if (tirada2 == 1 || tirada2 == 2) {
-	        nombreEncontrado = "Mojon Seco";
-	        System.out.println("Encuentras un objeto muy útil: Mojon Seco");
-	        personaje.getEquipo().add(new MojonSeco());
-
-	    } else if (tirada2 == 3 || tirada2 == 4) {
-	        nombreEncontrado = "Cuerda";
-	        System.out.println("Encuentras un objeto muy útil: Cuerda");
-	        personaje.getEquipo().add(new Cuerda());
-
-	    } else if (tirada2 == 5 || tirada2 == 6) {
-	        nombreEncontrado = "Piedra";
-	        System.out.println("Encuentras un objeto muy útil: Piedra");
-	        personaje.getEquipo().add(new Piedra());
-
-	    } else if (tirada2 == 7 || tirada2 == 8) {
-	        nombreEncontrado = "Palo";
-	        System.out.println("Encuentras un objeto muy útil: Palo");
-	        personaje.getEquipo().add(new Palo());
-
+	    if (tirada2 <= 2) {
+	        personaje.addEquipamiento(new MojonSeco());
+	        return "Encontraste un Mojón Seco.";
+	    } else if (tirada2 <= 4) {
+	        personaje.addEquipamiento(new Cuerda());
+	        return "Encontraste una Cuerda.";
+	    } else if (tirada2 <= 6) {
+	        personaje.addEquipamiento(new Piedra());
+	        return "Encontraste una Piedra.";
+	    } else if (tirada2 <= 8) {
+	        personaje.addEquipamiento(new Palo());
+	        return "Encontraste un Palo.";
 	    } else {
-	        nombreEncontrado = "Hoja Para Limpiar";
-	        System.out.println("Encuentras un objeto muy útil: Hoja Para Limpiar");
-	        personaje.getEquipo().add(new HojaParaLimpiar());
+	        personaje.addEquipamiento(new HojaParaLimpiar());
+	        return "Encontraste una Hoja Para Limpiar.";
 	    }
-
-	    System.out.println("\nHas encontrado el objeto: " + nombreEncontrado);
-	    return personaje;
 	}
+
+
+//	public static Personaje buscarObjeto(Personaje personaje) {
+//
+//	    if (personaje == null) {
+//	        System.out.println("Personaje no válido.");
+//	        return personaje;
+//	    }
+//
+//	    int tirada = Utils.dadoDiez();
+//
+//	    // Caso malo: serpiente
+//	    if (tirada <= 2) {
+//	        System.out.println("Metes la mano en un agujero... es un nido de serpiente y te muerde.");
+//	        personaje.setPuntosVida(personaje.getPuntosVida() - 5);
+//	        return personaje;
+//	    }
+//
+//	    // Caso bueno: encontramos un material
+//	    int tirada2 = Utils.dadoDiez();
+//	    String nombreEncontrado;
+//
+//	    if (tirada2 == 1 || tirada2 == 2) {
+//	        nombreEncontrado = "Mojon Seco";
+//	        System.out.println("Encuentras un objeto muy útil: Mojon Seco");
+//	        personaje.getEquipo().add(new MojonSeco());
+//
+//	    } else if (tirada2 == 3 || tirada2 == 4) {
+//	        nombreEncontrado = "Cuerda";
+//	        System.out.println("Encuentras un objeto muy útil: Cuerda");
+//	        personaje.getEquipo().add(new Cuerda());
+//
+//	    } else if (tirada2 == 5 || tirada2 == 6) {
+//	        nombreEncontrado = "Piedra";
+//	        System.out.println("Encuentras un objeto muy útil: Piedra");
+//	        personaje.getEquipo().add(new Piedra());
+//
+//	    } else if (tirada2 == 7 || tirada2 == 8) {
+//	        nombreEncontrado = "Palo";
+//	        System.out.println("Encuentras un objeto muy útil: Palo");
+//	        personaje.getEquipo().add(new Palo());
+//
+//	    } else {
+//	        nombreEncontrado = "Hoja Para Limpiar";
+//	        System.out.println("Encuentras un objeto muy útil: Hoja Para Limpiar");
+//	        personaje.getEquipo().add(new HojaParaLimpiar());
+//	    }
+//
+//	    System.out.println("\nHas encontrado el objeto: " + nombreEncontrado);
+//	    return personaje;
+//	}
 
 	public static Personaje buscarObjetoPersistido(Personaje personaje) {
 		if (personaje == null || personaje.getId() == null) {
