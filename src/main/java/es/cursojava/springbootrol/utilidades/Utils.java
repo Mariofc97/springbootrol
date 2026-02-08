@@ -65,26 +65,6 @@ public class Utils {
 	}
 
 
-	public static Criatura invocacionCompañeroCriatura(Personaje person) throws ReglaJuegoException {
-
-	    if (person == null) throw new ReglaJuegoException("Personaje no válido.");
-
-	    Criatura compi = randomizarCriatura();
-
-	    boolean ok = dadoDiez() > 1;
-	    if (!ok) {
-	        person.setPuntosVida(person.getPuntosVida() - compi.getPuntosAtaque());
-	        throw new ReglaJuegoException("La invocación ha fallado.");
-	    }
-
-	    String nombre = compi.getClass().getSimpleName();
-	    compi.setNombre(nombre);
-	    compi.setAlias(nombre);
-
-	    person.addCriatura(compi);
-
-	    return compi;
-	}
 
 //	public static Criatura invocacionCompañeroCriatura(Personaje person) throws ReglaJuegoException {
 //
@@ -169,6 +149,28 @@ public class Utils {
 //			return null;
 //		}
 //	}
+	
+	public static Criatura invocacionCompañeroCriatura(Personaje person) throws ReglaJuegoException {
+
+	    if (person == null) throw new ReglaJuegoException("Personaje no válido.");
+
+	    Criatura compi = randomizarCriatura();
+
+	    boolean ok = dadoDiez() > 1;
+	    if (!ok) {
+	        person.setPuntosVida(person.getPuntosVida() - compi.getPuntosAtaque());
+	        throw new ReglaJuegoException("La invocación ha fallado.");
+	    }
+
+	    String nombre = compi.getClass().getSimpleName();
+	    compi.setNombre(nombre);
+	    compi.setAlias(nombre);
+
+	    // IMPORTANTÍSIMO: usar helper del personaje
+	    person.addCriatura(compi);
+
+	    return compi;
+	}
 
 	public static int contarHojas(Personaje personaje) {
 		int contador = 0;
