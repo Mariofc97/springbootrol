@@ -24,7 +24,7 @@ public class ControllerPrueba {
 
 	// Mostrar pantalla previa del episodio (opcional)
 	@GetMapping("/episodio1/{id}")
-	public String mostrarPantallaEpisodio(@PathVariable Long id, Model model) {
+	public String mostrarPantallaEpisodio(@PathVariable Long id, Model model) throws ReglaJuegoException {
 		Personaje p = personajeService.cargarParaJuego(id);
 		model.addAttribute("personaje", p);
 		return "episodio1";
@@ -40,19 +40,15 @@ public class ControllerPrueba {
 	 * accionesEpisodioRepository.save(acciones);
 	 * 
 	 * model.addAttribute("acciones", acciones.getLog());
+	 * 
+	 * @throws ReglaJuegoException
 	 **/
 
 	// Ejecutar episodio 1
 	@PostMapping("/episodio1/{id}/jugar")
-	public String ejecutarEpisodio(@PathVariable Long id, Model model) {
+	public String ejecutarEpisodio(@PathVariable Long id, Model model) throws ReglaJuegoException {
 
-		Personaje p;
-		try {
-			p = personajeService.cargarParaJuego(id);
-		} catch (ReglaJuegoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Personaje p = personajeService.cargarParaJuego(id);
 
 		AccionesEpisodio acciones = new AccionesEpisodio();
 
