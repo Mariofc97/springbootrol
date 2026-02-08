@@ -96,5 +96,16 @@ public class UsuarioServiceImpl implements UsuarioService {
 		
 		return dtos;
 	}
+	
+	@Override
+	public UsuarioDto buscarPorId(Long id) {
+	    if (id == null) throw new RuntimeException("Id de usuario obligatorio");
+
+	    Usuario u = usuarioRepository.findById(id)
+	            .orElseThrow(() -> new RuntimeException("No existe el usuario con id " + id));
+
+	    return mapToDto(u);
+	}
+
 
 }

@@ -63,6 +63,7 @@ public class HomeController {
             UsuarioDto usuario = usuarioService.login(username, password);
             List<Personaje> personajes = personajeService.listarPorUsuario(usuario.getId());
             model.addAttribute("usuario", usuario);
+            model.addAttribute("usuarioId", usuario.getId());
             model.addAttribute("personajes", personajes);
             return "personajes"; 
         } catch (Exception e) {
@@ -71,48 +72,66 @@ public class HomeController {
         }
     }
     
-    // Simplification for demo: show characters of a specific user directly if needed
-    // or just handle selection Flow
-    
-    @GetMapping("/personaje/{id}")
-    public String verPersonaje(@PathVariable Long id, Model model) {
-        try {
-            Personaje p = personajeService.cargarParaJuego(id); // trae todo
-            model.addAttribute("personaje", p);
-            return "inventario"; // Reusing inventario view for character details
-        } catch (ReglaJuegoException e) {
-            return "redirect:/"; // error handling simplified
-        }
-    }
+    @GetMapping("/personajes")
+    public String personajes(@RequestParam("uid") Long uid, Model model) {
+        UsuarioDto usuario = usuarioService.buscarPorId(uid);
+        List<Personaje> personajes = personajeService.listarPorUsuario(uid);
 
-    @PostMapping("/personaje/{id}/fabricar")
-    public String fabricar(@PathVariable Long id, @RequestParam String tipo) {
-        try {
-            equipamientoService.fabricar(id, tipo);
-        } catch (ReglaJuegoException e) {
-            // Add flash message ideally
-        }
-        return "redirect:/personaje/" + id;
-    }
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("usuarioId", uid);
+        model.addAttribute("personajes", personajes);
 
-    @PostMapping("/personaje/{id}/eliminar-item")
-    public String eliminarItem(@PathVariable Long id, @RequestParam Long equipId) {
-        try {
-            equipamientoService.eliminarDeInventario(id, equipId);
-        } catch (ReglaJuegoException e) {
-            // error
-        }
-        return "redirect:/personaje/" + id;
+        return "personajes";
     }
     
-    @PostMapping("/personaje/{id}/consumir")
-    public String consumirItem(@PathVariable Long id, @RequestParam Long equipId) {
-        try {
-            equipamientoService.consumirCurativo(id, equipId);
-        } catch (ReglaJuegoException e) {
-            // error
-        }
-        return "redirect:/personaje/" + id;
+    @PostMapping("/personajes/crear")
+    public String crear(@RequestParam Long usuarioId,
+                        @RequestParam String nombre,
+                        @RequestParam String raza) {
+
+        personajeService.crearYGuardar(usuarioId, nombre, raza);
+        return "redirect:/personajes?uid=" + usuarioId;
     }
+    
+//    @GetMapping("/personaje/{id}")
+//    public String verPersonaje(@PathVariable Long id, Model model) {
+//        try {
+//            Personaje p = personajeService.cargarParaJuego(id); // trae todo
+//            model.addAttribute("personaje", p);
+//            return "inventario"; // Reusing inventario view for character details
+//        } catch (ReglaJuegoException e) {
+//            return "redirect:/"; // error handling simplified
+//        }
+//    }
+//
+//    @PostMapping("/personaje/{id}/fabricar")
+//    public String fabricar(@PathVariable Long id, @RequestParam String tipo) {
+//        try {
+//            equipamientoService.fabricar(id, tipo);
+//        } catch (ReglaJuegoException e) {
+//            // Add flash message ideally
+//        }
+//        return "redirect:/personaje/" + id;
+//    }
+//
+//    @PostMapping("/personaje/{id}/eliminar-item")
+//    public String eliminarItem(@PathVariable Long id, @RequestParam Long equipId) {
+//        try {
+//            equipamientoService.eliminarDeInventario(id, equipId);
+//        } catch (ReglaJuegoException e) {
+//            // error
+//        }
+//        return "redirect:/personaje/" + id;
+//    }
+//    
+//    @PostMapping("/personaje/{id}/consumir")
+//    public String consumirItem(@PathVariable Long id, @RequestParam Long equipId) {
+//        try {
+//            equipamientoService.consumirCurativo(id, equipId);
+//        } catch (ReglaJuegoException e) {
+//            // error
+//        }
+//        return "redirect:/personaje/" + id;
+//    }
 
 }
