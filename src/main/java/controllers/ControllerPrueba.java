@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import entities.Personaje;
 import entities.episodios.AccionesEpisodio;
 import entities.episodios.Episodio1Prueba;
+import exceptions.ReglaJuegoException;
 import service.PersonajeService;
 
 @Controller
@@ -29,11 +30,29 @@ public class ControllerPrueba {
 		return "episodio1";
 	}
 
+	/**
+	 * Cómo se usa en el controller para persistir acciones episodio java
+	 * 
+	 * AccionesEpisodio acciones = new AccionesEpisodio(personaje);
+	 * 
+	 * episodio1Prueba.episodio1(personaje, acciones);
+	 * 
+	 * accionesEpisodioRepository.save(acciones);
+	 * 
+	 * model.addAttribute("acciones", acciones.getLog());
+	 **/
+
 	// Ejecutar episodio 1
 	@PostMapping("/episodio1/{id}/jugar")
 	public String ejecutarEpisodio(@PathVariable Long id, Model model) {
 
-		Personaje p = personajeService.cargarParaJuego(id);
+		Personaje p;
+		try {
+			p = personajeService.cargarParaJuego(id);
+		} catch (ReglaJuegoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		AccionesEpisodio acciones = new AccionesEpisodio();
 

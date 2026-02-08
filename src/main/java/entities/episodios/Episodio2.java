@@ -56,16 +56,7 @@ public class Episodio2 {
 		boolean episodio2key1 = false;
 		boolean episodio2key2 = false;
 		boolean episodio2key3 = false;
-		if (contadorEpisodio2 == 0) {
-
-			episodio2key1 = false;
-			episodio2key2 = false;
-			episodio2key3 = false;
-		} else {
-			episodio2key1 = true;
-			episodio2key2 = true;
-			episodio2key3 = true;
-		}
+		
 		boolean salida = false;
 
 		System.out.println();
@@ -75,11 +66,11 @@ public class Episodio2 {
 		System.out.println();
 		
 		do {
+			int opcion;
 
 			System.out.println(
-					"\n1. Buscar bayas \n2. Cazar \n3. Crear arma \n4. Esconderse del miedo \n5.Inventario y estado \n6.Buscar materiales \n7.Ir al bosque oscuro \n8.Descansar");
-			System.out.println("dila opcion del menu");
-			int opcion = Utils.pideDatoNumerico("Que quieres hacer?");
+					"\n1. Buscar bayas \n2. Cazar \n3. Crear arma \n4. Esconderse del miedo \n.Inventario y estado \n5.Buscar materiales \n6.Ir al bosque oscuro \n7.Descansar");
+			opcion = (int) (Math.random() * 7) + 1; // genera entre 1 y 7
 
 			switch (opcion) {
 
@@ -130,20 +121,9 @@ public class Episodio2 {
 
 			}
 				break;
-			case 5: {
-                try {
-                    Utils.menuInventario(personaje);
-                    LOGGER.info("Mostrando inventario de: " + personaje.getNombre());
-                    // después de equipar/consumir en inventario, recargamos por si acaso:
-                    personaje = Utils.recargarPersonaje(personaje.getId());
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Error al mostrar el inventario", e);
-                    System.out.println("No se pudo mostrar el inventario.");
-                }
-            }
-            break;
+			
 
-            case 6: {
+            case 5: {
                 try {
                     personaje = Utils.buscarObjeto(personaje); // ya devuelve recargado
                     LOGGER.info("El personaje " + personaje.getNombre() + " ha buscado un objeto.");
@@ -154,7 +134,7 @@ public class Episodio2 {
             }
             break;
 
-            case 7: {
+            case 6: {
                 if (episodio2key1 && episodio2key2 && episodio2key3) {
                     salida = true;
                     System.out.println("Ya puedes ir al bosque oscuro.");
@@ -164,7 +144,7 @@ public class Episodio2 {
             }
             break;
 
-            case 8: {
+            case 7: {
                 try {
                     personaje.setPuntosVida(personaje.getPuntosVidaMax());
                     String msg = "Has descansado y recuperado toda la vida.";
