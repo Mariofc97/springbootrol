@@ -13,7 +13,7 @@ public interface PersonajeRepository extends JpaRepository<Personaje, Long> {
     
     List<Personaje> findByUsuarioId(Long usuarioId);
 
-    @Query("SELECT p FROM Personaje p LEFT JOIN FETCH p.equipo LEFT JOIN FETCH p.criaturas WHERE p.id = :id")
+    @Query("SELECT DISTINCT p FROM Personaje p LEFT JOIN FETCH p.equipo WHERE p.id = :id")
     Optional<Personaje> findByIdFetchAll(Long id);
     
     // To delete by id and usuarioId safely

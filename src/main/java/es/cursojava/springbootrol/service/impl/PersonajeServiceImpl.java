@@ -120,13 +120,16 @@ public class PersonajeServiceImpl implements PersonajeService {
 		return personajeRepository.save(p);
 	}
 
-	@Override
 	@Transactional(readOnly = true)
-	public Personaje cargarParaJuego(Long personajeId) throws ReglaJuegoException {
-	    if (personajeId == null) throw new ReglaJuegoException("El ID del personaje es obligatorio");
+	public Personaje cargarParaJuego(Long id) throws ReglaJuegoException {
 
-	    return personajeRepository.findByIdFetchAll(personajeId)
-	            .orElseThrow(() -> new ReglaJuegoException("No existe personaje con ID: " + personajeId));
+	    Personaje p = personajeRepository.findByIdFetchAll(id)
+	        .orElseThrow(() -> new ReglaJuegoException("No existe personaje con id " + id));
+
+	    // fuerza inicialización de la colección que NO hiciste fetch
+	    p.getCriaturas().size();
+
+	    return p;
 	}
 
 	@Override
