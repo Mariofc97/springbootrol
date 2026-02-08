@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import es.cursojava.springbootrol.entities.Personaje;
 import es.cursojava.springbootrol.entities.episodios.AccionesEpisodio;
@@ -24,10 +25,13 @@ public class ControllerPrueba {
 
 	// Mostrar pantalla previa del episodio (opcional)
 	@GetMapping("/episodio1/{id}")
-	public String mostrarPantallaEpisodio(@PathVariable Long id, Model model) throws ReglaJuegoException {
-		Personaje p = personajeService.cargarParaJuego(id);
-		model.addAttribute("personaje", p);
-		return "episodio1";
+	public String mostrarPantallaEpisodio(@PathVariable Long id,
+	                                      @RequestParam(required=false) Long uid,
+	                                      Model model) throws ReglaJuegoException {
+	    Personaje p = personajeService.cargarParaJuego(id);
+	    model.addAttribute("personaje", p);
+	    model.addAttribute("uid", uid);
+	    return "episodio1";
 	}
 
 	/**
@@ -46,17 +50,19 @@ public class ControllerPrueba {
 
 	// Ejecutar episodio 1
 	@PostMapping("/episodio1/{id}/jugar")
-	public String ejecutarEpisodio(@PathVariable Long id, Model model) throws ReglaJuegoException {
+	public String ejecutarEpisodio(@PathVariable Long id,
+	                               @RequestParam(required=false) Long uid,
+	                               Model model) throws ReglaJuegoException {
 
-		Personaje p = personajeService.cargarParaJuego(id);
+	    Personaje p = personajeService.cargarParaJuego(id);
 
-		AccionesEpisodio acciones = new AccionesEpisodio();
+	    AccionesEpisodio acciones = new AccionesEpisodio();
+	    episodio1Prueba.episodio1(p, acciones);
 
-		episodio1Prueba.episodio1(p, acciones);
+	    model.addAttribute("personaje", p);
+	    model.addAttribute("acciones", acciones.getLog());
+	    model.addAttribute("uid", uid);
 
-		model.addAttribute("personaje", p);
-		model.addAttribute("acciones", acciones.getLog());
-
-		return "episodio1_resultado";
+	    return "episodio1_resultado";
 	}
 }
