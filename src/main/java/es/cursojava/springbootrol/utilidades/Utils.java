@@ -18,6 +18,7 @@ import es.cursojava.springbootrol.entities.criatura.Jabali;
 import es.cursojava.springbootrol.entities.criatura.Lobo;
 import es.cursojava.springbootrol.entities.criatura.Mosquito;
 import es.cursojava.springbootrol.entities.criatura.Raton;
+import es.cursojava.springbootrol.entities.episodios.AccionesEpisodio;
 import es.cursojava.springbootrol.entities.equipo.Equipamiento;
 import es.cursojava.springbootrol.entities.equipo.armas.Arco;
 import es.cursojava.springbootrol.entities.equipo.armas.Armas;
@@ -1028,47 +1029,81 @@ public class Utils {
 		return ultimaCazaExitosa;
 	}
 
-	public static Personaje cazar(Personaje person) {
-		ultimaCazaExitosa = false;
+	public static void cazar(Personaje person, AccionesEpisodio acciones) {
+	    ultimaCazaExitosa = false;
 
-		if (person == null || person.getId() == null) {
-			System.out.println("Personaje no válido.");
-			return person;
-		}
+	    if (person == null) {
+	        acciones.add("Error: personaje no válido.");
+	        return;
+	    }
 
-		if (person.getCriaturas() == null || person.getCriaturas().isEmpty()) {
-			System.out.println("No puedes cazar sin un compañero criatura, primero invoca uno.");
-			return person;
-		}
+	    if (person.getCriaturas() == null || person.getCriaturas().isEmpty()) {
+	        acciones.add("No puedes cazar sin un compañero criatura. Primero invoca uno.");
+	        return;
+	    }
 
-		EquipamientoService equipService = new EquipamientoServiceImpl();
+	    boolean hayEncuentro = dadoDiez() > 3; 
+	    Criatura presa = randomizarCriatura();
+	    presa.setNombre(presa.getClass().getSimpleName());
 
-		boolean exito = dadoDiez() > 3; // 70%
-		Criatura presa = randomizarCriatura();
+	    if (!hayEncuentro) {
+	        int danio = presa.atacar(person);
+	        person.setPuntosVida(Math.max(0, person.getPuntosVida() - danio));
+	        acciones.add("Intentaste cazar pero fallaste. La presa te hizo " + danio + " de daño.");
+	        return;
+	    }
 
-		if (exito) {
-			boolean ganado = Utils.combate(person, presa);
+	    acciones.add("¡Encuentras una presa! Aparece un " + presa.getNombre() + ".");
 
-			if (ganado) {
-				ultimaCazaExitosa = true;
-				try {
-					System.out.println("Has cazado un " + presa.getNombre() + ", consigues carne seca.");
-					equipService.añadirAlInventario(person.getId(), new CarneSeca());
-					return recargarPersonaje(person.getId());
-				} catch (ReglaJuegoException e) {
-					System.out.println("No puedes añadir carne seca: " + e.getMessage());
-					return person;
-				}
-			} else {
-				return person;
-			}
+	    boolean ganado = combateAuto(person, presa, acciones);
 
-		} else {
-			int danioHecho = presa.atacar(person);
-			person.setPuntosVida(person.getPuntosVida() - danioHecho);
-			System.out.println("La presa te hace " + danioHecho + " de daño y huyes llorando.");
-			return person;
-		}
+	    if (ganado) {
+	        ultimaCazaExitosa = true;
+	        person.addEquipamiento(new CarneSeca()); 
+	        acciones.add("Buena caza!! Obtienes Carne Seca.");
+	    } else {
+	        acciones.add("La caza salió mal. No consigues carne.");
+	    }
+	}
+	
+	public static boolean combateAuto(Personaje p, Criatura enemigo, AccionesEpisodio acciones) {
+	    if (!p.tieneArmaEquipada()) {
+	        p.setPuntosVida(1);
+	        acciones.add("No tenías arma equipada. El enemigo te deja a 1 PV y huyes.");
+	        return false;
+	    }
+	    if (p.getCriaturas() == null || p.getCriaturas().isEmpty()) {
+	        acciones.add("No puedes combatir sin compañero criatura.");
+	        return false;
+	    }
+
+	    int turnos = 0;
+	    while (p.estaVivo() && enemigo.estaVivo() && turnos < 30) {
+
+	        int d1 = p.atacar(enemigo);
+	        acciones.add("Atacas a " + enemigo.getNombre() + " y le haces " + d1 + " de daño.");
+
+	        Criatura compi = obtenerCompaneroActivo(p);
+	        if (enemigo.estaVivo() && compi != null) {
+	            int d2 = compi.atacar(enemigo);
+	            acciones.add("Tu compañero " + compi.getAlias() + " ataca e inflige " + d2 + " de daño.");
+	        }
+
+	        if (enemigo.estaVivo()) {
+	            int d3 = enemigo.atacar(p);
+	            acciones.add(enemigo.getNombre() + " te ataca y te hace " + d3 + " de daño. PV: " + p.getPuntosVida());
+	        }
+
+	        turnos++;
+	    }
+
+	    if (!enemigo.estaVivo()) {
+	        acciones.add("¡Has ganado el combate!");
+	        return true;
+	    } else {
+	        acciones.add("Has perdido el combate (o se alargó demasiado y escapaste).");
+	        return false;
+	    }
 	}
 	
 	public static String buscarObjeto(Personaje personaje) {
