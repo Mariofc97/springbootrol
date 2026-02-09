@@ -101,3 +101,5 @@ corregir la palabra MATERALES POR materiales
 	-En el menu cuando dice fugar episodio actual deberia decir seguir jugando. (Porque no hay opcion de otro episodio).
 	-Poner un string en la opcion 6 buscar `materiales`  que diga el materiasl que has encontrado. (En una linea cercana al menu para que se vea bien).	
 	cambiar menus de episodios en vertical
+	
+	fdkfj
