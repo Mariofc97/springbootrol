@@ -990,39 +990,25 @@ public class Utils {
 	}
 
 	public static Personaje buscarBaya(Personaje personaje) {
-		if (personaje == null || personaje.getId() == null) {
-			System.out.println("Personaje no válido.");
-			return personaje;
-		}
+	    if (personaje == null || personaje.getId() == null) {
+	        return personaje;
+	    }
 
-		EquipamientoService equipService = new EquipamientoServiceImpl();
+	    int tirada = Utils.dadoDiez();
 
-		int tirada = Utils.dadoDiez();
+	    // baya venenosa: solo afecta a PV en memoria
+	    if (tirada <= 3) {
+	        personaje.setPuntosVida(personaje.getPuntosVida() - 5);
+	        return personaje;
+	    }
 
-		// baya venenosa -> solo cambia PV en memoria (se guarda al final del episodio)
-		if (tirada <= 3) {
-			System.out.println("Te comes una baya venenosa... Pierdes 5 de vida.");
-			personaje.setPuntosVida(personaje.getPuntosVida() - 5);
-			return personaje;
-		}
+	    int cantidad = (tirada <= 7) ? 1 : 2;
 
-		try {
-			if (tirada <= 7) {
-				System.out.println("Has encontrado algunas bayas");
-				equipService.añadirAlInventario(personaje.getId(), new Baya());
-			} else {
-				System.out.println("Has encontrado muchas bayas");
-				equipService.añadirAlInventario(personaje.getId(), new Baya());
-				equipService.añadirAlInventario(personaje.getId(), new Baya());
-			}
+	    for (int i = 0; i < cantidad; i++) {
+	        personaje.addEquipamiento(new Baya());
+	    }
 
-			// recargar inventario actualizado
-			return recargarPersonaje(personaje.getId());
-
-		} catch (ReglaJuegoException e) {
-			System.out.println("No puedes añadir bayas: " + e.getMessage());
-			return personaje;
-		}
+	    return personaje;
 	}
 
 	public static boolean fueUltimaCazaExitosa() {
