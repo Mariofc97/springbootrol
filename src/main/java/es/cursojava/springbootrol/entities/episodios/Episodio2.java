@@ -4,7 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import es.cursojava.springbootrol.entities.Personaje;
-import es.cursojava.springbootrol.utilidades.Utils;
+import es.cursojava.springbootrol.utilidades.JuegoActions;
 
 public class Episodio2 {
 	// FIXME: hay que declarar las keys como static para que se mantengan entre
@@ -64,7 +64,7 @@ public class Episodio2 {
 
             case 1: {
                 // buscar bayas (service + recarga)
-                personaje = Utils.buscarBaya(personaje);
+                personaje = JuegoActions.buscarBaya(personaje, acciones);
                 episodio2key1 = true;
             }
             break;
@@ -72,9 +72,9 @@ public class Episodio2 {
             case 2: {
                 try {
                     acciones.add("Intentando cazar...");
-                    Utils.cazar(personaje, acciones); 
+                    JuegoActions.cazar(personaje, acciones); 
 
-                    if (Utils.fueUltimaCazaExitosa()) {
+                    if (JuegoActions.fueUltimaCazaExitosa()) {
                         episodio2key2 = true;
                         acciones.add("Caza realizada con éxito.");
                         acciones.add("El personaje " + personaje.getNombre() + " ha cazado con éxito.");
@@ -92,9 +92,9 @@ public class Episodio2 {
             case 3: {
                 // fabricar (service)
                 try {
-                    Utils.menuFabricar(personaje);
+                	JuegoActions.fabricarArmaAleatoria(personaje, acciones);
                     // el inventario actualizado se ve al instante en el episodio:
-                    personaje = Utils.recargarPersonaje(personaje.getId());
+                    personaje = JuegoActions.recargarPersonaje(personaje.getId());
                     episodio2key3 = true;
                 } catch (Exception e) {
                     System.out.println("No puedes fabricar: " + e.getMessage());
@@ -114,7 +114,7 @@ public class Episodio2 {
 
             case 5: {
                 try {
-                	String msg = Utils.buscarObjeto(personaje);
+                	String msg = JuegoActions.buscarObjeto(personaje);
                 	acciones.add("Buscaste materiales en la cueva. " + msg);
                 } catch (Exception e) {
                     acciones.add("Error al buscar materiales.");
@@ -134,7 +134,7 @@ public class Episodio2 {
 
             case 7: {
                 try {
-                    Utils.recuperarVida(personaje);
+                    JuegoActions.recuperarVida(personaje);
                     acciones.add("Dormiste profundamente y recuperaste toda la vida.");
                 } catch (Exception e) {
                 	acciones.add("");

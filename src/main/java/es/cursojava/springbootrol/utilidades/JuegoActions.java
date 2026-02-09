@@ -8,8 +8,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.springframework.stereotype.Component;
-
 import es.cursojava.springbootrol.entities.Personaje;
 import es.cursojava.springbootrol.entities.criatura.Conejo;
 import es.cursojava.springbootrol.entities.criatura.Criatura;
@@ -46,7 +44,7 @@ import es.cursojava.springbootrol.service.EquipamientoService;
 import es.cursojava.springbootrol.service.impl.EquipamientoServiceImpl;
 
 
-public class Utils {
+public class JuegoActions {
 
 	private static boolean ultimaCazaExitosa = false;
 	// TODO
@@ -989,16 +987,17 @@ public class Utils {
 		}
 	}
 
-	public static Personaje buscarBaya(Personaje personaje) {
+	public static Personaje buscarBaya(Personaje personaje, AccionesEpisodio acciones) {
 	    if (personaje == null || personaje.getId() == null) {
 	        return personaje;
 	    }
 
-	    int tirada = Utils.dadoDiez();
+	    int tirada = JuegoActions.dadoDiez();
 
 	    // baya venenosa: solo afecta a PV en memoria
 	    if (tirada <= 3) {
 	        personaje.setPuntosVida(personaje.getPuntosVida() - 5);
+	        acciones.add("Te comes una baya venenosa y piedes 5 PV");
 	        return personaje;
 	    }
 
@@ -1006,6 +1005,7 @@ public class Utils {
 
 	    for (int i = 0; i < cantidad; i++) {
 	        personaje.addEquipamiento(new Baya());
+	        acciones.add("Has conseguido una Baya!");
 	    }
 
 	    return personaje;
@@ -1172,84 +1172,228 @@ public class Utils {
 //	    return personaje;
 //	}
 
-	public static Personaje buscarObjetoPersistido(Personaje personaje) {
-		if (personaje == null || personaje.getId() == null) {
-			System.out.println("Personaje no válido.");
-			return personaje;
-		}
+//	public static Personaje buscarObjetoPersistido(Personaje personaje) {
+//		if (personaje == null || personaje.getId() == null) {
+//			System.out.println("Personaje no válido.");
+//			return personaje;
+//		}
+//
+//		EquipamientoService equipService = new EquipamientoServiceImpl();
+//
+//		int tirada = JuegoActions.dadoDiez();
+//
+//		// Caso malo: serpiente
+//		if (tirada <= 2) {
+//			System.out.println("Metes la mano en un agujero... es un nido de serpiente y te muerde.");
+//			personaje.setPuntosVida(personaje.getPuntosVida() - 5);
+//			return personaje; // esto se guarda al final del episodio por EpisodioService
+//		}
+//
+//		// Caso bueno: encontramos un material
+//		int tirada2 = JuegoActions.dadoDiez();
+//
+//		String nombreEncontrado = null;
+//
+//		try {
+//			if (tirada2 == 1 || tirada2 == 2) {
+//				nombreEncontrado = "Mojon Seco";
+//				System.out.println("Encuentras un objeto muy útil: Mojon Seco");
+//				equipService.añadirAlInventario(personaje.getId(), new MojonSeco());
+//			} else if (tirada2 == 3 || tirada2 == 4) {
+//				nombreEncontrado = "Cuerda";
+//				System.out.println("Encuentras un objeto muy útil: Cuerda");
+//				equipService.añadirAlInventario(personaje.getId(), new Cuerda());
+//			} else if (tirada2 == 5 || tirada2 == 6) {
+//				nombreEncontrado = "Piedra";
+//				System.out.println("Encuentras un objeto muy útil: Piedra");
+//				equipService.añadirAlInventario(personaje.getId(), new Piedra());
+//			} else if (tirada2 == 7 || tirada2 == 8) {
+//				nombreEncontrado = "Palo";
+//				System.out.println("Encuentras un objeto muy útil: Palo");
+//				equipService.añadirAlInventario(personaje.getId(), new Palo());
+//			} else {
+//				nombreEncontrado = "Hoja Para Limpiar";
+//				System.out.println("Encuentras un objeto muy útil: Hoja Para Limpiar");
+//				equipService.añadirAlInventario(personaje.getId(), new HojaParaLimpiar());
+//			}
+//
+//			// IMPORTANTÍSIMO: recargamos desde BD para traer el inventario actualizado
+//			Personaje rec = JuegoActions.recargarPersonaje(personaje.getId());
+//			System.out.println("\nHas encontrado el objeto: " + nombreEncontrado);
+//
+//			return rec;
+//
+//		} catch (ReglaJuegoException e) {
+//			System.out.println("No puedes añadir el objeto al inventario: " + e.getMessage());
+//			return personaje;
+//		}
+//	}
 
-		EquipamientoService equipService = new EquipamientoServiceImpl();
+//	public static void menuFabricar(Personaje personaje) {
+//		if (personaje == null || personaje.getId() == null) {
+//			System.out.println("Debes tener un personaje válido.");
+//			return;
+//		}
+//
+//		catalogoFabricacionArmasEscudos();
+//
+//		String tipo = pideDatoCadena(
+//				"/n¿Qué quieres fabricar? Escribe la que desees (ARCO, BUMERAN, CAZAMARIPOSAS, LANZA, HONDA, CAÑA PESCA, TRAMPA, ESCUDO MADERA, ESCUDO PIEDRA)");
+//
+//		try {
+//			EquipamientoService es = new EquipamientoServiceImpl();
+//			EquipamientoDto dto = es.fabricar(personaje.getId(), tipo);
+//
+//			System.out.println("Fabricado OK: " + dto.getNombre() + " | durabilidad=" + dto.getDurabilidad()
+//					+ " | nivel requerido=" + dto.getNivelRequerido());
+//		} catch (ReglaJuegoException e) {
+//			System.out.println("No puedes fabricar: " + e.getMessage());
+//		}
+//	}
+	
+	public static void fabricarArmaAleatoria(Personaje p, AccionesEpisodio acciones) {
+	    if (p == null) {
+	        acciones.add("Error: personaje no válido.");
+	        return;
+	    }
+	    if (p.getEquipo() == null) p.setEquipo(new java.util.ArrayList<>());
 
-		int tirada = Utils.dadoDiez();
+	    final int INTENTOS = 5;
 
-		// Caso malo: serpiente
-		if (tirada <= 2) {
-			System.out.println("Metes la mano en un agujero... es un nido de serpiente y te muerde.");
-			personaje.setPuntosVida(personaje.getPuntosVida() - 5);
-			return personaje; // esto se guarda al final del episodio por EpisodioService
-		}
+	    for (int i = 0; i < INTENTOS; i++) {
+	        Armas arma = randomizarArma();
+	        Receta receta = recetaParaArma(arma);
 
-		// Caso bueno: encontramos un material
-		int tirada2 = Utils.dadoDiez();
+	        boolean nivelOk = p.getNivel() >= receta.nivelReq;
+	        boolean matsOk = tieneMateriales(p, receta.materiales);
 
-		String nombreEncontrado = null;
+	        if (nivelOk && matsOk) {
+	            consumirMateriales(p, receta.materiales);
+	            p.addEquipamiento(arma); // IMPORTANTE: usa vuestro addEquipamiento (setPersonaje + add)
+	            acciones.add("Fabricas " + arma.getNombre() + " (nivel req " + receta.nivelReq + ").");
+	            if (receta.materiales.length > 0) {
+	                acciones.add("Consumes materiales: " + String.join(", ", receta.materiales) + ".");
+	            }
+	            return;
+	        }
+	    }
 
-		try {
-			if (tirada2 == 1 || tirada2 == 2) {
-				nombreEncontrado = "Mojon Seco";
-				System.out.println("Encuentras un objeto muy útil: Mojon Seco");
-				equipService.añadirAlInventario(personaje.getId(), new MojonSeco());
-			} else if (tirada2 == 3 || tirada2 == 4) {
-				nombreEncontrado = "Cuerda";
-				System.out.println("Encuentras un objeto muy útil: Cuerda");
-				equipService.añadirAlInventario(personaje.getId(), new Cuerda());
-			} else if (tirada2 == 5 || tirada2 == 6) {
-				nombreEncontrado = "Piedra";
-				System.out.println("Encuentras un objeto muy útil: Piedra");
-				equipService.añadirAlInventario(personaje.getId(), new Piedra());
-			} else if (tirada2 == 7 || tirada2 == 8) {
-				nombreEncontrado = "Palo";
-				System.out.println("Encuentras un objeto muy útil: Palo");
-				equipService.añadirAlInventario(personaje.getId(), new Palo());
-			} else {
-				nombreEncontrado = "Hoja Para Limpiar";
-				System.out.println("Encuentras un objeto muy útil: Hoja Para Limpiar");
-				equipService.añadirAlInventario(personaje.getId(), new HojaParaLimpiar());
-			}
-
-			// IMPORTANTÍSIMO: recargamos desde BD para traer el inventario actualizado
-			Personaje rec = Utils.recargarPersonaje(personaje.getId());
-			System.out.println("\nHas encontrado el objeto: " + nombreEncontrado);
-
-			return rec;
-
-		} catch (ReglaJuegoException e) {
-			System.out.println("No puedes añadir el objeto al inventario: " + e.getMessage());
-			return personaje;
-		}
+	    // si llega aquí, no ha podido fabricar
+	    acciones.add("Intentaste fabricar, pero no tienes nivel/materiales suficientes para ninguna receta.");
+	}
+	
+	private static Armas randomizarArma() {
+	    int tirada = ThreadLocalRandom.current().nextInt(1, 8);
+	    return switch (tirada) {
+	        case 1 -> new Arco();
+	        case 2 -> new Bumeran();
+	        case 3 -> new CanaPescar();
+	        case 4 -> new Cazamariposas();
+	        case 5 -> new Honda();
+	        case 6 -> new Lanza();
+	        default -> new Trampa();
+	    };
 	}
 
-	public static void menuFabricar(Personaje personaje) {
-		if (personaje == null || personaje.getId() == null) {
-			System.out.println("Debes tener un personaje válido.");
-			return;
-		}
+	// ======= HELPERS FABRICACIÓN (SOLO MEMORIA) =======
 
-		catalogoFabricacionArmasEscudos();
+	private static class Receta {
+	    final int nivelReq;
+	    final String[] materiales;
 
-		String tipo = pideDatoCadena(
-				"/n¿Qué quieres fabricar? Escribe la que desees (ARCO, BUMERAN, CAZAMARIPOSAS, LANZA, HONDA, CAÑA PESCA, TRAMPA, ESCUDO MADERA, ESCUDO PIEDRA)");
-
-		try {
-			EquipamientoService es = new EquipamientoServiceImpl();
-			EquipamientoDto dto = es.fabricar(personaje.getId(), tipo);
-
-			System.out.println("Fabricado OK: " + dto.getNombre() + " | durabilidad=" + dto.getDurabilidad()
-					+ " | nivel requerido=" + dto.getNivelRequerido());
-		} catch (ReglaJuegoException e) {
-			System.out.println("No puedes fabricar: " + e.getMessage());
-		}
+	    Receta(int nivelReq, String... materiales) {
+	        this.nivelReq = nivelReq;
+	        this.materiales = materiales;
+	    }
 	}
+
+	private static Receta recetaParaArma(Armas arma) {
+	    if (arma instanceof Arco)         return new Receta(3, "PALO", "CUERDA");
+	    if (arma instanceof Bumeran)      return new Receta(1, "PALO");
+	    if (arma instanceof Cazamariposas)return new Receta(1, "PALO", "MOJON_SECO");
+	    if (arma instanceof Lanza)        return new Receta(2, "PALO", "PIEDRA");
+	    if (arma instanceof Honda)        return new Receta(1, "CUERDA");
+	    if (arma instanceof CanaPescar)   return new Receta(2, "CUERDA", "PALO", "BAYA");
+	    if (arma instanceof Trampa)       return new Receta(3, "CUERDA", "PALO", "PIEDRA");
+
+	    // Por si metéis más armas en el futuro:
+	    return new Receta(1);
+	}
+
+	private static boolean tieneMateriales(Personaje p, String... materiales) {
+	    if (materiales == null || materiales.length == 0) return true;
+	    if (p == null || p.getEquipo() == null) return false;
+
+	    // Contar por “tipo material” porque puede haber materiales repetidos
+	    java.util.Map<String, Integer> needed = new java.util.HashMap<>();
+	    for (String m : materiales) {
+	        String key = normalizaMaterial(m);
+	        needed.put(key, needed.getOrDefault(key, 0) + 1);
+	    }
+
+	    // Contar lo que tengo
+	    java.util.Map<String, Integer> have = new java.util.HashMap<>();
+	    for (Equipamiento e : p.getEquipo()) {
+	        String tipo = tipoMaterial(e);
+	        if (tipo != null) {
+	            have.put(tipo, have.getOrDefault(tipo, 0) + 1);
+	        }
+	    }
+
+	    // Ver si cumplo
+	    for (var entry : needed.entrySet()) {
+	        int tengo = have.getOrDefault(entry.getKey(), 0);
+	        if (tengo < entry.getValue()) return false;
+	    }
+	    return true;
+	}
+
+	private static void consumirMateriales(Personaje p, String... materiales) {
+	    if (materiales == null || materiales.length == 0) return;
+	    for (String m : materiales) {
+	        eliminarUno(p, m);
+	    }
+	}
+
+	private static void eliminarUno(Personaje p, String material) {
+	    if (p == null || p.getEquipo() == null) return;
+	    String target = normalizaMaterial(material);
+
+	    // buscamos el primer objeto que haga match y lo quitamos
+	    for (int i = 0; i < p.getEquipo().size(); i++) {
+	        Equipamiento e = p.getEquipo().get(i);
+	        if (target.equals(tipoMaterial(e))) {
+	            p.getEquipo().remove(i);
+	            return;
+	        }
+	    }
+	}
+
+	private static String normalizaMaterial(String m) {
+	    if (m == null) return "";
+	    return m.trim().toUpperCase().replace('Á', 'A').replace('É','E').replace('Í','I').replace('Ó','O').replace('Ú','U');
+	}
+
+	/**
+	 * Devuelve el “tipo material” (PALO, CUERDA, PIEDRA, BAYA, MOJON_SECO) si es un material.
+	 * Si no es material, devuelve null.
+	 */
+	private static String tipoMaterial(Equipamiento e) {
+	    if (e == null) return null;
+
+	    if (e instanceof Palo)      return "PALO";
+	    if (e instanceof Cuerda)    return "CUERDA";
+	    if (e instanceof Piedra)    return "PIEDRA";
+	    if (e instanceof Baya)      return "BAYA";
+	    if (e instanceof MojonSeco) return "MOJON_SECO";
+
+	    // Si queréis que HojaParaLimpiar cuente como “material”, añadidlo aquí.
+	    // if (e instanceof HojaParaLimpiar) return "HOJA_PARA_LIMPIAR";
+
+	    return null;
+	}
+
+
 
 	public static Personaje recargarPersonaje(Long personajeId) {
 		PersonajeDao personajeDao = new PersonajeDaoImpl();

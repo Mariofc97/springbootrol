@@ -7,7 +7,7 @@ import es.cursojava.springbootrol.entities.Personaje;
 import es.cursojava.springbootrol.entities.criatura.Criatura;
 import es.cursojava.springbootrol.entities.episodios.Episodio3ElBosqueOscuro;
 import es.cursojava.springbootrol.entities.equipo.Equipamiento;
-import es.cursojava.springbootrol.utilidades.Utils;
+import es.cursojava.springbootrol.utilidades.JuegoActions;
 
 public class PruebaEpisodio3 {
 	public static void main(String[] args) {
@@ -24,7 +24,7 @@ public class PruebaEpisodio3 {
 		p.setPuntosAtaque(10);
 		// añadir una criatura al personaje para probar
 
-		Criatura compi = Utils.randomizarCriatura();
+		Criatura compi = JuegoActions.randomizarCriatura();
 		p.getCriaturas().add(compi);
 		System.out.println("Iniciando prueba de Episodio 2 con el personaje: " + p.getNombre());
 		Episodio3ElBosqueOscuro.episodio3ElBosqueOscuro(p);

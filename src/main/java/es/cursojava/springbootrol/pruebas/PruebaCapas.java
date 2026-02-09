@@ -25,7 +25,7 @@ import es.cursojava.springbootrol.service.impl.EpisodioServiceImpl;
 import es.cursojava.springbootrol.service.impl.EquipamientoServiceImpl;
 import es.cursojava.springbootrol.service.impl.PersonajeServiceImpl;
 import es.cursojava.springbootrol.service.impl.UsuarioServiceImpl;
-import es.cursojava.springbootrol.utilidades.Utils;
+import es.cursojava.springbootrol.utilidades.JuegoActions;
 import utilidades.HibernateUtil;
 
 public class PruebaCapas {
@@ -65,16 +65,16 @@ public class PruebaCapas {
 
         while (!salir) {
         	mostrarMenu(usuarioLogueado);
-        	int op = Utils.pideDatoNumerico("Opcion: ");
+        	int op = JuegoActions.pideDatoNumerico("Opcion: ");
 
             try {
                 switch (op) {
 
                     case 1: {
-                        String u = Utils.pideDatoCadena("Username: ");
-                        String e = Utils.pideDatoCadena("Email: ");
-                        String p = Utils.pideDatoCadena("Password: ");
-                        String r = Utils.pideDatoCadena("Rol: ");
+                        String u = JuegoActions.pideDatoCadena("Username: ");
+                        String e = JuegoActions.pideDatoCadena("Email: ");
+                        String p = JuegoActions.pideDatoCadena("Password: ");
+                        String r = JuegoActions.pideDatoCadena("Rol: ");
 
                         UsuarioDto registrado = usuarioService.registrar(u, e, p, r);
                         System.out.println("Usuario registrado OK -> " + registrado);
@@ -82,8 +82,8 @@ public class PruebaCapas {
                     }
 
                     case 2: {
-                        String ul = Utils.pideDatoCadena("Username: ");
-                        String pl = Utils.pideDatoCadena("Password: ");
+                        String ul = JuegoActions.pideDatoCadena("Username: ");
+                        String pl = JuegoActions.pideDatoCadena("Password: ");
 
                         usuarioLogueado = usuarioService.login(ul, pl);
                         System.out.println("ID usuario logueado: " + usuarioLogueado.getId());
@@ -104,7 +104,7 @@ public class PruebaCapas {
                                     + " (id=" + personajes.get(i).getId() + ")");
                         }
 
-                        int idx = Utils.pideDatoNumerico("Opción: ") - 1;
+                        int idx = JuegoActions.pideDatoNumerico("Opción: ") - 1;
                         if (idx < 0 || idx >= personajes.size()) {
                             personajeCreado = null;
                             System.out.println("Opción inválida.");
@@ -126,8 +126,8 @@ public class PruebaCapas {
                     		break;
                     	}
                     	
-                    	String name = Utils.pideDatoCadena("Nombre de personaje: ");
-                    	String raza = Utils.pideDatoCadena("Elige raza (MONGOL, RAPA NUI, TROGLODITA): ");
+                    	String name = JuegoActions.pideDatoCadena("Nombre de personaje: ");
+                    	String raza = JuegoActions.pideDatoCadena("Elige raza (MONGOL, RAPA NUI, TROGLODITA): ");
                     	
                     	personajeCreado = personajeService.crearYGuardar(usuarioLogueado.getId(), name, raza);
                     	System.out.println("Personaje creado OK -> " + personajeCreado);
@@ -195,7 +195,7 @@ public class PruebaCapas {
                         }
 
                         try {
-                            String tipo = Utils.pideDatoCadena(
+                            String tipo = JuegoActions.pideDatoCadena(
                                     "¿Qué quieres añadir? (CUERDA, PALO, PIEDRA, MOJON, HOJA, BAYA): ");
                             String t = tipo.trim().toUpperCase();
 
@@ -247,7 +247,7 @@ public class PruebaCapas {
                         if (personajeCreado != null && personajeCreado.getId() != null) {
                             System.out.println("Personaje activo detectado: " + personajeCreado.getNombre()
                                     + " (id=" + personajeCreado.getId() + ")");
-                            String resp = Utils.pideDatoCadena("¿Quieres recargar ese personaje? (S/N): ")
+                            String resp = JuegoActions.pideDatoCadena("¿Quieres recargar ese personaje? (S/N): ")
                                     .trim().toUpperCase();
 
                             if ("S".equals(resp)) {
@@ -256,7 +256,7 @@ public class PruebaCapas {
                         }
 
                         if (idPersonaje == null) {
-                            idPersonaje = Long.valueOf(Utils.pideDatoNumerico("Introduce el ID del personaje a recargar: "));
+                            idPersonaje = Long.valueOf(JuegoActions.pideDatoNumerico("Introduce el ID del personaje a recargar: "));
                         }
 
                         try {
@@ -307,8 +307,8 @@ public class PruebaCapas {
                         }
 
                         try {
-                            String tipoC = Utils.pideDatoCadena("Tipo de criatura (GUSANO/CONEJO/MOSQUITO/RATON): ");
-                            String aliasC = Utils.pideDatoCadena("Alias (opcional): ");
+                            String tipoC = JuegoActions.pideDatoCadena("Tipo de criatura (GUSANO/CONEJO/MOSQUITO/RATON): ");
+                            String aliasC = JuegoActions.pideDatoCadena("Alias (opcional): ");
 
                             CriaturaDto creada = criaturaService.crearYAsignar(personajeCreado.getId(), tipoC, aliasC);
                             System.out.println("OK: criatura creada -> " + creada);

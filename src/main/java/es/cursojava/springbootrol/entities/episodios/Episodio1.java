@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import es.cursojava.springbootrol.entities.Personaje;
 import es.cursojava.springbootrol.entities.equipo.objetos.HojaParaLimpiar;
 import es.cursojava.springbootrol.service.PersonajeService;
-import es.cursojava.springbootrol.utilidades.Utils;
+import es.cursojava.springbootrol.utilidades.JuegoActions;
 
 public class Episodio1 {
 
@@ -65,7 +65,7 @@ public class Episodio1 {
                 switch (opcion) {
 
                 case 1: {
-                    int cantidad = Utils.contarHojas(personaje);
+                    int cantidad = JuegoActions.contarHojas(personaje);
                     if (cantidad >= 5) {
                         acciones.add("Intentaste llorar, pero te dieron una torta por llorón.");
                         break;
@@ -80,7 +80,7 @@ public class Episodio1 {
                 case 2: {
                     try {
                     	int antes = (personaje.getCriaturas() == null) ? 0 : personaje.getCriaturas().size();
-                        Utils.invocacionCompañeroCriatura(personaje); 
+                        JuegoActions.invocacionCompañeroCriatura(personaje); 
                         int despues = (personaje.getCriaturas() == null) ? 0 : personaje.getCriaturas().size();
 
                         if (despues > antes) {
@@ -111,7 +111,7 @@ public class Episodio1 {
                         }
 
                         personaje.setPuntosVida(1);
-                        String desgracia = Utils.desgraciaAleatorio();
+                        String desgracia = JuegoActions.desgraciaAleatorio();
                         acciones.add("Intentaste salir, pero sufriste una desgracia: " + desgracia);
                         acciones.add("Tu vida queda reducida a 1.");
                         key3 = true;
@@ -123,7 +123,7 @@ public class Episodio1 {
                     break;
 
                 case 4: {
-                    Utils.recuperarVida(personaje);
+                    JuegoActions.recuperarVida(personaje);
                     acciones.add("Dormiste profundamente y recuperaste toda la vida.");
                     key3 = true;
                 }
@@ -131,7 +131,7 @@ public class Episodio1 {
 
                 case 5: {
                     try {
-                    	String msg = Utils.buscarObjeto(personaje);
+                    	String msg = JuegoActions.buscarObjeto(personaje);
                     	acciones.add("Buscaste materiales en la cueva. " + msg);
                     } catch (Exception e) {
                         acciones.add("Error al buscar materiales.");

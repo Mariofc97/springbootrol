@@ -11,7 +11,7 @@ import es.cursojava.springbootrol.entities.equipo.armas.Trampa;
 import es.cursojava.springbootrol.entities.equipo.objetos.Baya;
 import es.cursojava.springbootrol.entities.equipo.objetos.CarneSeca;
 import es.cursojava.springbootrol.exceptions.ReglaJuegoException;
-import es.cursojava.springbootrol.utilidades.Utils;
+import es.cursojava.springbootrol.utilidades.JuegoActions;
 
 public class Episodio3ElBosqueOscuro {
 
@@ -60,7 +60,7 @@ public class Episodio3ElBosqueOscuro {
 			switch (opcion) {
 
 			case 1: {
-				personaje = Utils.buscarBaya(personaje);
+				personaje = JuegoActions.buscarBaya(personaje);
 
 				if (!controladorJabali) {
 
@@ -71,7 +71,7 @@ public class Episodio3ElBosqueOscuro {
 					int expAntes = personaje.getExperiencia();
 
 					// Opción 1: combate simulado sin depender de experiencia
-					boolean ganado = Utils.dadoDiez() >= 4;
+					boolean ganado = JuegoActions.dadoDiez() >= 4;
 
 					if (ganado) {
 						acciones.add("Has sobrevivido al ataque del jabalí y conseguido bayas.");
@@ -103,7 +103,7 @@ public class Episodio3ElBosqueOscuro {
 				try {
 					int expAntes = personaje.getExperiencia();
 					acciones.add("Intentando cazar...");
-					personaje = Utils.cazar(personaje);
+					personaje = JuegoActions.cazar(personaje);
 
 					if (personaje.getExperiencia() > expAntes) {
 						acciones.add("Caza realizada con éxito.");
@@ -138,7 +138,7 @@ public class Episodio3ElBosqueOscuro {
 					int expAntes = personaje.getExperiencia();
 
 					// Combate simulado (opción 1)
-					boolean ganado = Utils.dadoDiez() >= 4;
+					boolean ganado = JuegoActions.dadoDiez() >= 4;
 
 					if (ganado) {
 						acciones.add("Has sobrevivido al ataque del lobo y conseguido el conejo.");
@@ -169,7 +169,7 @@ public class Episodio3ElBosqueOscuro {
 
 			case 4: {
 				// Crear trampa
-				boolean creaTrampa = Utils.dadoDiez() >= 3;
+				boolean creaTrampa = JuegoActions.dadoDiez() >= 3;
 
 				if (creaTrampa) {
 					try {
@@ -188,7 +188,7 @@ public class Episodio3ElBosqueOscuro {
 
 			case 5: {
 				try {
-					personaje = Utils.buscarObjeto(personaje);
+					personaje = JuegoActions.buscarObjeto(personaje);
 					LOGGER.info("El personaje " + personaje.getNombre() + " ha buscado un objeto.");
 				} catch (Exception e) {
 					LOGGER.log(Level.SEVERE, "Error al buscar objeto", e);
@@ -208,7 +208,7 @@ public class Episodio3ElBosqueOscuro {
 				break;
 
 			case 7: {
-				Utils.recuperarVida(personaje);
+				JuegoActions.recuperarVida(personaje);
 				acciones.add("Has descansado y recuperado toda la vida.");
 				LOGGER.info("Descanso. Personaje: " + personaje.getNombre());
 				bosqueOscurokey2 = true;
@@ -219,7 +219,7 @@ public class Episodio3ElBosqueOscuro {
 				if (controladorAtaqueLobo && controladorJabali) {
 					acciones.add("Ya puedes invocar a tu lobo o jabalí compañero.");
 					bosqueOscurokey3 = true;
-					Utils.invocarLoboJabali(personaje);
+					JuegoActions.invocarLoboJabali(personaje);
 					// personaje = Utils.recargarPersonaje(personaje.getId());
 				} else {
 					acciones.add("Aún no has derrotado a un lobo y un jabalí, no puedes invocarlos.");

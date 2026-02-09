@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 import es.cursojava.springbootrol.entities.Personaje;
 import es.cursojava.springbootrol.entities.criatura.JefeDelClan;
-import es.cursojava.springbootrol.utilidades.Utils;
+import es.cursojava.springbootrol.utilidades.JuegoActions;
 
 public class Episodio5JefeCueva {
 //combate con el jefe de clan, dos resultados pierdes la mayoria de las vez pero se te reconoce como miembro valioso del clan, recuperas tu familia.....
@@ -49,7 +49,7 @@ public class Episodio5JefeCueva {
 					+ "3. Descansar\n" + "4. Invocar criaturas\n" + "5. Inventario y estado\n" + "6. Fabricar\n"
 					+ "7. Buscar materiales\n" + "8. Desafiar Jefe del Clan");
 
-			int opcion = Utils.pideDatoNumerico("¿Qué quieres hacer?");
+			int opcion = JuegoActions.pideDatoNumerico("¿Qué quieres hacer?");
 
 			switch (opcion) {
 
@@ -91,7 +91,7 @@ public class Episodio5JefeCueva {
 			}
 
 			case 3: {
-				Utils.recuperarVida(personaje);
+				JuegoActions.recuperarVida(personaje);
 				System.out.println(
 						"Has descansado y recuperado toda la vida, si tenias aumentos en la vida se a pasado el efecto.");
 				LOGGER.info("Descanso completo de: " + personaje.getNombre());
@@ -99,13 +99,13 @@ public class Episodio5JefeCueva {
 			}
 
 			case 4: {
-				Utils.invocarTodasCriaturas(personaje);
+				JuegoActions.invocarTodasCriaturas(personaje);
 				break;
 			}
 
 			case 5: {
 				try {
-					Utils.menuInventario(personaje);
+					JuegoActions.menuInventario(personaje);
 				} catch (Exception e) {
 					LOGGER.log(Level.SEVERE, "Error al mostrar inventario", e);
 					System.out.println("No se pudo mostrar el inventario.");
@@ -114,13 +114,13 @@ public class Episodio5JefeCueva {
 			}
 
 			case 6: {
-				Utils.menuFabricar(personaje);
+				JuegoActions.menuFabricar(personaje);
 				break;
 			}
 
 			case 7: {
 				try {
-					Utils.buscarObjeto(personaje);
+					JuegoActions.buscarObjeto(personaje);
 				} catch (Exception e) {
 					LOGGER.log(Level.SEVERE, "Error al buscar objeto", e);
 					System.out.println("No se pudo buscar el objeto.");
@@ -132,7 +132,7 @@ public class Episodio5JefeCueva {
 				System.out.println("Te preparas para desafiar al jefe del clan...");
 				// aquí irá el combate
 				JefeDelClan jefedelclan = new JefeDelClan();
-				Boolean resultadoFinal = Utils.combate(personaje, jefedelclan);
+				Boolean resultadoFinal = JuegoActions.combate(personaje, jefedelclan);
 				jefekey2 = true;
 				if (resultadoFinal) {
 					System.out.println(

@@ -8,7 +8,7 @@ import es.cursojava.springbootrol.entities.criatura.PezPrehistoricoGigante;
 import es.cursojava.springbootrol.entities.equipo.armas.CanaPescar;
 import es.cursojava.springbootrol.entities.equipo.objetos.CarneSeca;
 import es.cursojava.springbootrol.exceptions.ReglaJuegoException;
-import es.cursojava.springbootrol.utilidades.Utils;
+import es.cursojava.springbootrol.utilidades.JuegoActions;
 
 public class Episodio4Rio {
 
@@ -71,7 +71,7 @@ public class Episodio4Rio {
 			switch (opcion) {
 
 			case 1: {
-				Utils.buscarBaya(personaje);
+				JuegoActions.buscarBaya(personaje);
 			}
 				break;
 
@@ -95,7 +95,7 @@ public class Episodio4Rio {
 
 				acciones.add("Lanzas la caña al río y esperas pacientemente...");
 
-				int tirada = Utils.dadoDiez();
+				int tirada = JuegoActions.dadoDiez();
 
 				if (tirada <= 2) {
 					acciones.add("Nada pica esta vez. El río sigue en calma.");
@@ -119,7 +119,7 @@ public class Episodio4Rio {
 				if (!pezPrehistoricoGigante) {
 
 					PezPrehistoricoGigante pez = new PezPrehistoricoGigante();
-					boolean resultado = Utils.combate(personaje, pez);
+					boolean resultado = JuegoActions.combate(personaje, pez);
 
 					if (resultado) {
 						Riokey2 = true;
@@ -136,7 +136,7 @@ public class Episodio4Rio {
 
 			case 5: {
 				try {
-					Utils.buscarObjeto(personaje);
+					JuegoActions.buscarObjeto(personaje);
 					LOGGER.info("El personaje " + personaje.getNombre() + " ha buscado un objeto.");
 				} catch (Exception e) {
 					LOGGER.log(Level.SEVERE, "Error al buscar objeto", e);
@@ -157,7 +157,7 @@ public class Episodio4Rio {
 				break;
 
 			case 7: {
-				Utils.recuperarVida(personaje);
+				JuegoActions.recuperarVida(personaje);
 				acciones.add("Has dormido y recuperado toda la vida.");
 				LOGGER.info("Descanso. Personaje: " + personaje.getNombre());
 			}
@@ -167,10 +167,10 @@ public class Episodio4Rio {
 
 				if (pezPrehistoricoGigante) {
 
-					if (Utils.dadoDiez() < 3) {
+					if (JuegoActions.dadoDiez() < 3) {
 						acciones.add(
 								"Intentas invocar a tu PezPrehistoricoGigante, pero estornudas y lo enfureces. ¡Te ataca!");
-						Utils.combate(personaje, new PezPrehistoricoGigante());
+						JuegoActions.combate(personaje, new PezPrehistoricoGigante());
 					} else {
 						Riokey3 = true;
 
