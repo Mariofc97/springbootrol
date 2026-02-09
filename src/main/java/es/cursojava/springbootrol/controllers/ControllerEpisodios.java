@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import es.cursojava.springbootrol.entities.Personaje;
 import es.cursojava.springbootrol.entities.episodios.AccionesEpisodio;
-import es.cursojava.springbootrol.entities.episodios.Episodio1Prueba;
+import es.cursojava.springbootrol.entities.episodios.Episodio1;
 import es.cursojava.springbootrol.exceptions.ReglaJuegoException;
 import es.cursojava.springbootrol.service.EpisodioService;
 import es.cursojava.springbootrol.service.PersonajeService;
 
 @Controller
-public class ControllerPrueba {
+public class ControllerEpisodios {
 
 	@Autowired
 	private PersonajeService personajeService;
