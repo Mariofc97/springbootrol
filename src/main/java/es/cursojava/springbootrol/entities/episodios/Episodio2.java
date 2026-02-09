@@ -18,7 +18,7 @@ public class Episodio2 {
 		LOGGER.setUseParentHandlers(false); // evita que el logger escriba en consola
 	}
 
-	public static void episodio2(Personaje personaje) {
+	public static void episodio2(Personaje personaje, AccionesEpisodio acciones) {
 		// Comprobación inicial: si no nos pasan un personaje, salimos con un mensaje de
 		// error
 
@@ -28,42 +28,34 @@ public class Episodio2 {
 			return;
 		}
 
-		// Asegurarnos de que la lista de equipo exista para evitar NullPointerException
-		if (personaje.getEquipo() == null) {
-			try {
-				// Inicializamos una lista vacía si no existe
-				java.util.List<es.cursojava.springbootrol.entities.equipo.Equipamiento> equipoList = new java.util.ArrayList<>();
-				personaje.setEquipo(equipoList);
-				LOGGER.info("Se inicializó la lista de equipo para el personaje: " + personaje.getNombre());
-			} catch (Exception e) {
-				// Si falla la inicialización la registramos pero no abortamos el episodio
-				LOGGER.log(Level.WARNING, "No se pudo inicializar la lista de equipo", e);
-			}
-		}
+        if (personaje.getEquipo() == null) {
+            try {
+                personaje.setEquipo(new java.util.ArrayList<>());
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "No se pudo inicializar la lista de equipo", e);
+            }
+        }
 
 		// Asegurarnos de que la lista de criaturas exista para evitar
-		// NullPointerException
-		if (personaje.getCriaturas() == null) {
-			try {
-				java.util.List<es.cursojava.springbootrol.entities.criatura.Criatura> criaturasList = new java.util.ArrayList<>();
-				personaje.setCriaturas(criaturasList);
-				LOGGER.info("Se inicializó la lista de criaturas para el personaje: " + personaje.getNombre());
-			} catch (Exception e) {
-				LOGGER.log(Level.WARNING, "No se pudo inicializar la lista de criaturas", e);
-			}
-		}
+        if (personaje.getCriaturas() == null) {
+            try {
+                personaje.setCriaturas(new java.util.ArrayList<>());
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "No se pudo inicializar la lista de criaturas", e);
+            }
+        }
 
 		boolean episodio2key1 = false;
 		boolean episodio2key2 = false;
 		boolean episodio2key3 = false;
 		
 		boolean salida = false;
+        int errorCount = 0;
+        final int MAX_ERRORS = 3;
 
-		System.out.println();
-		System.out.println("EPISODIO 2: En el exterior...");
-		System.out.println("Sales al bosque y todo parece comida…");
-		System.out.println("Avanzas hacia un bosque con apetitosas y llamativas bayas. Tú decides si te las comes…");
-		System.out.println();
+		acciones.add("EPISODIO 2: En el exterior...");
+		acciones.add("Sales al bosque y todo parece comida…");
+		acciones.add("Avanzas hacia un bosque con apetitosas y llamativas bayas. Tú decides si te las comes…");
 		
 		do {
 			int opcion;
