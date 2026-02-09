@@ -58,11 +58,7 @@ public class Episodio2 {
 		acciones.add("Avanzas hacia un bosque con apetitosas y llamativas bayas. Tú decides si te las comes…");
 		
 		do {
-			int opcion;
-
-			System.out.println(
-					"\n1. Buscar bayas \n2. Cazar \n3. Crear arma \n4. Esconderse del miedo \n.Inventario y estado \n5.Buscar materiales \n6.Ir al bosque oscuro \n7.Descansar");
-			opcion = (int) (Math.random() * 7) + 1; // genera entre 1 y 7
+			int opcion = (int) (Math.random() * 7) + 1; // genera entre 1 y 7
 
 			switch (opcion) {
 
@@ -106,8 +102,7 @@ public class Episodio2 {
 
 			case 4: {
 				// esconderse del miedo
-				System.out.println(
-						"Te escondes entre los arbustos, intentando calmar tu respiración agitada y el latido acelerado de tu corazón. Mientras esperas, escuchas los sonidos del bosque que poco a poco vuelven a la normalidad. Después de unos minutos, te sientes lo suficientemente tranquilo como para salir de tu escondite.");
+				acciones.add("Te escondes entre los arbustos, intentando calmar tu respiración agitada y el latido acelerado de tu corazón. Mientras esperas, escuchas los sonidos del bosque que poco a poco vuelven a la normalidad. Después de unos minutos, te sientes lo suficientemente tranquilo como para salir de tu escondite.");
 
 				episodio2key3 = true;
 
@@ -117,11 +112,10 @@ public class Episodio2 {
 
             case 5: {
                 try {
-                    personaje = Utils.buscarObjeto(personaje); // ya devuelve recargado
-                    LOGGER.info("El personaje " + personaje.getNombre() + " ha buscado un objeto.");
+                	String msg = Utils.buscarObjeto(personaje);
+                	acciones.add("Buscaste materiales en la cueva. " + msg);
                 } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Error al buscar objeto", e);
-                    System.out.println("No se pudo buscar el objeto.");
+                    acciones.add("Error al buscar materiales.");
                 }
             }
             break;
