@@ -63,21 +63,22 @@ public class Episodio3ElBosqueOscuro {
 				personaje = Utils.buscarBaya(personaje);
 
 				if (!controladorJabali) {
+
 					acciones.add(
 							"Ummm que ricas las bayas... escuchas un ruido... de repente un jabalí salvaje aparece buscando comida y te ataca.");
 
 					Jabali jabali = new Jabali();
 					int expAntes = personaje.getExperiencia();
 
-					boolean ganado = Utils.combate(personaje, jabali);
+					// Opción 1: combate simulado sin depender de experiencia
+					boolean ganado = Utils.dadoDiez() >= 4;
 
-					if (ganado && personaje.getExperiencia() > expAntes) {
+					if (ganado) {
 						acciones.add("Has sobrevivido al ataque del jabalí y conseguido bayas.");
 						controladorJabali = true;
 
 						try {
 							personaje.addEquipamiento(new Baya());
-//                            personaje = Utils.recargarPersonaje(personaje.getId());
 						} catch (ReglaJuegoException e) {
 							acciones.add("No puedes añadir bayas: " + e.getMessage());
 						}
@@ -86,10 +87,11 @@ public class Episodio3ElBosqueOscuro {
 					}
 
 				} else {
+
 					acciones.add("Bien, has encontrado bayas!!!!");
+
 					try {
 						personaje.addEquipamiento(new Baya());
-//                        personaje = Utils.recargarPersonaje(personaje.getId());
 					} catch (ReglaJuegoException e) {
 						acciones.add("No puedes añadir bayas: " + e.getMessage());
 					}
@@ -115,6 +117,7 @@ public class Episodio3ElBosqueOscuro {
 				break;
 
 			case 3: {
+
 				int contadorTrampas = 0;
 				for (Equipamiento eq : personaje.getEquipo()) {
 					if (eq instanceof Trampa)
@@ -127,22 +130,23 @@ public class Episodio3ElBosqueOscuro {
 				}
 
 				if (!controladorAtaqueLobo) {
-					acciones.add(
-							"Bien, has atrapado un conejo!!!! te acercas despacio pero... sientes como algo te acecha... te ataca un lobo que también quiere el conejo.");
+
+					acciones.add("Bien, has atrapado un conejo!!!! Te acercas despacio pero... "
+							+ "sientes como algo te acecha... ¡te ataca un lobo que también quiere el conejo!");
 
 					Lobo lobo = new Lobo();
 					int expAntes = personaje.getExperiencia();
 
-					boolean ganado = Utils.combate(personaje, lobo);
+					// Combate simulado (opción 1)
+					boolean ganado = Utils.dadoDiez() >= 4;
 
-					if (ganado && personaje.getExperiencia() > expAntes) {
+					if (ganado) {
 						acciones.add("Has sobrevivido al ataque del lobo y conseguido el conejo.");
 
 						controladorAtaqueLobo = true;
 
 						try {
-							equipService.añadirAlInventario(personaje.getId(), new CarneSeca());
-							personaje = Utils.recargarPersonaje(personaje.getId());
+							personaje.addEquipamiento(new CarneSeca());
 						} catch (ReglaJuegoException e) {
 							acciones.add("No puedes añadir carne seca: " + e.getMessage());
 						}
@@ -151,10 +155,11 @@ public class Episodio3ElBosqueOscuro {
 					}
 
 				} else {
-					acciones.add("Bien has atrapado un conejo!!!!");
+
+					acciones.add("Bien, has atrapado un conejo!!!!");
+
 					try {
-						equipService.añadirAlInventario(personaje.getId(), new CarneSeca());
-						personaje = Utils.recargarPersonaje(personaje.getId());
+						personaje.addEquipamiento(new CarneSeca());
 					} catch (ReglaJuegoException e) {
 						acciones.add("No puedes añadir carne seca: " + e.getMessage());
 					}
@@ -163,13 +168,20 @@ public class Episodio3ElBosqueOscuro {
 				break;
 
 			case 4: {
-				try {
-					Utils.menuInventario(personaje);
-					LOGGER.info("Mostrando inventario de: " + personaje.getNombre());
-					personaje = Utils.recargarPersonaje(personaje.getId());
-				} catch (Exception e) {
-					LOGGER.log(Level.SEVERE, "Error al mostrar el inventario", e);
-					acciones.add("No se pudo mostrar el inventario.");
+				// Crear trampa
+				boolean creaTrampa = Utils.dadoDiez() >= 3;
+
+				if (creaTrampa) {
+					try {
+						personaje.addEquipamiento(new Trampa());
+						acciones.add("Has fabricado una trampa.");
+					} catch (Exception e) {
+						LOGGER.log(Level.SEVERE, "Error al fabricar", e);
+						acciones.add("No se pudo fabricar.");
+					}
+				} else {
+					acciones.add("Intentaste fabricar una trampa, pero no tuviste éxito.");
+					LOGGER.info("El personaje " + personaje.getNombre() + " intentó fabricar una trampa sin éxito.");
 				}
 			}
 				break;
@@ -208,7 +220,7 @@ public class Episodio3ElBosqueOscuro {
 					acciones.add("Ya puedes invocar a tu lobo o jabalí compañero.");
 					bosqueOscurokey3 = true;
 					Utils.invocarLoboJabali(personaje);
-					personaje = Utils.recargarPersonaje(personaje.getId());
+					// personaje = Utils.recargarPersonaje(personaje.getId());
 				} else {
 					acciones.add("Aún no has derrotado a un lobo y un jabalí, no puedes invocarlos.");
 				}
