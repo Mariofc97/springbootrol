@@ -71,18 +71,20 @@ public class Episodio2 {
 
             case 2: {
                 try {
-                    System.out.println("Intentando cazar...");
-                    personaje = Utils.cazar(personaje);
+                    acciones.add("Intentando cazar...");
+                    Utils.cazar(personaje, acciones); 
 
                     if (Utils.fueUltimaCazaExitosa()) {
                         episodio2key2 = true;
-                        System.out.println("Caza realizada con éxito.");
-                        LOGGER.info("El personaje " + personaje.getNombre() + " ha cazado con éxito.");
+                        acciones.add("Caza realizada con éxito.");
+                        acciones.add("El personaje " + personaje.getNombre() + " ha cazado con éxito.");
+                    } else {
+                        acciones.add("La caza no tuvo éxito.");
                     }
 
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Error al cazar", e);
-                    System.out.println("No se pudo cazar.");
+                    acciones.add("No se pudo cazar.");
                 }
             }
             break;
@@ -123,22 +125,19 @@ public class Episodio2 {
             case 6: {
                 if (episodio2key1 && episodio2key2 && episodio2key3) {
                     salida = true;
-                    System.out.println("Ya puedes ir al bosque oscuro.");
+                    acciones.add("Ya puedes ir al bosque oscuro.");
                 } else {
-                    System.out.println("Aún no has hecho todo lo necesario para avanzar.");
+                    acciones.add("Aún no has hecho todo lo necesario para avanzar.");
                 }
             }
             break;
 
             case 7: {
                 try {
-                    personaje.setPuntosVida(personaje.getPuntosVidaMax());
-                    String msg = "Has descansado y recuperado toda la vida.";
-                    System.out.println(msg);
-                    LOGGER.info(msg + " Personaje: " + personaje.getNombre());
+                    Utils.recuperarVida(personaje);
+                    acciones.add("Dormiste profundamente y recuperaste toda la vida.");
                 } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Error al descansar", e);
-                    System.out.println("No se pudo descansar correctamente.");
+                	acciones.add("");
                 }
             }
             break;
