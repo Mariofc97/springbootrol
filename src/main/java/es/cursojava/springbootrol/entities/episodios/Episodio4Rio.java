@@ -201,5 +201,7 @@ public class Episodio4Rio {
 			}
 
 		} while (!salida);
+        acciones.add("Fin del episodio 4.");
+
 	}
 }

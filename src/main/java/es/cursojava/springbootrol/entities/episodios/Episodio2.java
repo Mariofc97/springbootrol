@@ -146,6 +146,7 @@ public class Episodio2 {
 
 
 		} while (!salida);
+        acciones.add("Fin del episodio 2.");
 
 	}
 }

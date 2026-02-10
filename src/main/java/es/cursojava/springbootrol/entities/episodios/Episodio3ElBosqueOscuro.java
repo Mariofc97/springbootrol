@@ -3,6 +3,8 @@ package es.cursojava.springbootrol.entities.episodios;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.security.crypto.codec.Utf8;
+
 import es.cursojava.springbootrol.entities.Personaje;
 import es.cursojava.springbootrol.entities.criatura.Jabali;
 import es.cursojava.springbootrol.entities.criatura.Lobo;
@@ -20,7 +22,8 @@ public class Episodio3ElBosqueOscuro {
 		LOGGER.setUseParentHandlers(false);
 	}
 
-	public static void episodio3ElBosqueOscuro(Personaje personaje, AccionesEpisodio acciones) {
+	public static void episodio3ElBosqueOscuro(Personaje personaje, AccionesEpisodio acciones)
+			throws ReglaJuegoException {
 
 		if (personaje == null) {
 			LOGGER.warning("Se llamó a episodio3ElBosqueOscuro con Personaje null");
@@ -71,30 +74,27 @@ public class Episodio3ElBosqueOscuro {
 					int expAntes = personaje.getExperiencia();
 
 					// Opción 1: combate simulado sin depender de experiencia
-					boolean ganado = JuegoActions.dadoDiez() >= 4;
+					boolean ganado = JuegoActions.combateAuto(personaje, jabali, acciones);
 
 					if (ganado) {
 						acciones.add("Has sobrevivido al ataque del jabalí y conseguido bayas.");
 						controladorJabali = true;
 
-						try {
-							personaje.addEquipamiento(new Baya());
-						} catch (ReglaJuegoException e) {
-							acciones.add("No puedes añadir bayas: " + e.getMessage());
-						}
+						personaje.addEquipamiento(new Baya());
 
 						bosqueOscurokey1 = true;
+					} else {
+						acciones.add(
+								"El jabalí te ha herido, pero logras escapar con vida. Sin embargo, no consigues las bayas.");
+						// LOGGER.info("El personaje " + personaje.getNombre() + " fue herido por el
+						// jabalí pero escapó con vida.");
 					}
 
 				} else {
 
 					acciones.add("Bien, has encontrado bayas!!!!");
 
-					try {
-						personaje.addEquipamiento(new Baya());
-					} catch (ReglaJuegoException e) {
-						acciones.add("No puedes añadir bayas: " + e.getMessage());
-					}
+					personaje.addEquipamiento(new Baya());
 				}
 			}
 				break;
@@ -103,7 +103,7 @@ public class Episodio3ElBosqueOscuro {
 				try {
 					int expAntes = personaje.getExperiencia();
 					acciones.add("Intentando cazar...");
-                    JuegoActions.cazar(personaje, acciones); 
+					JuegoActions.cazar(personaje, acciones);
 
 					if (personaje.getExperiencia() > expAntes) {
 						acciones.add("Caza realizada con éxito.");
@@ -145,11 +145,7 @@ public class Episodio3ElBosqueOscuro {
 
 						controladorAtaqueLobo = true;
 
-						try {
-							personaje.addEquipamiento(new CarneSeca());
-						} catch (ReglaJuegoException e) {
-							acciones.add("No puedes añadir carne seca: " + e.getMessage());
-						}
+						personaje.addEquipamiento(new CarneSeca());
 
 						bosqueOscurokey1 = true;
 					}
@@ -158,11 +154,7 @@ public class Episodio3ElBosqueOscuro {
 
 					acciones.add("Bien, has atrapado un conejo!!!!");
 
-					try {
-						personaje.addEquipamiento(new CarneSeca());
-					} catch (ReglaJuegoException e) {
-						acciones.add("No puedes añadir carne seca: " + e.getMessage());
-					}
+					personaje.addEquipamiento(new CarneSeca());
 				}
 			}
 				break;
@@ -231,5 +223,7 @@ public class Episodio3ElBosqueOscuro {
 			}
 
 		} while (!salida);
+		acciones.add("Fin del episodio 3.");
+
 	}
 }
