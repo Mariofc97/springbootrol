@@ -49,30 +49,28 @@ public class ControllerEpisodios {
 	    model.addAttribute("acciones", acciones.getLog());
 	    model.addAttribute("uid", uid);
 
-	    // Renderizamos el resultado del episodio que se acaba de jugar.
-	    // OJO: si jugarEpisodioActual incrementa episodioActual, entonces el episodio jugado es (p.getEpisodioActual()-1)
 	    int episodioJugado = Math.max(1, p.getEpisodioActual() - 1);
 	    return "episodio" + episodioJugado + "_resultado";
 	}
 
-	@GetMapping("/episodio1/{id}")
-	public String mostrarPantallaEpisodio1(@PathVariable Long id,
-			@RequestParam(required=false) Long uid,
-			Model model) throws ReglaJuegoException {
-		Personaje p = personajeService.cargarParaJuego(id);
-		model.addAttribute("personaje", p);
-		model.addAttribute("uid", uid);
-		return "episodio1";
-	}
-	@GetMapping("/episodio2/{id}")
-	public String mostrarPantallaEpisodio2(@PathVariable Long id,
-			@RequestParam(required=false) Long uid,
-			Model model) throws ReglaJuegoException {
-		Personaje p = personajeService.cargarParaJuego(id);
-		model.addAttribute("personaje", p);
-		model.addAttribute("uid", uid);
-		return "episodio2";
-	}
+//	@GetMapping("/episodio1/{id}")
+//	public String mostrarPantallaEpisodio1(@PathVariable Long id,
+//			@RequestParam(required=false) Long uid,
+//			Model model) throws ReglaJuegoException {
+//		Personaje p = personajeService.cargarParaJuego(id);
+//		model.addAttribute("personaje", p);
+//		model.addAttribute("uid", uid);
+//		return "episodio1";
+//	}
+//	@GetMapping("/episodio2/{id}")
+//	public String mostrarPantallaEpisodio2(@PathVariable Long id,
+//			@RequestParam(required=false) Long uid,
+//			Model model) throws ReglaJuegoException {
+//		Personaje p = personajeService.cargarParaJuego(id);
+//		model.addAttribute("personaje", p);
+//		model.addAttribute("uid", uid);
+//		return "episodio2";
+//	}
 
 	/**
 	 * Cómo se usa en el controller para persistir acciones episodio java
@@ -89,36 +87,36 @@ public class ControllerEpisodios {
 	 **/
 
 	// Ejecutar episodios
-	@PostMapping("/episodio1/{id}/jugar")
-	public String ejecutarEpisodio1(@PathVariable Long id,
-	                               @RequestParam(required=false) Long uid,
-	                               Model model) throws ReglaJuegoException {
-
-	    AccionesEpisodio acciones = episodioService.jugarEpisodioActual(id);
-
-	    // Si quieres recargar el personaje actualizado para mostrarlo:
-	    Personaje p = personajeService.cargarParaJuego(id);
-
-	    model.addAttribute("personaje", p);
-	    model.addAttribute("acciones", acciones.getLog());
-	    model.addAttribute("uid", uid);
-
-	    return "episodio1_resultado";
-	}
-	@PostMapping("/episodio2/{id}/jugar")
-	public String ejecutarEpisodio2(@PathVariable Long id,
-			@RequestParam(required=false) Long uid,
-			Model model) throws ReglaJuegoException {
-		
-		AccionesEpisodio acciones = episodioService.jugarEpisodioActual(id);
-		
-		// Si quieres recargar el personaje actualizado para mostrarlo:
-		Personaje p = personajeService.cargarParaJuego(id);
-		
-		model.addAttribute("personaje", p);
-		model.addAttribute("acciones", acciones.getLog());
-		model.addAttribute("uid", uid);
-		
-		return "episodio2_resultado";
-	}
+//	@PostMapping("/episodio1/{id}/jugar")
+//	public String ejecutarEpisodio1(@PathVariable Long id,
+//	                               @RequestParam(required=false) Long uid,
+//	                               Model model) throws ReglaJuegoException {
+//
+//	    AccionesEpisodio acciones = episodioService.jugarEpisodioActual(id);
+//
+//	    // Si quieres recargar el personaje actualizado para mostrarlo:
+//	    Personaje p = personajeService.cargarParaJuego(id);
+//
+//	    model.addAttribute("personaje", p);
+//	    model.addAttribute("acciones", acciones.getLog());
+//	    model.addAttribute("uid", uid);
+//
+//	    return "episodio1_resultado";
+//	}
+//	@PostMapping("/episodio2/{id}/jugar")
+//	public String ejecutarEpisodio2(@PathVariable Long id,
+//			@RequestParam(required=false) Long uid,
+//			Model model) throws ReglaJuegoException {
+//		
+//		AccionesEpisodio acciones = episodioService.jugarEpisodioActual(id);
+//		
+//		// Si quieres recargar el personaje actualizado para mostrarlo:
+//		Personaje p = personajeService.cargarParaJuego(id);
+//		
+//		model.addAttribute("personaje", p);
+//		model.addAttribute("acciones", acciones.getLog());
+//		model.addAttribute("uid", uid);
+//		
+//		return "episodio2_resultado";
+//	}
 }
