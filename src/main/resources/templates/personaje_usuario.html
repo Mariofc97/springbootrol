@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Personaje</title></head>
+<body>
+<h1 th:text="${personaje.nombre}">Personaje</h1>
+
+<p th:text="'Nivel: ' + ${personaje.nivel}"></p>
+<p th:text="'PV: ' + ${personaje.puntosVida} + '/' + ${personaje.puntosVidaMax}"></p>
+
+<a th:href="@{/episodio1/{id}(id=${personaje.id},uid=${uid})}">Ir a Episodio 1</a>
+<br/>
+<a th:href="@{/episodio2/{id}(id=${personaje.id},uid=${uid})}">Ir a Episodio 2</a>
+<br/><br/>
+
+<a th:href="@{/}">Volver al menú</a>
+</body>
+</html>

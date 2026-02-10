@@ -25,13 +25,22 @@ public class ControllerEpisodios {
 	private EpisodioService episodioService;
 	// Mostrar pantalla previa del episodio (opcional)
 	@GetMapping("/episodio1/{id}")
-	public String mostrarPantallaEpisodio(@PathVariable Long id,
+	public String mostrarPantallaEpisodio1(@PathVariable Long id,
 	                                      @RequestParam(required=false) Long uid,
 	                                      Model model) throws ReglaJuegoException {
 	    Personaje p = personajeService.cargarParaJuego(id);
 	    model.addAttribute("personaje", p);
 	    model.addAttribute("uid", uid);
 	    return "episodio1";
+	}
+	@GetMapping("/episodio2/{id}")
+	public String mostrarPantallaEpisodio2(@PathVariable Long id,
+			@RequestParam(required=false) Long uid,
+			Model model) throws ReglaJuegoException {
+		Personaje p = personajeService.cargarParaJuego(id);
+		model.addAttribute("personaje", p);
+		model.addAttribute("uid", uid);
+		return "episodio2";
 	}
 
 	/**
@@ -48,9 +57,9 @@ public class ControllerEpisodios {
 	 * @throws ReglaJuegoException
 	 **/
 
-	// Ejecutar episodio 1
+	// Ejecutar episodios
 	@PostMapping("/episodio1/{id}/jugar")
-	public String ejecutarEpisodio(@PathVariable Long id,
+	public String ejecutarEpisodio1(@PathVariable Long id,
 	                               @RequestParam(required=false) Long uid,
 	                               Model model) throws ReglaJuegoException {
 
@@ -64,5 +73,21 @@ public class ControllerEpisodios {
 	    model.addAttribute("uid", uid);
 
 	    return "episodio1_resultado";
+	}
+	@PostMapping("/episodio2/{id}/jugar")
+	public String ejecutarEpisodio2(@PathVariable Long id,
+			@RequestParam(required=false) Long uid,
+			Model model) throws ReglaJuegoException {
+		
+		AccionesEpisodio acciones = episodioService.jugarEpisodioActual(id);
+		
+		// Si quieres recargar el personaje actualizado para mostrarlo:
+		Personaje p = personajeService.cargarParaJuego(id);
+		
+		model.addAttribute("personaje", p);
+		model.addAttribute("acciones", acciones.getLog());
+		model.addAttribute("uid", uid);
+		
+		return "episodio2_resultado";
 	}
 }

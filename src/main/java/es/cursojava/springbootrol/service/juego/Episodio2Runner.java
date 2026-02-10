@@ -1,6 +1,7 @@
 package es.cursojava.springbootrol.service.juego;
 
 import es.cursojava.springbootrol.entities.Personaje;
+import es.cursojava.springbootrol.entities.episodios.AccionesEpisodio;
 import es.cursojava.springbootrol.entities.episodios.Episodio2;
 
 public class Episodio2Runner implements EpisodioRunner {
@@ -12,9 +13,9 @@ public class Episodio2Runner implements EpisodioRunner {
 	}
 
 	@Override
-	public int ejecutar(Personaje personaje) {
+	public int ejecutar(Personaje p, AccionesEpisodio acciones) {
 		// TODO Auto-generated method stub
-		Episodio2.episodio2(personaje);
+		Episodio2.episodio2(p,acciones);
 		return 3;
 	}
 

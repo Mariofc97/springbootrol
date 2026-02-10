@@ -2,21 +2,21 @@ package es.cursojava.springbootrol.service.juego;
 
 import es.cursojava.springbootrol.entities.Personaje;
 import es.cursojava.springbootrol.entities.episodios.AccionesEpisodio;
-import es.cursojava.springbootrol.entities.episodios.Episodio3ElBosqueOscuro;
+import es.cursojava.springbootrol.entities.episodios.Episodio4Rio;
 
-public class Episodio3Runner implements EpisodioRunner {
+public class Episodio4Runner implements EpisodioRunner {
 
 	@Override
 	public int numero() {
 		// TODO Auto-generated method stub
-		return 3;
+		return 4;
 	}
 
 	@Override
 	public int ejecutar(Personaje p, AccionesEpisodio acciones) {
 		// TODO Auto-generated method stub
-		Episodio3ElBosqueOscuro.episodio3ElBosqueOscuro(p, acciones);
-		return 4; // cuando haya un cuarto episodio ponemos cuatro
+		Episodio4Rio.episodio4Rio(p, acciones);
+		return 5; // cuando haya un cuarto episodio ponemos cuatro
 	}
 
 }
