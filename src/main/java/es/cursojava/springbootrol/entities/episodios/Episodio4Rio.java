@@ -131,13 +131,24 @@ public class Episodio4Rio {
 
 			case 4: {
 				// CREAR CAÑA DE PESCAR
+				
+				boolean tiradaFabricar = JuegoActions.dadoDiez() >= 3;
+				if (tiradaFabricar) {
+					personaje.getEquipo().add(new CanaPescar());
+					acciones.add("Has fabricado una caña de pescar.");
+				}else {
+					acciones.add("Intentaste fabricar una caña de pescar, pero no tuviste éxito.");
+					acciones.add("El personaje " + personaje.getNombre() + " intentó fabricar una caña de pescar sin éxito.");
+				}
+				
+				
 			}
 				break;
 
 			case 5: {
 				try {
-					JuegoActions.buscarObjeto(personaje);
-					LOGGER.info("El personaje " + personaje.getNombre() + " ha buscado un objeto.");
+					JuegoActions.buscarObjeto(personaje, acciones);
+					acciones.add("El personaje " + personaje.getNombre() + " ha buscado un objeto.");
 				} catch (Exception e) {
 					LOGGER.log(Level.SEVERE, "Error al buscar objeto", e);
 					acciones.add("No se pudo buscar el objeto.");
