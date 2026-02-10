@@ -1,9 +1,8 @@
 package es.cursojava.springbootrol.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import es.cursojava.springbootrol.entities.Personaje;
 import es.cursojava.springbootrol.exceptions.ReglaJuegoException;
+import es.cursojava.springbootrol.model.EquipamientoDto;
 import es.cursojava.springbootrol.model.UsuarioDto;
 import es.cursojava.springbootrol.service.EquipamientoService;
 import es.cursojava.springbootrol.service.PersonajeService;
@@ -62,17 +62,30 @@ public class HomeController {
     public String homeUsuario(@RequestParam(value="pid", required=false) Long pid,
                               Model model) {
 
-        // usuario desde security (mejor) o como lo tengas
-        // model.addAttribute("usuario", ...);
-
         if (pid != null) {
             try {
                 Personaje p = personajeService.cargarParaJuego(pid);
                 model.addAttribute("personaje", p);
-                model.addAttribute("pid", pid); // <- CLAVE
+                model.addAttribute("pid", pid);
+
+                model.addAttribute("armas", equipamientoService.listarArmas(pid));
+                model.addAttribute("escudos", equipamientoService.listarEscudos(pid));
+                model.addAttribute("objetos", equipamientoService.listarObjetos(pid));
+                model.addAttribute("criaturas", p.getCriaturas());
+
             } catch (ReglaJuegoException e) {
                 model.addAttribute("error", e.getMessage());
+                model.addAttribute("criaturas", List.of());
+                model.addAttribute("armas", List.of());
+                model.addAttribute("escudos", List.of());
+                model.addAttribute("objetos", List.of());
             }
+        } else {
+            // para que Thymeleaf no reviente con nulls si no hay personaje
+            model.addAttribute("criaturas", List.of());
+            model.addAttribute("armas", List.of());
+            model.addAttribute("escudos", List.of());
+            model.addAttribute("objetos", List.of());
         }
 
         return "home";

@@ -438,5 +438,38 @@ public class EquipamientoServiceImpl implements EquipamientoService {
 	    // But for cleaner migration, let's keep it simple. If it's gone, it's gone.
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<EquipamientoDto> listarArmas(Long personajeId) throws ReglaJuegoException {
+	    Personaje p = cargarPersonajeConEquipo(personajeId);
+	    List<EquipamientoDto> res = new ArrayList<>();
+	    for (Equipamiento e : p.getEquipo()) {
+	        if (e instanceof Armas) res.add(mapToDto(e));
+	    }
+	    return res;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<EquipamientoDto> listarEscudos(Long personajeId) throws ReglaJuegoException {
+	    Personaje p = cargarPersonajeConEquipo(personajeId);
+	    List<EquipamientoDto> res = new ArrayList<>();
+	    for (Equipamiento e : p.getEquipo()) {
+	        if (e instanceof Escudos) res.add(mapToDto(e));
+	    }
+	    return res;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<EquipamientoDto> listarObjetos(Long personajeId) throws ReglaJuegoException {
+	    Personaje p = cargarPersonajeConEquipo(personajeId);
+	    List<EquipamientoDto> res = new ArrayList<>();
+	    for (Equipamiento e : p.getEquipo()) {
+	        if (!(e instanceof Armas) && !(e instanceof Escudos)) res.add(mapToDto(e));
+	    }
+	    return res;
+	}
+
 	
 }

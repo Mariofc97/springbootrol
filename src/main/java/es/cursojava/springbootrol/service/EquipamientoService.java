@@ -25,4 +25,7 @@ public interface EquipamientoService {
 	
 	void eliminarDeInventario(Long personajeId, Long equipamientoId) throws ReglaJuegoException;
 
+	List<EquipamientoDto> listarArmas(Long personajeId) throws ReglaJuegoException;
+	List<EquipamientoDto> listarEscudos(Long personajeId) throws ReglaJuegoException;
+	List<EquipamientoDto> listarObjetos(Long personajeId) throws ReglaJuegoException;
 }
