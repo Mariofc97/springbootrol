@@ -32,7 +32,7 @@
 
   <!-- Puedes mostrar el username del principal si quieres: -->
   <div class="subtitle">
-    Bienvenido, <b th:text="${usuario.username}">usuario</b>
+    Bienvenido, <b sec:authentication="name">usuario</b>
     <span class="badge" style="margin-left:10px"
           sec:authentication="principal.authorities">ROL</span>
   </div>

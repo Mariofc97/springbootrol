@@ -19,7 +19,7 @@ public class Episodio4Rio {
 		LOGGER.setUseParentHandlers(false);
 	}
 
-	public static void episodio4Rio(Personaje personaje, AccionesEpisodio acciones) {
+	public  void episodio4Rio(Personaje personaje, AccionesEpisodio acciones) {
 
 		if (personaje == null) {
 			LOGGER.warning("Se llamó a episodio4Rio con Personaje null");

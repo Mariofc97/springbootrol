@@ -1,38 +1,40 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Gestión Juego Rol - Login</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Gestión Juego Rol - Login</title>
+<link rel="stylesheet" href="/css/style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <div class="container">
-        <h1>Bienvenido al Juego de Rol</h1>
-        
-        <div class="login-box">
-            <h2>Iniciar Sesión</h2>
-            <form action="/login" method="post">
-                <div class="form-group">
-                    <label>Usuario:</label>
-                    <input type="text" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label>Contraseña:</label>
-                    <input type="password" name="password" required>
-                </div>
-                <!-- Simple hack for demo: list existing users to copy-paste -->
-                <div class="hint" th:if="${usuarios}">
-                    <p>Usuarios disponibles (para test):</p>
-                    <ul>
-                        <li th:each="u : ${usuarios}" th:text="${u.username}">User</li>
-                    </ul>
-                </div>
-                <button type="submit">Entrar</button>
-                <a th:href="@{/registro}">Crear cuenta</a>
-            </form>
-            <p th:if="${param.error}" class="error" th:text="${error}"></p>
-        </div>
-    </div>
+	<div class="container">
+		<h1>Bienvenido al Juego de Rol</h1>
+
+		<div class="login-box">
+			<h2>Iniciar Sesión</h2>
+			<form action="/login" method="post">
+				<div class="form-group">
+					<label>Usuario:</label> <input type="text" name="username" required>
+				</div>
+				<div class="form-group">
+					<label>Contraseña:</label> <input type="password" name="password"
+						required>
+				</div>
+				<!-- Simple hack for demo: list existing users to copy-paste -->
+				<div class="hint" th:if="${usuarios}">
+					<p>Usuarios disponibles (para test):</p>
+					<ul>
+						<li th:each="u : ${usuarios}" th:text="${u.username}">User</li>
+					</ul>
+				</div>
+				<button type="submit">Entrar</button>
+				<a th:href="@{/registro}">Crear cuenta</a>
+			</form>
+			<div th:if="${param.errorMsg}"
+				style="margin: 14px auto 0; padding: 10px 14px; max-width: 520px; border-radius: 10px; background: rgba(220, 38, 38, .12); border: 1px solid rgba(220, 38, 38, .35); color: #dc2626; font-weight: 700; text-align: center;">
+				<span th:text="${param.errorMsg}">Usuario no dado de alta</span>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

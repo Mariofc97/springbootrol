@@ -18,7 +18,7 @@ public class Episodio3ElBosqueOscuro {
 		LOGGER.setUseParentHandlers(false);
 	}
 
-	public static void episodio3ElBosqueOscuro(Personaje personaje, AccionesEpisodio acciones) {
+	public void episodio3ElBosqueOscuro(Personaje personaje, AccionesEpisodio acciones) {
 
 		if (personaje == null) {
 			LOGGER.warning("Se llamó a episodio3ElBosqueOscuro con Personaje null");

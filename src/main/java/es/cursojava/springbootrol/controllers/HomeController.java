@@ -59,23 +59,19 @@ public class HomeController {
     }
     
     @GetMapping("/home")
-    public String homeUsuario(@RequestParam(value = "pid", required = false) Long pid,
+    public String homeUsuario(@RequestParam(value="pid", required=false) Long pid,
                               Model model) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName(); // el username logueado
-
-        UsuarioDto usuario = usuarioService.buscarPorUsername(username); // <-- crea este método
-        model.addAttribute("usuario", usuario);
+        // usuario desde security (mejor) o como lo tengas
+        // model.addAttribute("usuario", ...);
 
         if (pid != null) {
             try {
                 Personaje p = personajeService.cargarParaJuego(pid);
                 model.addAttribute("personaje", p);
-                model.addAttribute("pid", pid);
+                model.addAttribute("pid", pid); // <- CLAVE
             } catch (ReglaJuegoException e) {
                 model.addAttribute("error", e.getMessage());
-                model.addAttribute("pid", null);
             }
         }
 
@@ -84,24 +80,34 @@ public class HomeController {
 
     
     @GetMapping("/personajes")
-    public String personajes(@RequestParam("uid") Long uid, Model model) {
-        UsuarioDto usuario = usuarioService.buscarPorId(uid);
-        List<Personaje> personajes = personajeService.listarPorUsuario(uid);
+    public String personajes(org.springframework.security.core.Authentication auth, Model model) {
+
+        // username del usuario autenticado
+        String username = auth.getName();
+
+        // aquí necesitas un método en UsuarioService que busque por username
+        UsuarioDto usuario = usuarioService.buscarPorUsername(username);
+
+        List<Personaje> personajes = personajeService.listarPorUsuario(usuario.getId());
 
         model.addAttribute("usuario", usuario);
-        model.addAttribute("usuarioId", uid);
+        model.addAttribute("usuarioId", usuario.getId());
         model.addAttribute("personajes", personajes);
 
         return "personajes";
     }
     
     @PostMapping("/personajes/crear")
-    public String crear(@RequestParam Long usuarioId,
-                        @RequestParam String nombre,
-                        @RequestParam String raza) {
+    public String crear(@RequestParam String nombre,
+                        @RequestParam String raza,
+                        org.springframework.security.core.Authentication auth) {
 
-        personajeService.crearYGuardar(usuarioId, nombre, raza);
-        return "redirect:/personajes?uid=" + usuarioId;
+        String username = auth.getName();
+        UsuarioDto usuario = usuarioService.buscarPorUsername(username);
+
+        personajeService.crearYGuardar(usuario.getId(), nombre, raza);
+
+        return "redirect:/personajes";
     }
     
 //    @GetMapping("/personaje/{id}")

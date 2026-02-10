@@ -11,6 +11,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
+	
+	private final CustomAuthFailureHandler customAuthFailureHandler;
+
+	public SecurityConfig(CustomAuthFailureHandler customAuthFailureHandler) {
+	    this.customAuthFailureHandler = customAuthFailureHandler;
+	}
 
 	// Deshabilitar la seguridad para permitir el acceso sin autenticación
 	// Esto es útil para desarrollo o aplicaciones públicas
@@ -25,11 +31,12 @@ public class SecurityConfig {
         	    .anyRequest().authenticated()
         	)
         .formLogin(form -> form
-            .loginPage("/")              // tu página index.html
-            .loginProcessingUrl("/login")
-            .defaultSuccessUrl("/home", true)
-            .permitAll()
-        )
+        	    .loginPage("/")
+        	    .loginProcessingUrl("/login")
+        	    .defaultSuccessUrl("/home", true)
+        	    .failureHandler(customAuthFailureHandler)   // 👈
+        	    .permitAll()
+        	)
         .logout(logout -> logout
             .logoutUrl("/logout")        // POST /logout
             .logoutSuccessUrl("/")       // vuelve al login
