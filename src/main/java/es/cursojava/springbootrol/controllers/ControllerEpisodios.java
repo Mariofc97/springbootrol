@@ -48,6 +48,7 @@ public class ControllerEpisodios {
 	    model.addAttribute("personaje", p);
 	    model.addAttribute("acciones", acciones.getLog());
 	    model.addAttribute("uid", uid);
+	    model.addAttribute("pid", id); // ✅
 
 	    int episodioJugado = Math.max(1, p.getEpisodioActual() - 1);
 	    return "episodio" + episodioJugado + "_resultado";
