@@ -131,7 +131,7 @@ public class Episodio1 {
 
                 case 5: {
                     try {
-                    	String msg = JuegoActions.buscarObjeto(personaje);
+                    	String msg = JuegoActions.buscarObjeto(personaje, acciones);
                     	acciones.add("Buscaste materiales en la cueva. " + msg);
                     } catch (Exception e) {
                         acciones.add("Error al buscar materiales.");

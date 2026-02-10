@@ -988,16 +988,13 @@ public class JuegoActions {
 	}
 
 	public static Personaje buscarBaya(Personaje personaje, AccionesEpisodio acciones) {
-	    if (personaje == null || personaje.getId() == null) {
-	        return personaje;
-	    }
+	    if (personaje == null) return null;
 
 	    int tirada = JuegoActions.dadoDiez();
 
-	    // baya venenosa: solo afecta a PV en memoria
 	    if (tirada <= 3) {
 	        personaje.setPuntosVida(personaje.getPuntosVida() - 5);
-	        acciones.add("Te comes una baya venenosa y piedes 5 PV");
+	        acciones.add("Te comes una baya venenosa y pierdes 5 PV.");
 	        return personaje;
 	    }
 
@@ -1007,6 +1004,9 @@ public class JuegoActions {
 	        personaje.addEquipamiento(new Baya());
 	        acciones.add("Has conseguido una Baya!");
 	    }
+
+	    personaje.ganarExperiencia(10, acciones);
+	    acciones.add("Ganas 10 EXP por recolectar bayas.");
 
 	    return personaje;
 	}
@@ -1085,6 +1085,8 @@ public class JuegoActions {
 
 	    if (!enemigo.estaVivo()) {
 	        acciones.add("¡Has ganado el combate!");
+	        p.ganarExperiencia(40, acciones);          
+	        acciones.add("Ganas 40 EXP.");
 	        return true;
 	    } else {
 	        acciones.add("Has perdido el combate (o se alargó demasiado y escapaste).");
@@ -1092,34 +1094,43 @@ public class JuegoActions {
 	    }
 	}
 	
-	public static String buscarObjeto(Personaje personaje) {
+	public static String buscarObjeto(Personaje personaje, AccionesEpisodio acciones) {
+	    if (personaje == null) return "Error: personaje no válido.";
 
 	    int tirada = dadoDiez();
 
 	    if (tirada <= 2) {
 	        personaje.setPuntosVida(personaje.getPuntosVida() - 5);
+	        acciones.add("Metiste la mano en un agujero... era una serpiente. Pierdes 5 PV.");
 	        return "Metiste la mano en un agujero... era una serpiente. Pierdes 5 PV.";
 	    }
 
 	    int tirada2 = dadoDiez();
+	    String msg;
 
 	    if (tirada2 <= 2) {
 	        personaje.addEquipamiento(new MojonSeco());
-	        return "Encontraste un Mojón Seco.";
+	        msg = "Encontraste un Mojón Seco.";
 	    } else if (tirada2 <= 4) {
 	        personaje.addEquipamiento(new Cuerda());
-	        return "Encontraste una Cuerda.";
+	        msg = "Encontraste una Cuerda.";
 	    } else if (tirada2 <= 6) {
 	        personaje.addEquipamiento(new Piedra());
-	        return "Encontraste una Piedra.";
+	        msg = "Encontraste una Piedra.";
 	    } else if (tirada2 <= 8) {
 	        personaje.addEquipamiento(new Palo());
-	        return "Encontraste un Palo.";
+	        msg = "Encontraste un Palo.";
 	    } else {
 	        personaje.addEquipamiento(new HojaParaLimpiar());
-	        return "Encontraste una Hoja Para Limpiar.";
+	        msg = "Encontraste una Hoja Para Limpiar.";
 	    }
+
+	    personaje.ganarExperiencia(20, acciones);
+	    acciones.add("Ganas 20 EXP por explorar.");
+
+	    return msg;
 	}
+
 
 
 //	public static Personaje buscarObjeto(Personaje personaje) {

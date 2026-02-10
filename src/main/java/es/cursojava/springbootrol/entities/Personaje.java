@@ -5,6 +5,7 @@ import java.util.List;
 import es.cursojava.springbootrol.core.Atacable;
 import es.cursojava.springbootrol.core.Defendible;
 import es.cursojava.springbootrol.entities.criatura.Criatura;
+import es.cursojava.springbootrol.entities.episodios.AccionesEpisodio;
 import es.cursojava.springbootrol.entities.equipo.Equipamiento;
 import es.cursojava.springbootrol.entities.equipo.armas.Armas;
 import es.cursojava.springbootrol.entities.equipo.escudos.Escudos;
@@ -361,51 +362,41 @@ public class Personaje implements Atacable, Defendible {
 		return Math.max(0, escudo.getPuntosResistencia());
 	}
 	
-	public int getExpRestanteParaSubir() {
-	    return experienciaParaSiguienteNivel() - experiencia;
-	}
-	
-	public void ganarExperiencia() {
-		ganarExperiencia(10); // por defecto gana 10 puntos de experiencia
-	}
 
 	public void ganarExperiencia(int experienciaAñadida) {
-		if (experienciaAñadida <= 0) {
-			System.out.println("El personaje no puede perder experiencia");
-			return;
-		}
-
-		System.out.println("El personaje " + nombre + " gana " + experienciaAñadida + " de experiencia.");
-		this.experiencia += experienciaAñadida;
-		System.out.println("Experiencia acumulada: " + experiencia);
-		subirNivelSiToca();
+	    ganarExperiencia(experienciaAñadida, null);
 	}
 
-	// sencillo, se sube de nivel cada 100 puntos de experiencia.
+	public void ganarExperiencia(int experienciaAñadida, AccionesEpisodio acciones) {
+	    if (experienciaAñadida <= 0) {
+	        if (acciones != null) acciones.add("No puedes perder experiencia.");
+	        return;
+	    }
+
+	    this.experiencia += experienciaAñadida;
+	    subirNivelSiToca(acciones);
+	}
 
 	private int experienciaParaSiguienteNivel() {
-		return nivel * 100;
+	    return nivel * 100;
 	}
-	
 
-	public void subirNivelSiToca() {
+	private void subirNivelSiToca(AccionesEpisodio acciones) {
+	    boolean haSubido = false;
 
-		boolean haSubido = false;
+	    while (this.experiencia >= experienciaParaSiguienteNivel()) {
+	        this.experiencia -= experienciaParaSiguienteNivel();
+	        this.nivel++;
+	        haSubido = true;
 
-		while (this.experiencia >= experienciaParaSiguienteNivel()) {
-			this.experiencia -= experienciaParaSiguienteNivel();
-			this.nivel++;
-			haSubido = true;
+	        this.puntosVidaMax += 10;
+	        this.puntosAtaque += 2;
+	    }
 
-			this.puntosVidaMax += 10;
-			this.puntosAtaque += 2;
-
-		}
-
-		if (haSubido) {
-			System.out.println("¡" + nombre + " ha subido al nivel " + nivel + "!");
-			System.out.println("Vida máxima: " + puntosVidaMax + " | Ataque: " + puntosAtaque);
-		}
+	    if (haSubido && acciones != null) {
+	        acciones.add("¡" + nombre + " ha subido al nivel " + nivel + "!");
+	        acciones.add("Vida máxima: " + puntosVidaMax + " | Ataque: " + puntosAtaque);
+	    }
 	}
 
 	@Override

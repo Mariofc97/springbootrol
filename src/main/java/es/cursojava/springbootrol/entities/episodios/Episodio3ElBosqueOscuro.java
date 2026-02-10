@@ -60,7 +60,7 @@ public class Episodio3ElBosqueOscuro {
 			switch (opcion) {
 
 			case 1: {
-				personaje = JuegoActions.buscarBaya(personaje);
+				personaje = JuegoActions.buscarBaya(personaje, acciones);
 
 				if (!controladorJabali) {
 
@@ -103,7 +103,7 @@ public class Episodio3ElBosqueOscuro {
 				try {
 					int expAntes = personaje.getExperiencia();
 					acciones.add("Intentando cazar...");
-					personaje = JuegoActions.cazar(personaje);
+                    JuegoActions.cazar(personaje, acciones); 
 
 					if (personaje.getExperiencia() > expAntes) {
 						acciones.add("Caza realizada con éxito.");
@@ -188,7 +188,7 @@ public class Episodio3ElBosqueOscuro {
 
 			case 5: {
 				try {
-					personaje = JuegoActions.buscarObjeto(personaje);
+					JuegoActions.buscarObjeto(personaje, acciones);
 					LOGGER.info("El personaje " + personaje.getNombre() + " ha buscado un objeto.");
 				} catch (Exception e) {
 					LOGGER.log(Level.SEVERE, "Error al buscar objeto", e);
