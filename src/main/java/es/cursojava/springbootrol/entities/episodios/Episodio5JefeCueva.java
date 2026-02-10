@@ -1,17 +1,13 @@
 package es.cursojava.springbootrol.entities.episodios;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import es.cursojava.springbootrol.entities.Personaje;
 import es.cursojava.springbootrol.entities.criatura.JefeDelClan;
+import es.cursojava.springbootrol.entities.criatura.PezPrehistoricoGigante;
 import es.cursojava.springbootrol.utilidades.JuegoActions;
 
 public class Episodio5JefeCueva {
-//combate con el jefe de clan, dos resultados pierdes la mayoria de las vez pero se te reconoce como miembro valioso del clan, recuperas tu familia.....
-	// ganas el combate... en un estado de locura matas al jefe brutalmente... y te
-	// das cuenta que ha sido un error, todo el clan té mira, con ojos de asombro,
-	// miedo, rechazo, no consigues nada, es más lo pierdes todo, eres desterrado.
 
 	private static final Logger LOGGER = Logger.getLogger(Episodio5JefeCueva.class.getName());
 	static {
@@ -22,84 +18,69 @@ public class Episodio5JefeCueva {
 
 		if (personaje == null) {
 			LOGGER.warning("Se llamó a episodio5 con Personaje null");
-			System.out.println("Error: personaje no proporcionado.");
+			acciones.add("Error: personaje no proporcionado.");
 			return;
 		}
 
-		// Aseguramos listas
-		if (personaje.getEquipo() == null) {
+		if (personaje.getEquipo() == null)
 			personaje.setEquipo(new java.util.ArrayList<>());
-		}
 
-		if (personaje.getCriaturas() == null) {
+		if (personaje.getCriaturas() == null)
 			personaje.setCriaturas(new java.util.ArrayList<>());
-		}
 
-		// Texto inicial (SIEMPRE se muestra)
-		System.out.println("Tras atravesar el bosque oscuro, llegas a un río caudaloso que bloquea tu camino. "
-				+ "El agua corre lentamente, limpia y clara... enseguida se te ocurren muchas cosas que podrías hacer.");
+		acciones.add("\"EPISODIO 5: El Jefe del Clan\"");
+		acciones.add("Tras superar todas las pruebas, regresas al Clan para enfrentarte al Jefe.");
+		acciones.add("El ambiente es tenso. Todos te observan. Ha llegado el momento de demostrar quién eres.");
 
 		boolean jefekey2 = false;
 		boolean salida = false;
 		int contadorCorrer = 0;
 		int contadorGolpes = 0;
 		int vidaInicial = personaje.getPuntosVida();
+
 		do {
 
-//			System.out.println("1. Salir corriendo por la presión\n" + "2. Darte golpes en el pecho\n"
-//					+ "3. Descansar\n" + "4. Invocar criaturas\n" + "5. Inventario y estado\n" + "6. Fabricar\n"
-//					+ "7. Buscar materiales\n" + "8. Desafiar Jefe del Clan");
+			int opcion = (int) (Math.random() * 6) + 1;
 
-			int opcion = (int) (Math.random() * 6) + 1; // genera entre 1 y 6
 			switch (opcion) {
 
-			case 1: {// si corres más de 5 veces pierdes todos los aunemntos y no puedes hacer más
-
+			case 1: {
 				if (contadorCorrer > 5) {
-					acciones.add(
-							"Como no lloron, encima cobarde... pierdes todas los aumentos de vida y ya no podras tener más aumentos de vida. ");
+					acciones.add("Corres demasiado. El clan te llama cobarde. Pierdes todos los aumentos de vida.");
 					personaje.setPuntosVida(vidaInicial);
-
 				} else {
-					acciones.add(
-							"Sales corriendo presa del miedo, llorando... pero algo cambia en ti, te paras respiras y empiezas a dominar la congoja, vuelves con + 50 en vida.");
+					acciones.add("Huyes presa del miedo, pero algo cambia en ti. Regresas con +50 de vida.");
 					contadorCorrer++;
-					int vidaSubida = personaje.getPuntosVida() + 50;
-					personaje.setPuntosVida(vidaSubida);
-
+					personaje.setPuntosVida(personaje.getPuntosVida() + 50);
 				}
 				break;
 			}
 
 			case 2: {
-
 				if (contadorGolpes > 5) {
-					acciones.add(
-							"Eres un bruto te has golpeado tanto que te has roto dos costillas, tu vida es 1 y ya no podras tener más aumentos de ataque y pierdes todos los aumentos de vida.");
+					acciones.add("Te golpeas demasiado fuerte. Te rompes dos costillas. Vida reducida a 1.");
 					personaje.setPuntosVida(1);
-
 				} else {
-					acciones.add(
-							"Golpeas tu pecho y ruges. El clan te observa con atención demuestra lo que vales!!!! Ganas +10 en ataque");
+					acciones.add("Golpeas tu pecho y ruges. El clan te observa. +10 ataque.");
 					contadorGolpes++;
-					int ataqueSubido = personaje.getPuntosAtaque() + 10;
-					personaje.setPuntosAtaque(ataqueSubido);
-
+					personaje.setPuntosAtaque(personaje.getPuntosAtaque() + 10);
 				}
-
 				break;
 			}
 
 			case 3: {
 				JuegoActions.recuperarVida(personaje, acciones);
-				acciones.add(
-						"Has descansado y recuperado toda la vida, si tenias aumentos en la vida se a pasado el efecto.");
-				// LOGGER.info("Descanso completo de: " + personaje.getNombre());
+				acciones.add("Descansas y recuperas toda la vida. Los aumentos temporales desaparecen.");
 				break;
 			}
 
 			case 4: {
-				JuegoActions.invocarTodasCriaturas(personaje);
+				if (JuegoActions.dadoDiez() <= 5) {
+					JuegoActions.invocarLoboJabali(personaje, acciones);
+				} else {
+					acciones.add("Invocas a tu PezPrehistoricoGigante. Emerge del agua y se une a ti.");
+					personaje.getCriaturas().add(new PezPrehistoricoGigante());
+				}
 				break;
 			}
 
@@ -107,24 +88,25 @@ public class Episodio5JefeCueva {
 				try {
 					JuegoActions.buscarObjeto(personaje, acciones);
 				} catch (Exception e) {
-					// LOGGER.log(Level.SEVERE, "Error al buscar objeto", e);
 					acciones.add("No se pudo buscar el objeto.");
 				}
 				break;
 			}
 
 			case 6: {
-				acciones.add("Te preparas para desafiar al jefe del clan...");
-				// aquí irá el combate
-				JefeDelClan jefedelclan = new JefeDelClan();
-				Boolean resultadoFinal = JuegoActions.combateAuto(personaje, jefedelclan, acciones);
+				acciones.add("Te preparas para desafiar al Jefe del Clan...");
+				JefeDelClan jefe = new JefeDelClan();
+				boolean resultadoFinal = JuegoActions.combateAuto(personaje, jefe, acciones);
 				jefekey2 = true;
+
 				if (resultadoFinal) {
-					acciones.add(
-							"En un ataque de locura matas al Jefe del clan, pero a locura no cesa, te acuerdas todo lo que te han hecho y cuando todo termina, estas ensangrentado de pies a cabeza, te das cuenta de algo..... Has matado a todo el clan.\n A partir de ahora seras un errante sin clan consumido por la verguenza.");
+					acciones.add("La locura te domina. Matas al Jefe del Clan... y luego a todos los presentes.\n"
+							+ "Cuando recuperas la cordura, estás solo, cubierto de sangre.\n"
+							+ "Has perdido todo. Eres desterrado para siempre.");
 				} else {
-					acciones.add(
-							"Has luchado con honor, de repente te despiertas, estas en el suelo y el Jefe te dice unas palabras:\nHas cambiado mucho, ahora tienes honor, y lo has demostrado. Vuelve con nosotros, eres de nuetro Clan, recuperaras todo, tu familia y posicón.\n Y desde entonces vives orgulloso con tu familia y tu Clan!");
+					acciones.add("Caes derrotado, pero el Jefe te ayuda a levantarte.\n"
+							+ "\"Has cambiado. Ahora tienes honor\", dice.\n"
+							+ "El Clan te acepta de nuevo. Recuperas tu familia y tu lugar.");
 				}
 
 				break;
@@ -134,10 +116,10 @@ public class Episodio5JefeCueva {
 				acciones.add("Opción no válida.");
 			}
 
-			// solo cuando se ha pasado por case 1 y case 2
 			salida = jefekey2;
 
 		} while (!salida);
 
+		acciones.add("Fin del episodio 5.");
 	}
 }
