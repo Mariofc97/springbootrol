@@ -543,8 +543,58 @@ public class JuegoActions {
 
 		System.out.println(enemigo.getNombre() + " PV: " + enemigo.getPuntosVida());
 	}
+	public static void invocarLoboJabali(Personaje person, AccionesEpisodio acciones) {
 
-	public static void invocarLoboJabali(Personaje person) {
+	    if (person == null) {
+	        acciones.add("Error: personaje no válido.");
+	        return;
+	    }
+
+	    int tirada = JuegoActions.dadoDiez();
+
+	    // Fallo crítico invocando lobo
+	    if (tirada == 1) {
+	        acciones.add("Mientras invocas al lobo, un mosquito te pica y te distrae. "
+	                + "El lobo se enfada y te ataca.");
+	        JuegoActions.combateAuto(person, new Lobo(), acciones);
+	        return;
+	    }
+
+	    // Fallo crítico invocando jabalí
+	    if (tirada == 9) {
+	        acciones.add("Mientras invocas al jabalí, un ratón te asusta y te distrae. "
+	                + "El jabalí se enfada y te ataca.");
+	        JuegoActions.combateAuto(person, new Jabali(), acciones);
+	        return;
+	    }
+
+	    // Éxito: decidir criatura según tirada
+	    if (tirada > 1 && tirada < 5) {
+
+	        acciones.add("Has invocado correctamente a un lobo.");
+
+	        Lobo nuevo = new Lobo();
+	        nuevo.setNombre("Lobo");
+	        person.getCriaturas().add(nuevo);
+
+	        acciones.add("Tu nuevo compañero lobo se llama: Lobo");
+
+	    } else {
+
+	        acciones.add("Has invocado correctamente a un jabalí.");
+
+	        Jabali nuevo = new Jabali();
+	        nuevo.setNombre("Jabalí");
+	        person.getCriaturas().add(nuevo);
+
+	        acciones.add("Tu nuevo compañero jabalí se llama: Jabalí");
+	    }
+
+	    acciones.add("La invocación ha sido un éxito.");
+	}
+
+
+	public static void invocarLoboJabaliPersistido(Personaje person, AccionesEpisodio acciones) {
 
 		if (person == null || person.getId() == null) {
 			System.out.println("Error: personaje no válido o no persistido.");

@@ -1,9 +1,6 @@
 package es.cursojava.springbootrol.entities.episodios;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.springframework.security.crypto.codec.Utf8;
 
 import es.cursojava.springbootrol.entities.Personaje;
 import es.cursojava.springbootrol.entities.criatura.Jabali;
@@ -12,7 +9,6 @@ import es.cursojava.springbootrol.entities.equipo.Equipamiento;
 import es.cursojava.springbootrol.entities.equipo.armas.Trampa;
 import es.cursojava.springbootrol.entities.equipo.objetos.Baya;
 import es.cursojava.springbootrol.entities.equipo.objetos.CarneSeca;
-import es.cursojava.springbootrol.exceptions.ReglaJuegoException;
 import es.cursojava.springbootrol.utilidades.JuegoActions;
 
 public class Episodio3ElBosqueOscuro {
@@ -22,8 +18,7 @@ public class Episodio3ElBosqueOscuro {
 		LOGGER.setUseParentHandlers(false);
 	}
 
-	public  void episodio3ElBosqueOscuro(Personaje personaje, AccionesEpisodio acciones)
-			throws ReglaJuegoException {
+	public void episodio3ElBosqueOscuro(Personaje personaje, AccionesEpisodio acciones) {
 
 		if (personaje == null) {
 			LOGGER.warning("Se llamó a episodio3ElBosqueOscuro con Personaje null");
@@ -211,7 +206,7 @@ public class Episodio3ElBosqueOscuro {
 
 			case 7: {
 				JuegoActions.recuperarVida(personaje, acciones);
-				//LOGGER.info("Descanso. Personaje: " + personaje.getNombre());
+				// LOGGER.info("Descanso. Personaje: " + personaje.getNombre());
 				bosqueOscurokey2 = true;
 			}
 				break;
@@ -220,7 +215,7 @@ public class Episodio3ElBosqueOscuro {
 				if (controladorAtaqueLobo && controladorJabali) {
 					acciones.add("Ya puedes invocar a tu lobo o jabalí compañero.");
 					bosqueOscurokey3 = true;
-					JuegoActions.invocarLoboJabali(personaje);
+					JuegoActions.invocarLoboJabali(personaje, acciones);
 					// personaje = Utils.recargarPersonaje(personaje.getId());
 				} else {
 					acciones.add("Aún no has derrotado a un lobo y un jabalí, no puedes invocarlos.");
