@@ -30,7 +30,8 @@ public class Episodio4Rio {
 		if (personaje.getEquipo() == null) {
 			try {
 				personaje.setEquipo(new java.util.ArrayList<>());
-				LOGGER.info("Se inicializó la lista de equipo para el personaje: " + personaje.getNombre());
+				// LOGGER.info("Se inicializó la lista de equipo para el personaje: " +
+				// personaje.getNombre());
 			} catch (Exception e) {
 				LOGGER.log(Level.WARNING, "No se pudo inicializar la lista de equipo", e);
 			}
@@ -39,7 +40,8 @@ public class Episodio4Rio {
 		if (personaje.getCriaturas() == null) {
 			try {
 				personaje.setCriaturas(new java.util.ArrayList<>());
-				LOGGER.info("Se inicializó la lista de criaturas para el personaje: " + personaje.getNombre());
+				// LOGGER.info("Se inicializó la lista de criaturas para el personaje: " +
+				// personaje.getNombre());
 			} catch (Exception e) {
 				LOGGER.log(Level.WARNING, "No se pudo inicializar la lista de criaturas", e);
 			}
@@ -90,7 +92,8 @@ public class Episodio4Rio {
 				if (!tieneCana) {
 					acciones.add("Intentas pescar, pero sin una caña es imposible.");
 					acciones.add("Necesitas fabricar o encontrar una caña de pescar.");
-					LOGGER.info("El personaje " + personaje.getNombre() + " intentó pescar sin caña.");
+					// LOGGER.info("El personaje " + personaje.getNombre() + " intentó pescar sin
+					// caña.");
 
 				} else {
 					acciones.add("Lanzas la caña al río y esperas pacientemente...");
@@ -107,7 +110,7 @@ public class Episodio4Rio {
 						// personaje = Utils.recargarPersonaje(personaje.getId());
 						Riokey1 = true;
 
-						LOGGER.info("El personaje " + personaje.getNombre() + " pescó un Siluro.");
+						// LOGGER.info("El personaje " + personaje.getNombre() + " pescó un Siluro.");
 					}
 
 				}
@@ -126,6 +129,10 @@ public class Episodio4Rio {
 					if (resultado) {
 						Riokey2 = true;
 						pezPrehistoricoGigante = true;
+					} else {
+						acciones.add("El PezPrehistoricoGigante te ha herido, pero logras escapar con vida.");
+						// LOGGER.info("El personaje " + personaje.getNombre() + " fue herido por el
+						// PezPrehistoricoGigante pero escapó con vida.");
 					}
 				}
 			}
@@ -151,7 +158,7 @@ public class Episodio4Rio {
 				try {
 					JuegoActions.buscarObjeto(personaje, acciones);
 				} catch (Exception e) {
-					LOGGER.log(Level.SEVERE, "Error al buscar objeto", e);
+					// LOGGER.log(Level.SEVERE, "Error al buscar objeto", e);
 					acciones.add("No se pudo buscar el objeto.");
 				}
 			}
@@ -201,7 +208,7 @@ public class Episodio4Rio {
 			}
 
 		} while (!salida);
-        acciones.add("Fin del episodio 4.");
+		acciones.add("Fin del episodio 4.");
 
 	}
 }

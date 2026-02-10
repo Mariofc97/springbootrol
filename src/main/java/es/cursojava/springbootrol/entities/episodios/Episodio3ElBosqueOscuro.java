@@ -107,10 +107,11 @@ public class Episodio3ElBosqueOscuro {
 
 					if (personaje.getExperiencia() > expAntes) {
 						acciones.add("Caza realizada con éxito.");
-						LOGGER.info("El personaje " + personaje.getNombre() + " ha cazado con éxito.");
+						// LOGGER.info("El personaje " + personaje.getNombre() + " ha cazado con
+						// éxito.");
 					}
 				} catch (Exception e) {
-					LOGGER.log(Level.SEVERE, "Error al cazar", e);
+					// LOGGER.log(Level.SEVERE, "Error al cazar", e);
 					acciones.add("No se pudo cazar.");
 				}
 			}
@@ -138,7 +139,7 @@ public class Episodio3ElBosqueOscuro {
 					int expAntes = personaje.getExperiencia();
 
 					// Combate simulado (opción 1)
-					boolean ganado = JuegoActions.dadoDiez() >= 4;
+					boolean ganado = JuegoActions.combateAuto(personaje, lobo, acciones);
 
 					if (ganado) {
 						acciones.add("Has sobrevivido al ataque del lobo y conseguido el conejo.");
@@ -148,6 +149,11 @@ public class Episodio3ElBosqueOscuro {
 						personaje.addEquipamiento(new CarneSeca());
 
 						bosqueOscurokey1 = true;
+					} else {
+						acciones.add(
+								"El lobo te ha herido, pero logras escapar con vida. Sin embargo, no consigues el conejo.");
+						// LOGGER.info("El personaje " + personaje.getNombre() + " fue herido por el
+						// lobo pero escapó con vida.");
 					}
 
 				} else {
@@ -168,12 +174,13 @@ public class Episodio3ElBosqueOscuro {
 						personaje.addEquipamiento(new Trampa());
 						acciones.add("Has fabricado una trampa.");
 					} catch (Exception e) {
-						LOGGER.log(Level.SEVERE, "Error al fabricar", e);
+						// LOGGER.log(Level.SEVERE, "Error al fabricar", e);
 						acciones.add("No se pudo fabricar.");
 					}
 				} else {
 					acciones.add("Intentaste fabricar una trampa, pero no tuviste éxito.");
-					LOGGER.info("El personaje " + personaje.getNombre() + " intentó fabricar una trampa sin éxito.");
+					// LOGGER.info("El personaje " + personaje.getNombre() + " intentó fabricar una
+					// trampa sin éxito.");
 				}
 			}
 				break;
@@ -181,9 +188,10 @@ public class Episodio3ElBosqueOscuro {
 			case 5: {
 				try {
 					JuegoActions.buscarObjeto(personaje, acciones);
-					LOGGER.info("El personaje " + personaje.getNombre() + " ha buscado un objeto.");
+					// LOGGER.info("El personaje " + personaje.getNombre() + " ha buscado un
+					// objeto.");
 				} catch (Exception e) {
-					LOGGER.log(Level.SEVERE, "Error al buscar objeto", e);
+					// LOGGER.log(Level.SEVERE, "Error al buscar objeto", e);
 					acciones.add("No se pudo buscar el objeto.");
 				}
 			}
@@ -193,6 +201,8 @@ public class Episodio3ElBosqueOscuro {
 				if (bosqueOscurokey1 && bosqueOscurokey2 && bosqueOscurokey3) {
 					salida = true;
 					acciones.add("Ya puedes ir al río.");
+					// acaba el episodio 3 y empieza el episodio 4
+
 				} else {
 					acciones.add("Aún no cumples los requisitos para avanzar.");
 				}
@@ -201,7 +211,7 @@ public class Episodio3ElBosqueOscuro {
 
 			case 7: {
 				JuegoActions.recuperarVida(personaje, acciones);
-				LOGGER.info("Descanso. Personaje: " + personaje.getNombre());
+				//LOGGER.info("Descanso. Personaje: " + personaje.getNombre());
 				bosqueOscurokey2 = true;
 			}
 				break;
