@@ -2,59 +2,65 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Mis Personajes</title>
-    <link rel="stylesheet" href="/css/style.css">
+<meta charset="UTF-8">
+<title>Mis Personajes</title>
+<link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
-    <div class="container">
-        <h1>Mis Personajes</h1>
-        <h3 th:if="${usuario != null}" th:text="'Bienvenido, ' + ${usuario.username}">User</h3>
+	<div class="container">
+		<h1>Mis Personajes</h1>
+		<h3 th:if="${usuario != null}"
+			th:text="'Bienvenido, ' + ${usuario.username}">User</h3>
 
-        <!-- ✅ FORMULARIO CREAR PERSONAJE -->
-        <div class="card" style="margin-bottom: 20px;">
-            <h2>Crear personaje</h2>
+		<!-- ✅ FORMULARIO CREAR PERSONAJE -->
+		<div class="card" style="margin-bottom: 20px;">
+			<h2>Crear personaje</h2>
 
-            <p th:if="${error}" th:text="${error}" style="color:red;"></p>
+			<p th:if="${error}" th:text="${error}" style="color: red;"></p>
 
-            <form th:action="@{/personajes/crear}" method="post">
-                <input type="hidden" name="usuarioId" th:value="${usuarioId}" />
+			<form th:action="@{/personajes/crear}" method="post">
+				<input type="hidden" name="usuarioId" th:value="${usuarioId}" />
 
-                <div style="margin-bottom: 10px;">
-                    <label>Nombre:</label><br>
-                    <input type="text" name="nombre" required />
-                </div>
+				<div style="margin-bottom: 10px;">
+					<label>Nombre:</label><br> <input type="text" name="nombre"
+						required />
+				</div>
 
-                <div style="margin-bottom: 10px;">
-                    <label>Raza:</label><br>
-                    <select name="raza" required>
-                        <option value="Mongol">Mongol</option>
-                        <option value="RapaNui">Rapa Nui</option>
-                        <option value="Troglodita">Troglodita</option>
-                    </select>
-                </div>
+				<div style="margin-bottom: 10px;">
+					<label>Raza:</label><br> <select name="raza" required>
+						<option value="Mongol">Mongol</option>
+						<option value="RapaNui">Rapa Nui</option>
+						<option value="Troglodita">Troglodita</option>
+					</select>
+				</div>
 
-                <button type="submit" class="btn">Crear</button>
-            </form>
-        </div>
+				<button type="submit" class="btn">Crear</button>
+			</form>
+		</div>
 
-        <!-- ✅ LISTA DE PERSONAJES -->
-        <div class="personajes-grid">
-            <div th:each="p : ${personajes}" class="card">
-                <h2 th:text="${p.nombre}">Nombre</h2>
-                <p>Nivel: <span th:text="${p.nivel}">1</span></p>
-                <p>Raza: <span th:text="${p.razaTipo}"></span></p>
-                <a th:href="@{/home(uid=${usuario.id},pid=${p.id})}" class="btn">Seleccionar</a>
-            </div>
+		<!-- ✅ LISTA DE PERSONAJES -->
+		<div class="personajes-grid">
+			<div th:each="p : ${personajes}" class="card">
+				<h2 th:text="${p.nombre}">Nombre</h2>
+				<p>
+					Nivel: <span th:text="${p.nivel}">1</span>
+				</p>
+				<p>
+					Raza: <span th:text="${p.razaTipo}"></span>
+				</p>
+				<a th:href="@{/home(pid=${p.id})}" class="btn">Seleccionar</a>
+			</div>
 
-            <div th:if="${personajes.empty}">
-                <p>No tienes personajes aún.</p>
-            </div>
-        </div>
+			<div th:if="${personajes.empty}">
+				<p>No tienes personajes aún.</p>
+			</div>
+		</div>
 
-        <a href="/" class="btn-secondary">Cerrar Sesión</a>
-    </div>
+		<form th:action="@{/logout}" method="post">
+			<button type="submit" class="btn-secondary">Cerrar sesión</button>
+		</form>
+	</div>
 </body>
 
 </html>

@@ -7,11 +7,6 @@
 <p th:text="'Nivel: ' + ${personaje.nivel}"></p>
 <p th:text="'PV: ' + ${personaje.puntosVida} + '/' + ${personaje.puntosVidaMax}"></p>
 
-<a th:href="@{/episodio1/{id}(id=${personaje.id},uid=${uid})}">Ir a Episodio 1</a>
-<br/>
-<a th:href="@{/episodio2/{id}(id=${personaje.id},uid=${uid})}">Ir a Episodio 2</a>
-<br/><br/>
-
-<a th:href="@{/}">Volver al menú</a>
+<a th:href="@{/home(pid=${personaje.id})}">Volver al menú</a>
 </body>
 </html>

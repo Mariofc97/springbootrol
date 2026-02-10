@@ -1,47 +1,82 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-<meta charset="UTF-8">
-<title>Menú principal</title>
-<link rel="stylesheet" href="/css/style.css">
+  <meta charset="UTF-8">
+  <title>Menú principal</title>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Extra look "juego" (puedes moverlo a style.css) -->
+  <style>
+    body { background: radial-gradient(circle at top, #1b2735 0%, #090a0f 100%); color:#eaeaea; }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+    .title { font-size: 2rem; letter-spacing: .5px; margin-bottom: 6px; }
+    .subtitle { opacity: .85; margin-bottom: 18px; }
+    .card { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 18px; box-shadow: 0 12px 30px rgba(0,0,0,.35); backdrop-filter: blur(6px); }
+    .row { display:flex; gap:12px; flex-wrap: wrap; margin-top: 12px; }
+    .btn, .btn-secondary { display:inline-block; padding: 10px 14px; border-radius: 10px; text-decoration:none; border: 1px solid rgba(255,255,255,.18); }
+    .btn { background: linear-gradient(135deg, #7c3aed, #2563eb); color:#fff; }
+    .btn:hover { filter: brightness(1.05); }
+    .btn-secondary { background: rgba(255,255,255,.08); color:#fff; }
+    .btn-secondary:hover { background: rgba(255,255,255,.12); }
+    .badge { display:inline-block; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.14); font-size: .85rem; }
+    .divider { height:1px; background: rgba(255,255,255,.12); margin: 14px 0; }
+    form { margin: 0; }
+  </style>
 </head>
+
 <body>
-	<div class="container">
-		<h1>Menú principal</h1>
+<div class="container">
 
-		<h3 th:text="'Bienvenido, ' + ${usuario.username}">Bienvenido</h3>
+  <h1 class="title">Menú principal</h1>
 
-		<div class="card" style="margin-top: 20px;">
-			<h2>Personaje</h2>
+  <!-- Puedes mostrar el username del principal si quieres: -->
+  <div class="subtitle">
+    Bienvenido, <b th:text="${usuario.username}">usuario</b>
+    <span class="badge" style="margin-left:10px"
+          sec:authentication="principal.authorities">ROL</span>
+  </div>
 
-			<p th:if="${personaje == null}">No has seleccionado ningún
-				personaje todavía.</p>
+  <!-- ✅ Botón SOLO para ADMINISTRADOR -->
+  <div class="row" style="margin-bottom: 14px;" sec:authorize="hasRole('ADMINISTRADOR')">
+    <a class="btn" th:href="@{/admin}">Panel de administración</a>
+  </div>
 
-			<div th:if="${personaje != null}">
-				<p>
-					<b>Seleccionado:</b> <span th:text="${personaje.nombre}">Nombre</span>
-				</p>
-				<p>
-					<b>Nivel:</b> <span th:text="${personaje.nivel}">1</span>
-				</p>
-				<p>
-					<b>Episodio actual:</b> <span th:text="${personaje.episodioActual}">1</span>
-				</p>
-			</div>
+  <div class="card" style="margin-top: 10px;">
+    <h2 style="margin-top:0;">Personaje</h2>
 
-			<a class="btn" th:href="@{/personajes(uid=${uid})}">Crear /
-				Seleccionar personaje</a>
+    <p th:if="${personaje == null}">No has seleccionado ningún personaje todavía.</p>
 
-			<div th:if="${personaje != null}" style="margin-top: 12px;">
-				<a th:if="${pid != null}"
-					th:href="@{/episodio/actual/{id}(id=${pid},uid=${uid})}"> Jugar
-					episodio actual </a> <a class="btn-secondary"
-					th:href="@{/personaje_usuario/{id}(id=${personaje.id},uid=${uid})}">
-					Ver estado del personaje </a>
-			</div>
-		</div>
+    <div th:if="${personaje != null}">
+      <p><b>Seleccionado:</b> <span th:text="${personaje.nombre}">Nombre</span></p>
+      <p><b>Nivel:</b> <span th:text="${personaje.nivel}">1</span></p>
+      <p><b>Episodio actual:</b> <span th:text="${personaje.episodioActual}">1</span></p>
+    </div>
 
-		<br> <a class="btn-secondary" th:href="@{/}">Cerrar sesión</a>
-	</div>
+    <div class="divider"></div>
+
+    <div class="row">
+      <a class="btn" th:href="@{/personajes}">Crear / Seleccionar personaje</a>
+
+      <a class="btn-secondary" th:if="${pid != null}"
+         th:href="@{/episodio/actual/{id}(id=${pid})}">
+        Jugar episodio actual
+      </a>
+
+      <a class="btn-secondary" th:if="${personaje != null}"
+         th:href="@{/personaje_usuario/{id}(id=${personaje.id})}">
+        Ver estado del personaje
+      </a>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top: 16px;">
+    <form th:action="@{/logout}" method="post">
+      <button type="submit" class="btn-secondary">Cerrar sesión</button>
+    </form>
+  </div>
+
+</div>
 </body>
 </html>
+

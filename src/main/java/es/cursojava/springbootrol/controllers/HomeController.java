@@ -2,10 +2,11 @@ package es.cursojava.springbootrol.controllers;
 
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -56,28 +57,16 @@ public class HomeController {
             return "registro";
         }
     }
-
-    @PostMapping("/login")
-    public String login(@RequestParam String username,
-                        @RequestParam String password,
-                        Model model) {
-        try {
-            UsuarioDto usuario = usuarioService.login(username, password);
-            return "redirect:/home?uid=" + usuario.getId();
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return "index";
-        }
-    }
     
     @GetMapping("/home")
-    public String homeUsuario(@RequestParam("uid") Long uid,
-                              @RequestParam(value = "pid", required = false) Long pid,
+    public String homeUsuario(@RequestParam(value = "pid", required = false) Long pid,
                               Model model) {
 
-        UsuarioDto usuario = usuarioService.buscarPorId(uid);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName(); // el username logueado
+
+        UsuarioDto usuario = usuarioService.buscarPorUsername(username); // <-- crea este método
         model.addAttribute("usuario", usuario);
-        model.addAttribute("uid", uid);
 
         if (pid != null) {
             try {
