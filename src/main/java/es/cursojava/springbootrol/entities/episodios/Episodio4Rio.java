@@ -7,7 +7,6 @@ import es.cursojava.springbootrol.entities.Personaje;
 import es.cursojava.springbootrol.entities.criatura.PezPrehistoricoGigante;
 import es.cursojava.springbootrol.entities.equipo.armas.CanaPescar;
 import es.cursojava.springbootrol.entities.equipo.objetos.CarneSeca;
-import es.cursojava.springbootrol.exceptions.ReglaJuegoException;
 import es.cursojava.springbootrol.utilidades.JuegoActions;
 
 public class Episodio4Rio {
@@ -19,7 +18,7 @@ public class Episodio4Rio {
 		LOGGER.setUseParentHandlers(false);
 	}
 
-	public  void episodio4Rio(Personaje personaje, AccionesEpisodio acciones) {
+	public void episodio4Rio(Personaje personaje, AccionesEpisodio acciones) {
 
 		if (personaje == null) {
 			LOGGER.warning("Se llamó a episodio4Rio con Personaje null");
