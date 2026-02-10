@@ -79,7 +79,7 @@ public class Episodio5JefeCueva {
 					JuegoActions.invocarLoboJabali(personaje, acciones);
 				} else {
 					acciones.add("Invocas a tu PezPrehistoricoGigante. Emerge del agua y se une a ti.");
-					personaje.getCriaturas().add(new PezPrehistoricoGigante());
+					personaje.addCriatura(new PezPrehistoricoGigante()); // ← CORREGIDO
 				}
 				break;
 			}

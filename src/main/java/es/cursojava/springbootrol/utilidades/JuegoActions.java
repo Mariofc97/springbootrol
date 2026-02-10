@@ -575,7 +575,7 @@ public class JuegoActions {
 
 	        Lobo nuevo = new Lobo();
 	        nuevo.setNombre("Lobo");
-	        person.getCriaturas().add(nuevo);
+	        person.addCriatura(nuevo);   // ← CORREGIDO: respeta la FK
 
 	        acciones.add("Tu nuevo compañero lobo se llama: Lobo");
 
@@ -585,13 +585,14 @@ public class JuegoActions {
 
 	        Jabali nuevo = new Jabali();
 	        nuevo.setNombre("Jabalí");
-	        person.getCriaturas().add(nuevo);
+	        person.addCriatura(nuevo);   // ← CORREGIDO: respeta la FK
 
 	        acciones.add("Tu nuevo compañero jabalí se llama: Jabalí");
 	    }
 
 	    acciones.add("La invocación ha sido un éxito.");
 	}
+
 
 
 	public static void invocarLoboJabaliPersistido(Personaje person, AccionesEpisodio acciones) {

@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Episodio 5</title>
+<meta charset="UTF-8">
+<title>Episodio 5</title>
 </head>
 
 <body>
 
-<h1 th:text="'Episodio 1 - ' + ${personaje.nombre}"></h1>
+	<h1 th:text="'Episodio 5 - ' + ${personaje.nombre}"></h1>
 
-<p>¿Quieres jugar el episodio 5?</p>
+	<p>¿Quieres jugar el episodio 5?</p>
 
-<form th:action="@{/episodio/actual/{id}/jugar(id=${personaje.id})}" method="post">
-  <button type="submit">Jugar Episodio</button>
-</form>
+	<form th:action="@{/episodio/actual/{id}/jugar(id=${personaje.id})}"
+		method="post">
+		<button type="submit">Jugar Episodio</button>
+	</form>
 
-<br>
+	<br>
 
-<a th:href="@{/personajes}">Salir</a>
+	<a th:href="@{/personajes}">Salir</a>
 
 </body>
 </html>

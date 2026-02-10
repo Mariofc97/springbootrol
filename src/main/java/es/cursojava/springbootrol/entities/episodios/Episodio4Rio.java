@@ -142,7 +142,7 @@ public class Episodio4Rio {
 
 				boolean tiradaFabricar = JuegoActions.dadoDiez() >= 3;
 				if (tiradaFabricar) {
-					personaje.getEquipo().add(new CanaPescar());
+					personaje.addEquipamiento(new CanaPescar());
 					acciones.add("Has fabricado una caña de pescar.");
 				} else {
 					acciones.add("Intentaste fabricar una caña de pescar, pero no tuviste éxito.");
@@ -193,7 +193,8 @@ public class Episodio4Rio {
 
 						acciones.add(
 								"Invocas a tu PezPrehistoricoGigante. Emerge del agua con un gran salto y se convierte en tu compañero.");
-						personaje.getCriaturas().add(new PezPrehistoricoGigante());
+
+						personaje.addCriatura(new PezPrehistoricoGigante()); // ← CORREGIDO
 					}
 
 				} else {

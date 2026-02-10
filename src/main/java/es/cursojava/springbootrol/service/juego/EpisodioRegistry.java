@@ -11,6 +11,8 @@ public class EpisodioRegistry {
 		registrar(new Episodio1Runner());
 		registrar(new Episodio2Runner());
 		registrar(new Episodio3Runner());
+		registrar(new Episodio4Runner());
+		registrar(new Episodio5Runner());
 	}
 	
 	private void registrar(EpisodioRunner r) {
