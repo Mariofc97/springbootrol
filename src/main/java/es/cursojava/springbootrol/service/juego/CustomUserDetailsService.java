@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService{
             throw new DisabledException("Usuario desactivado");
         }
 
-        String role = "ROLE_" + u.getRol().toUpperCase(); // ADMINISTRADOR / JUGADOR
+        String role = "ROL: " + u.getRol().toUpperCase(); // ADMINISTRADOR / JUGADOR
 
         return org.springframework.security.core.userdetails.User
             .withUsername(u.getUsername())

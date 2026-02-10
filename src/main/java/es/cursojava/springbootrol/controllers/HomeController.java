@@ -59,23 +59,19 @@ public class HomeController {
     }
     
     @GetMapping("/home")
-    public String homeUsuario(@RequestParam(value = "pid", required = false) Long pid,
+    public String homeUsuario(@RequestParam(value="pid", required=false) Long pid,
                               Model model) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName(); // el username logueado
-
-        UsuarioDto usuario = usuarioService.buscarPorUsername(username); // <-- crea este método
-        model.addAttribute("usuario", usuario);
+        // usuario desde security (mejor) o como lo tengas
+        // model.addAttribute("usuario", ...);
 
         if (pid != null) {
             try {
                 Personaje p = personajeService.cargarParaJuego(pid);
                 model.addAttribute("personaje", p);
-                model.addAttribute("pid", pid);
+                model.addAttribute("pid", pid); // <- CLAVE
             } catch (ReglaJuegoException e) {
                 model.addAttribute("error", e.getMessage());
-                model.addAttribute("pid", null);
             }
         }
 
