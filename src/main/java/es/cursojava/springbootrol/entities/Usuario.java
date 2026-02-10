@@ -180,6 +180,11 @@ public class Usuario implements Serializable {
 
         return username != null && username.equals(other.username);
     }
+    
+    public boolean isActivo() {
+        return Boolean.TRUE.equals(this.activo);
+    }
+
 
     // ======== TO STRING ========
     @Override

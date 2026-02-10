@@ -10,4 +10,7 @@ public interface UsuarioService {
 	UsuarioDto login(String username, String password);
 	List<UsuarioDto> listar();
 	UsuarioDto buscarPorId(Long id);
+	void toggleActivo(Long userId);
+	void cambiarRol(Long userId, String rol);
+	UsuarioDto buscarPorUsername(String username);
 }

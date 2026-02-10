@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Administración</title>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <style>
+    body { background: radial-gradient(circle at top, #2a1b3d 0%, #090a0f 70%); color:#eaeaea; }
+    .container { max-width: 1050px; margin: 0 auto; padding: 26px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap: wrap; }
+    .title { font-size: 2rem; margin:0; }
+    .hint { opacity: .8; margin-top: 6px; }
+    .card { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 18px; box-shadow: 0 14px 32px rgba(0,0,0,.35); backdrop-filter: blur(6px); }
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-top:14px; }
+    @media (max-width: 900px){ .grid{ grid-template-columns: 1fr; } }
+    .btn, .btn-secondary, .btn-danger { display:inline-block; padding: 10px 14px; border-radius: 10px; text-decoration:none; border: 1px solid rgba(255,255,255,.18); color:#fff; cursor:pointer; }
+    .btn { background: linear-gradient(135deg, #7c3aed, #2563eb); }
+    .btn-secondary { background: rgba(255,255,255,.08); }
+    .btn-danger { background: linear-gradient(135deg, #ef4444, #b91c1c); border-color: rgba(255,255,255,.12); }
+    .btn:hover, .btn-secondary:hover, .btn-danger:hover { filter: brightness(1.05); }
+    .badge { display:inline-block; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.14); font-size: .85rem; }
+    .table { width:100%; border-collapse: collapse; overflow:hidden; border-radius: 12px; }
+    .table th, .table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,.10); text-align:left; }
+    .table th { background: rgba(255,255,255,.07); font-weight: 600; }
+    .table tr:hover td { background: rgba(255,255,255,.04); }
+    .actions { display:flex; gap:10px; flex-wrap: wrap; }
+    .input, select { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.15); color:#fff; padding: 8px 10px; border-radius: 10px; }
+    .input::placeholder { color: rgba(255,255,255,.55); }
+    .muted { opacity:.8; }
+    form { margin:0; }
+  </style>
+</head>
+
+<body>
+<div class="container" sec:authorize="hasRole('ADMINISTRADOR')">
+
+  <div class="topbar">
+    <div>
+      <h1 class="title">Panel de Administración</h1>
+      <div class="hint">Gestiona usuarios del sistema: alta, activación y rol.</div>
+    </div>
+    <div class="actions">
+      <a class="btn-secondary" th:href="@{/home}">Volver al menú</a>
+      <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn-danger">Cerrar sesión</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- Crear usuario -->
+    <div class="card">
+      <h2 style="margin-top:0;">Crear usuario</h2>
+      <p class="muted">Crea un nuevo usuario (Jugador o Administrador).</p>
+
+      <!-- Endpoint sugerido: POST /admin/usuarios -->
+      <form th:action="@{/admin/usuarios}" method="post" style="display:grid; gap:10px;">
+        <input class="input" name="username" placeholder="Username" required>
+        <input class="input" name="email" type="email" placeholder="Email" required>
+        <input class="input" name="password" type="password" placeholder="Password" required>
+
+        <select name="rol" required>
+          <option value="JUGADOR">JUGADOR</option>
+          <option value="ADMINISTRADOR">ADMINISTRADOR</option>
+        </select>
+
+        <button class="btn" type="submit">Crear usuario</button>
+
+        <p th:if="${error}" th:text="${error}" style="color:#ffb4b4;"></p>
+        <p th:if="${ok}" th:text="${ok}" style="color:#b8ffcc;"></p>
+      </form>
+    </div>
+
+    <!-- Filtros / ayuda -->
+    <div class="card">
+      <h2 style="margin-top:0;">Acciones rápidas</h2>
+      <div class="actions" style="margin-top:10px;">
+        <!-- Endpoint sugerido: GET /admin/usuarios?soloActivos=true -->
+        <a class="btn-secondary" th:href="@{/admin}">Ver todos</a>
+        <a class="btn-secondary" th:href="@{/admin(soloActivos=true)}">Solo activos</a>
+        <a class="btn-secondary" th:href="@{/admin(soloActivos=false)}">Solo inactivos</a>
+      </div>
+      <div style="margin-top:14px;">
+        <span class="badge">Tip</span>
+        <span class="muted">Puedes activar/desactivar usuarios y cambiar roles desde la tabla.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla usuarios -->
+  <div class="card" style="margin-top:14px;">
+    <h2 style="margin-top:0;">Usuarios</h2>
+
+    <!-- Espera model attribute: usuarios (List<UsuarioDto> o similar) -->
+    <table class="table">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Activo</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="u : ${usuarios}">
+        <td th:text="${u.id}">1</td>
+        <td th:text="${u.username}">user</td>
+        <td th:text="${u.email}">mail</td>
+
+        <td>
+          <span class="badge" th:text="${u.rol}">JUGADOR</span>
+        </td>
+
+        <td>
+          <span class="badge"
+                th:text="${u.activo} ? 'ACTIVO' : 'INACTIVO'">ACTIVO</span>
+        </td>
+
+        <td>
+          <div class="actions">
+            <!-- Toggle activo: POST /admin/usuarios/{id}/toggle -->
+            <form th:action="@{/admin/usuarios/{id}/toggle(id=${u.id})}" method="post">
+              <button class="btn-secondary" type="submit"
+                      th:text="${u.activo} ? 'Desactivar' : 'Activar'">Toggle</button>
+            </form>
+
+            <!-- Cambiar rol: POST /admin/usuarios/{id}/rol -->
+            <form th:action="@{/admin/usuarios/{id}/rol(id=${u.id})}" method="post" style="display:flex; gap:8px;">
+              <select name="rol" required>
+                <option value="JUGADOR" th:selected="${u.rol == 'JUGADOR'}">JUGADOR</option>
+                <option value="ADMINISTRADOR" th:selected="${u.rol == 'ADMINISTRADOR'}">ADMINISTRADOR</option>
+              </select>
+              <button class="btn" type="submit">Cambiar rol</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+
+      <tr th:if="${usuarios == null || #lists.isEmpty(usuarios)}">
+        <td colspan="6" class="muted">No hay usuarios para mostrar.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- Si entra un no-admin por error, ocultamos todo -->
+<div class="container" sec:authorize="!hasRole('ADMINISTRADOR')">
+  <div class="card">
+    <h2>Acceso denegado</h2>
+    <p>No tienes permisos para ver el panel de administración.</p>
+    <a class="btn-secondary" th:href="@{/home}">Volver</a>
+  </div>
+</div>
+
+</body>
+</html>
