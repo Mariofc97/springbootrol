@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Menú principal</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+	<div class="container">
+		<h1>Menú principal</h1>
+
+		<h3 th:text="'Bienvenido, ' + ${usuario.username}">Bienvenido</h3>
+
+		<div class="card" style="margin-top: 20px;">
+			<h2>Personaje</h2>
+
+			<p th:if="${personaje == null}">No has seleccionado ningún
+				personaje todavía.</p>
+
+			<div th:if="${personaje != null}">
+				<p>
+					<b>Seleccionado:</b> <span th:text="${personaje.nombre}">Nombre</span>
+				</p>
+				<p>
+					<b>Nivel:</b> <span th:text="${personaje.nivel}">1</span>
+				</p>
+				<p>
+					<b>Episodio actual:</b> <span th:text="${personaje.episodioActual}">1</span>
+				</p>
+			</div>
+
+			<a class="btn" th:href="@{/personajes(uid=${uid})}">Crear /
+				Seleccionar personaje</a>
+
+			<div th:if="${personaje != null}" style="margin-top: 12px;">
+				<a th:if="${pid != null}"
+					th:href="@{/episodio/actual/{id}(id=${pid},uid=${uid})}"> Jugar
+					episodio actual </a> <a class="btn-secondary"
+					th:href="@{/personaje_usuario/{id}(id=${personaje.id},uid=${uid})}">
+					Ver estado del personaje </a>
+			</div>
+		</div>
+
+		<br> <a class="btn-secondary" th:href="@{/}">Cerrar sesión</a>
+	</div>
+</body>
+</html>

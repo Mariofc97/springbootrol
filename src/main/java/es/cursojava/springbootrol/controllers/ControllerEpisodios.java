@@ -24,14 +24,45 @@ public class ControllerEpisodios {
 	@Autowired
 	private EpisodioService episodioService;
 	// Mostrar pantalla previa del episodio (opcional)
-	@GetMapping("/episodio1/{id}")
-	public String mostrarPantallaEpisodio1(@PathVariable Long id,
-	                                      @RequestParam(required=false) Long uid,
-	                                      Model model) throws ReglaJuegoException {
+	
+	@GetMapping("/episodio/actual/{id}")
+	public String irAEpisodioActual(@PathVariable Long id,
+	                                @RequestParam(required=false) Long uid,
+	                                Model model) throws ReglaJuegoException {
+
 	    Personaje p = personajeService.cargarParaJuego(id);
 	    model.addAttribute("personaje", p);
 	    model.addAttribute("uid", uid);
-	    return "episodio1";
+
+	    int ep = p.getEpisodioActual();
+	    return "episodio" + ep; // episodio1, episodio2, episodio3...
+	}
+	@PostMapping("/episodio/actual/{id}/jugar")
+	public String jugarEpisodioActual(@PathVariable Long id,
+	                                  @RequestParam(required=false) Long uid,
+	                                  Model model) throws ReglaJuegoException {
+
+	    AccionesEpisodio acciones = episodioService.jugarEpisodioActual(id);
+	    Personaje p = personajeService.cargarParaJuego(id);
+
+	    model.addAttribute("personaje", p);
+	    model.addAttribute("acciones", acciones.getLog());
+	    model.addAttribute("uid", uid);
+
+	    // Renderizamos el resultado del episodio que se acaba de jugar.
+	    // OJO: si jugarEpisodioActual incrementa episodioActual, entonces el episodio jugado es (p.getEpisodioActual()-1)
+	    int episodioJugado = Math.max(1, p.getEpisodioActual() - 1);
+	    return "episodio" + episodioJugado + "_resultado";
+	}
+
+	@GetMapping("/episodio1/{id}")
+	public String mostrarPantallaEpisodio1(@PathVariable Long id,
+			@RequestParam(required=false) Long uid,
+			Model model) throws ReglaJuegoException {
+		Personaje p = personajeService.cargarParaJuego(id);
+		model.addAttribute("personaje", p);
+		model.addAttribute("uid", uid);
+		return "episodio1";
 	}
 	@GetMapping("/episodio2/{id}")
 	public String mostrarPantallaEpisodio2(@PathVariable Long id,

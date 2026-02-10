@@ -6,7 +6,7 @@ public class Troglodita extends Raza {
 	
 	
 	public Troglodita() {
-		super("Trogodita", 8, 2, 1); //tipo, fuerza, inteligencia, suergencia, int suertete
+		super("Trogodita", 8, 2, 1); //tipo, fuerza, inteligencia, suerte, int suertete
 		// TODO Auto-generated constructor stub
 	}
 

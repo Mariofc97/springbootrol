@@ -11,8 +11,8 @@
 
 <p>¿Quieres jugar el episodio 2?</p>
 
-<form th:action="@{/episodio2/{id}/jugar(id=${personaje.id},uid=${uid})}" method="post">
-    <button type="submit">Jugar Episodio 2</button>
+<form th:action="@{/episodio/actual/{id}/jugar(id=${personaje.id},uid=${uid})}" method="post">
+  <button type="submit">Jugar Episodio</button>
 </form>
 
 <br>

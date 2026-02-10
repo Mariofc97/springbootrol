@@ -45,7 +45,7 @@
                 <h2 th:text="${p.nombre}">Nombre</h2>
                 <p>Nivel: <span th:text="${p.nivel}">1</span></p>
                 <p>Raza: <span th:text="${p.razaTipo}"></span></p>
-                <a th:href="@{/episodio1/{id}(id=${p.id},uid=${usuario.id})}" class="btn">Seleccionar</a>
+                <a th:href="@{/home(uid=${usuario.id},pid=${p.id})}" class="btn">Seleccionar</a>
             </div>
 
             <div th:if="${personajes.empty}">

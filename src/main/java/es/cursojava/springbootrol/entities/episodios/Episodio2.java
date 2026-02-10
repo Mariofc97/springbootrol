@@ -94,7 +94,6 @@ public class Episodio2 {
                 try {
                 	JuegoActions.fabricarArmaAleatoria(personaje, acciones);
                     // el inventario actualizado se ve al instante en el episodio:
-                    personaje = JuegoActions.recargarPersonaje(personaje.getId());
                     episodio2key3 = true;
                 } catch (Exception e) {
                     System.out.println("No puedes fabricar: " + e.getMessage());

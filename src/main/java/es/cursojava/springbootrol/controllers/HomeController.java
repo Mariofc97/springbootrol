@@ -30,7 +30,7 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(Model model) {
+    public String inicio(Model model) {
         // Listar usuarios para facilitar login en demo
         List<UsuarioDto> usuarios = usuarioService.listar();
         model.addAttribute("usuarios", usuarios);
@@ -58,19 +58,41 @@ public class HomeController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password, Model model) {
+    public String login(@RequestParam String username,
+                        @RequestParam String password,
+                        Model model) {
         try {
             UsuarioDto usuario = usuarioService.login(username, password);
-            List<Personaje> personajes = personajeService.listarPorUsuario(usuario.getId());
-            model.addAttribute("usuario", usuario);
-            model.addAttribute("usuarioId", usuario.getId());
-            model.addAttribute("personajes", personajes);
-            return "personajes"; 
+            return "redirect:/home?uid=" + usuario.getId();
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "index";
         }
     }
+    
+    @GetMapping("/home")
+    public String homeUsuario(@RequestParam("uid") Long uid,
+                              @RequestParam(value = "pid", required = false) Long pid,
+                              Model model) {
+
+        UsuarioDto usuario = usuarioService.buscarPorId(uid);
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("uid", uid);
+
+        if (pid != null) {
+            try {
+                Personaje p = personajeService.cargarParaJuego(pid);
+                model.addAttribute("personaje", p);
+                model.addAttribute("pid", pid);
+            } catch (ReglaJuegoException e) {
+                model.addAttribute("error", e.getMessage());
+                model.addAttribute("pid", null);
+            }
+        }
+
+        return "home";
+    }
+
     
     @GetMapping("/personajes")
     public String personajes(@RequestParam("uid") Long uid, Model model) {
