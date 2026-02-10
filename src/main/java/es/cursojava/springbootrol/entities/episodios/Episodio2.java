@@ -18,7 +18,7 @@ public class Episodio2 {
 		LOGGER.setUseParentHandlers(false); // evita que el logger escriba en consola
 	}
 
-	public static void episodio2(Personaje personaje, AccionesEpisodio acciones) {
+	public void episodio2(Personaje personaje, AccionesEpisodio acciones) {
 		// Comprobación inicial: si no nos pasan un personaje, salimos con un mensaje de
 		// error
 

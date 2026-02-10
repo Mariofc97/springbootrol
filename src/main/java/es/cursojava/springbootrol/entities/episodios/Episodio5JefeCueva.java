@@ -18,7 +18,7 @@ public class Episodio5JefeCueva {
 		LOGGER.setUseParentHandlers(false);
 	}
 
-	public static void episodio5JefeClan(Personaje personaje, AccionesEpisodio acciones) {
+	public void episodio5JefeClan(Personaje personaje, AccionesEpisodio acciones) {
 
 		if (personaje == null) {
 			LOGGER.warning("Se llamó a episodio5 con Personaje null");

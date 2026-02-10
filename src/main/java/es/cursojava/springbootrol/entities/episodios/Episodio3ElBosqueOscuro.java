@@ -22,7 +22,7 @@ public class Episodio3ElBosqueOscuro {
 		LOGGER.setUseParentHandlers(false);
 	}
 
-	public static void episodio3ElBosqueOscuro(Personaje personaje, AccionesEpisodio acciones)
+	public  void episodio3ElBosqueOscuro(Personaje personaje, AccionesEpisodio acciones)
 			throws ReglaJuegoException {
 
 		if (personaje == null) {
