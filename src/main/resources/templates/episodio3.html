@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Episodio 3</title>
+</head>
+
+<body>
+
+<h1 th:text="'Episodio 3 - ' + ${personaje.nombre}"></h1>
+
+<p>¿Quieres jugar el episodio 3?</p>
+
+<form th:action="@{/episodio/actual/{id}/jugar(id=${personaje.id})}" method="post">
+  <button type="submit">Jugar Episodio</button>
+</form>
+
+<br>
+
+<a th:href="@{/personajes}">Salir</a>
+
+</body>
+</html>
