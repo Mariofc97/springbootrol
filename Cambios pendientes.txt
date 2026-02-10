@@ -49,18 +49,18 @@ Anotaciones MARIO:
 		• Si coincide → devolver UsuarioDTO (sin exponer datos innecesarios). 
 		
 	1. ADMINISTRADOR 
-	o Puede dar de alta nuevos usuarios (crear otros usuarios en el 
-	sistema). 
-	o Puede listar usuarios existentes. 
-	o Puede activar/desactivar usuarios. 
-	o Opcionalmente, puede modificar su rol (por ejemplo, convertir un 
-	usuario jugador en administrador o viceversa). 
+		o Puede dar de alta nuevos usuarios (crear otros usuarios en el 
+		sistema). 
+		o Puede listar usuarios existentes. 
+		o Puede activar/desactivar usuarios. 
+		o Opcionalmente, puede modificar su rol (por ejemplo, convertir un 
+		usuario jugador en administrador o viceversa). 
 	2. JUGADOR 
-	o Puede crear y gestionar sus propias criaturas (altas, 
-	modificaciones y, si se desea, bajas lógicas). 
-	o Puede iniciar partidas y jugar utilizando las criaturas que tenga 
-	asociadas. 
-	o No puede dar de alta otros usuarios ni gestionar usuarios existentes.
+		o Puede crear y gestionar sus propias criaturas (altas, 
+		modificaciones y, si se desea, bajas lógicas). 
+		o Puede iniciar partidas y jugar utilizando las criaturas que tenga 
+		asociadas. 
+		o No puede dar de alta otros usuarios ni gestionar usuarios existentes.
 
 DEBERIAMOS DE LISTAR UN REGISTRO DE LOS COMBATES EN LA BASE DE DATOS. (PENDIENTE)
 
