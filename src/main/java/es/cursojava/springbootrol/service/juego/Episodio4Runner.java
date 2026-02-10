@@ -6,6 +6,8 @@ import es.cursojava.springbootrol.entities.episodios.Episodio4Rio;
 
 public class Episodio4Runner implements EpisodioRunner {
 
+	private final Episodio4Rio episodio = new Episodio4Rio();
+	
 	@Override
 	public int numero() {
 		// TODO Auto-generated method stub
@@ -15,7 +17,7 @@ public class Episodio4Runner implements EpisodioRunner {
 	@Override
 	public int ejecutar(Personaje p, AccionesEpisodio acciones) {
 		// TODO Auto-generated method stub
-		Episodio4Rio.episodio4Rio(p, acciones);
+		episodio.episodio4Rio(p, acciones);
 		return 5; // cuando haya un cuarto episodio ponemos cuatro
 	}
 
