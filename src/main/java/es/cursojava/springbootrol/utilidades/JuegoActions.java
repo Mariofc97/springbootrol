@@ -631,9 +631,10 @@ public class JuegoActions {
 		}
 	}
 
-	public static void recuperarVida(Personaje personaje) {
+	public static void recuperarVida(Personaje personaje, AccionesEpisodio acciones) {
 
 		personaje.setPuntosVida(personaje.getPuntosVidaMax());
+		acciones.add("Has recuperado toda tu vida. PV: " + personaje.getPuntosVida() + "/" + personaje.getPuntosVidaMax());
 
 	}
 

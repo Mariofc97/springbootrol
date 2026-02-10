@@ -133,8 +133,7 @@ public class Episodio2 {
 
             case 7: {
                 try {
-                    JuegoActions.recuperarVida(personaje);
-                    acciones.add("Dormiste profundamente y recuperaste toda la vida.");
+                    JuegoActions.recuperarVida(personaje , acciones);
                 } catch (Exception e) {
                 	acciones.add("");
                 }

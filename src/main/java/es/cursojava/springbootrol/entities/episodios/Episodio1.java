@@ -123,8 +123,7 @@ public class Episodio1 {
                     break;
 
                 case 4: {
-                    JuegoActions.recuperarVida(personaje);
-                    acciones.add("Dormiste profundamente y recuperaste toda la vida.");
+                    JuegoActions.recuperarVida(personaje, acciones);
                     key3 = true;
                 }
                     break;

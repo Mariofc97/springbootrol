@@ -208,8 +208,7 @@ public class Episodio3ElBosqueOscuro {
 				break;
 
 			case 7: {
-				JuegoActions.recuperarVida(personaje);
-				acciones.add("Has descansado y recuperado toda la vida.");
+				JuegoActions.recuperarVida(personaje, acciones);
 				LOGGER.info("Descanso. Personaje: " + personaje.getNombre());
 				bosqueOscurokey2 = true;
 			}

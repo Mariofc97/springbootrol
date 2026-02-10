@@ -56,22 +56,23 @@ public class Episodio4Rio {
 
 		do {
 
-			acciones.add("1. Buscar bayas");
-			acciones.add("2. Pescar");
-			acciones.add("3. Bañarte");
-			acciones.add("4. CREAR CAÑA DE PESCAR");
-			acciones.add("5. Buscar materiales");
-			acciones.add("6. Ir al río");
-			acciones.add("7. Descansar");
-			acciones.add("8. Invocar PezPrehistoricoGigante");
-			acciones.add("Elige una opción...");
+//			acciones.add("1. Buscar bayas");
+//			acciones.add("2. Pescar");
+//			acciones.add("3. Bañarte");
+//			acciones.add("4. CREAR CAÑA DE PESCAR");
+//			acciones.add("5. Buscar materiales");
+//			acciones.add("6. Ir al río");
+//			acciones.add("7. Descansar");
+//			acciones.add("8. Invocar PezPrehistoricoGigante");
+
+//			acciones.add("Elige una opción...");
 
 			int opcion = (int) (Math.random() * 8) + 1;
 
 			switch (opcion) {
 
 			case 1: {
-				JuegoActions.buscarBaya(personaje);
+				JuegoActions.buscarBaya(personaje, acciones);
 			}
 				break;
 
@@ -90,25 +91,27 @@ public class Episodio4Rio {
 					acciones.add("Intentas pescar, pero sin una caña es imposible.");
 					acciones.add("Necesitas fabricar o encontrar una caña de pescar.");
 					LOGGER.info("El personaje " + personaje.getNombre() + " intentó pescar sin caña.");
-					break;
-				}
 
-				acciones.add("Lanzas la caña al río y esperas pacientemente...");
-
-				int tirada = JuegoActions.dadoDiez();
-
-				if (tirada <= 2) {
-					acciones.add("Nada pica esta vez. El río sigue en calma.");
 				} else {
-					acciones.add("¡La caña se tensa con fuerza! Has pescado un Siluro.");
+					acciones.add("Lanzas la caña al río y esperas pacientemente...");
 
-					personaje.addEquipamiento(new CarneSeca());
+					int tirada = JuegoActions.dadoDiez();
 
-					// personaje = Utils.recargarPersonaje(personaje.getId());
-					Riokey1 = true;
+					if (tirada <= 2) {
+						acciones.add("Nada pica esta vez. El río sigue en calma.");
+					} else {
+						acciones.add("¡La caña se tensa con fuerza! Has pescado un Siluro.");
 
-					LOGGER.info("El personaje " + personaje.getNombre() + " pescó un Siluro.");
+						personaje.addEquipamiento(new CarneSeca());
+
+						// personaje = Utils.recargarPersonaje(personaje.getId());
+						Riokey1 = true;
+
+						LOGGER.info("El personaje " + personaje.getNombre() + " pescó un Siluro.");
+					}
+
 				}
+
 			}
 				break;
 
@@ -119,8 +122,7 @@ public class Episodio4Rio {
 				if (!pezPrehistoricoGigante) {
 
 					PezPrehistoricoGigante pez = new PezPrehistoricoGigante();
-					boolean resultado = JuegoActions.combate(personaje, pez);
-
+					boolean resultado = JuegoActions.combateAuto(personaje, pez, acciones);
 					if (resultado) {
 						Riokey2 = true;
 						pezPrehistoricoGigante = true;
@@ -131,24 +133,23 @@ public class Episodio4Rio {
 
 			case 4: {
 				// CREAR CAÑA DE PESCAR
-				
+
 				boolean tiradaFabricar = JuegoActions.dadoDiez() >= 3;
 				if (tiradaFabricar) {
 					personaje.getEquipo().add(new CanaPescar());
 					acciones.add("Has fabricado una caña de pescar.");
-				}else {
+				} else {
 					acciones.add("Intentaste fabricar una caña de pescar, pero no tuviste éxito.");
-					acciones.add("El personaje " + personaje.getNombre() + " intentó fabricar una caña de pescar sin éxito.");
+					acciones.add("El personaje " + personaje.getNombre()
+							+ " intentó fabricar una caña de pescar sin éxito.");
 				}
-				
-				
+
 			}
 				break;
 
 			case 5: {
 				try {
 					JuegoActions.buscarObjeto(personaje, acciones);
-					acciones.add("El personaje " + personaje.getNombre() + " ha buscado un objeto.");
 				} catch (Exception e) {
 					LOGGER.log(Level.SEVERE, "Error al buscar objeto", e);
 					acciones.add("No se pudo buscar el objeto.");
@@ -168,8 +169,7 @@ public class Episodio4Rio {
 				break;
 
 			case 7: {
-				JuegoActions.recuperarVida(personaje);
-				acciones.add("Has dormido y recuperado toda la vida.");
+				JuegoActions.recuperarVida(personaje, acciones);
 				LOGGER.info("Descanso. Personaje: " + personaje.getNombre());
 			}
 				break;
@@ -181,7 +181,7 @@ public class Episodio4Rio {
 					if (JuegoActions.dadoDiez() < 3) {
 						acciones.add(
 								"Intentas invocar a tu PezPrehistoricoGigante, pero estornudas y lo enfureces. ¡Te ataca!");
-						JuegoActions.combate(personaje, new PezPrehistoricoGigante());
+						JuegoActions.combateAuto(personaje, new PezPrehistoricoGigante(), acciones);
 					} else {
 						Riokey3 = true;
 
