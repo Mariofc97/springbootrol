@@ -1,42 +1,97 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Resultado Episodio 3</title>
+    <meta charset="UTF-8">
+    <title>Resultado Episodio 3</title>
+
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <script>
+        function toggleMenu() {
+            const sb = document.getElementById('sidebar');
+            sb.classList.toggle('open');
+        }
+    </script>
 </head>
 
 <body>
 
-<h1>Episodio 3 completado</h1>
+<header class="topbar">
+    <div style="display:flex; gap:10px; align-items:center;">
+        <button class="iconbtn" onclick="toggleMenu()" type="button">
+            <i class="bi bi-list"></i>
+        </button>
+        <div class="brand">Episodio 3 completado</div>
+    </div>
 
-<h2>Acciones realizadas</h2>
+    <div class="who">
+        <span>Resumen del episodio</span>
+    </div>
+</header>
 
-<div style="white-space: pre-line; background:#222; color:#eee; padding:15px; border-radius:8px;">
-  <span th:text="${acciones}"></span>
-</div>
+<div class="layout">
 
-<br>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="panel">
+            <div class="panel-title">Navegación</div>
 
-<!-- BOTONES / ENLACES -->
-<div style="display:flex; gap:12px; margin-top:12px;">
+            <div class="nav">
+                <a th:href="@{/home(pid=${personaje.id})}">
+                    <i class="bi bi-house-door"></i> Menú principal
+                </a>
+                <a th:href="@{/personaje_usuario/{id}(id=${personaje.id})}">
+                    <i class="bi bi-file-earmark-text"></i> Ver personaje
+                </a>
+                <a th:href="@{/episodio/actual/{id}(id=${personaje.id})}">
+                    <i class="bi bi-play-circle"></i> Continuar
+                </a>
+            </div>
+        </div>
+    </aside>
 
-  <!-- Menú principal -->
-  <a th:href="@{/home(pid=${personaje.id})}"
-     style="padding:10px 14px; background:#444; color:white; border-radius:8px; text-decoration:none;">
-    Menú principal
-  </a>
+    <!-- Main -->
+    <main class="main">
 
-  <!-- Ver personaje -->
-  <a th:href="@{/personaje_usuario/{id}(id=${personaje.id})}"
-     style="padding:10px 14px; background:#2b6cb0; color:white; border-radius:8px; text-decoration:none;">
-    Ver personaje
-  </a>
+        <div class="card" style="max-width:900px;">
 
-  <!-- Continuar al episodio actual -->
-  <a th:href="@{/episodio/actual/{id}(id=${personaje.id})}"
-     style="padding:10px 14px; background:#2f855a; color:white; border-radius:8px; text-decoration:none;">
-    Continuar
-  </a>
+            <h2 class="h2">Episodio 3 completado</h2>
+            <p class="sub">Acciones realizadas durante el episodio</p>
+
+            <div style="
+                white-space: pre-line;
+                background: rgba(255,255,255,.05);
+                color: var(--text);
+                padding: 16px;
+                border-radius: 12px;
+                border: 1px solid var(--border);
+                margin-top: 16px;
+            ">
+                <span th:text="${acciones}"></span>
+            </div>
+
+            <!-- Botones -->
+            <div class="actions" style="margin-top:20px;">
+
+                <a class="btn2" th:href="@{/home(pid=${personaje.id})}">
+                    <i class="bi bi-house-door"></i> Menú principal
+                </a>
+
+                <a class="btn2" th:href="@{/personaje_usuario/{id}(id=${personaje.id})}">
+                    <i class="bi bi-file-earmark-text"></i> Ver personaje
+                </a>
+
+                <a class="btn" th:href="@{/episodio/actual/{id}(id=${personaje.id})}">
+                    <i class="bi bi-play-circle"></i> Continuar
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
 
 </div>
 

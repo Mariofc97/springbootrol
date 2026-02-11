@@ -3,21 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <title>Episodio 1</title>
+
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <script>
+        function toggleMenu() {
+            const sb = document.getElementById('sidebar');
+            sb.classList.toggle('open');
+        }
+    </script>
 </head>
 
 <body>
 
-<h1 th:text="'Episodio 1 - ' + ${personaje.nombre}"></h1>
+<header class="topbar">
+    <div style="display:flex; gap:10px; align-items:center;">
+        <button class="iconbtn" onclick="toggleMenu()" type="button">
+            <i class="bi bi-list"></i>
+        </button>
+        <div class="brand">Episodio 1</div>
+    </div>
 
-<p>¿Quieres jugar el episodio 1?</p>
+    <div class="who">
+        <span th:text="${personaje.nombre}">Personaje</span>
+    </div>
+</header>
 
-<form th:action="@{/episodio/actual/{id}/jugar(id=${personaje.id})}" method="post">
-  <button type="submit">Jugar Episodio</button>
-</form>
+<div class="layout">
 
-<br>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="panel">
+            <div class="panel-title">Navegación</div>
 
-<a th:href="@{/personajes}">Salir</a>
+            <div class="nav">
+                <a th:href="@{/personajes}">
+                    <i class="bi bi-arrow-left"></i> Salir
+                </a>
+                <a th:href="@{/home(pid=${personaje.id})}">
+                    <i class="bi bi-house-door"></i> Menú principal
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <div class="card" style="max-width:600px;">
+
+            <h2 class="h2" th:text="'Episodio 1 - ' + ${personaje.nombre}">
+                Episodio 1
+            </h2>
+
+            <p class="sub" style="margin-top:10px;">
+                ¿Quieres jugar el episodio 1?
+            </p>
+
+            <form th:action="@{/episodio/actual/{id}/jugar(id=${personaje.id})}"
+                  method="post"
+                  style="margin-top:20px;">
+                <button type="submit" class="btn">
+                    <i class="bi bi-play-circle"></i> Jugar Episodio
+                </button>
+            </form>
+
+            <div style="margin-top:20px;">
+                <a class="btn2" th:href="@{/personajes}">
+                    <i class="bi bi-arrow-left-circle"></i> Salir
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
 
 </body>
 </html>

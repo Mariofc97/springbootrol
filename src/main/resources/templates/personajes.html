@@ -2,65 +2,134 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<meta charset="UTF-8">
-<title>Mis Personajes</title>
-<link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
+    <title>Mis Personajes</title>
+
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <script>
+        function toggleMenu() {
+            const sb = document.getElementById('sidebar');
+            sb.classList.toggle('open');
+        }
+    </script>
 </head>
 
 <body>
-	<div class="container">
-		<h1>Mis Personajes</h1>
-		<h3 th:if="${usuario != null}"
-			th:text="'Bienvenido, ' + ${usuario.username}">User</h3>
 
-		<!-- ✅ FORMULARIO CREAR PERSONAJE -->
-		<div class="card" style="margin-bottom: 20px;">
-			<h2>Crear personaje</h2>
+<header class="topbar">
+    <div style="display:flex; gap:10px; align-items:center;">
+        <button class="iconbtn" onclick="toggleMenu()" type="button">
+            <i class="bi bi-list"></i>
+        </button>
+        <div class="brand">Mis Personajes</div>
+    </div>
 
-			<p th:if="${error}" th:text="${error}" style="color: red;"></p>
+    <div class="who">
+        <span th:if="${usuario != null}">
+            Bienvenido, <b th:text="${usuario.username}">User</b>
+        </span>
+    </div>
+</header>
 
-			<form th:action="@{/personajes/crear}" method="post">
-				<input type="hidden" name="usuarioId" th:value="${usuarioId}" />
+<div class="layout">
 
-				<div style="margin-bottom: 10px;">
-					<label>Nombre:</label><br> <input type="text" name="nombre"
-						required />
-				</div>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="panel">
+            <div class="panel-title">Navegación</div>
 
-				<div style="margin-bottom: 10px;">
-					<label>Raza:</label><br> <select name="raza" required>
-						<option value="Mongol">Mongol</option>
-						<option value="RapaNui">Rapa Nui</option>
-						<option value="Troglodita">Troglodita</option>
-					</select>
-				</div>
+            <div class="nav">
+                <a th:href="@{/}">
+                    <i class="bi bi-house-door"></i> Inicio
+                </a>
+                <a th:href="@{/logout}" onclick="event.preventDefault(); this.closest('form').submit();">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                </a>
+                <form th:action="@{/logout}" method="post"></form>
+            </div>
+        </div>
+    </aside>
 
-				<button type="submit" class="btn">Crear</button>
-			</form>
-		</div>
+    <!-- Main -->
+    <main class="main">
 
-		<!-- ✅ LISTA DE PERSONAJES -->
-		<div class="personajes-grid">
-			<div th:each="p : ${personajes}" class="card">
-				<h2 th:text="${p.nombre}">Nombre</h2>
-				<p>
-					Nivel: <span th:text="${p.nivel}">1</span>
-				</p>
-				<p>
-					Raza: <span th:text="${p.razaTipo}"></span>
-				</p>
-				<a class="btn2" th:href="@{/home(pid=${p.id})}">Seleccionar</a>
-			</div>
+        <!-- Crear personaje -->
+        <div class="card" style="max-width: 600px; margin-bottom: 20px;">
+            <h2 class="h2">Crear personaje</h2>
+            <p class="sub">Completa los datos para crear un nuevo personaje</p>
 
-			<div th:if="${personajes.empty}">
-				<p>No tienes personajes aún.</p>
-			</div>
-		</div>
+            <p th:if="${error}" th:text="${error}" style="color:#ff6b6b; margin-top:10px;"></p>
 
-		<form th:action="@{/logout}" method="post">
-			<button type="submit" class="btn-secondary">Cerrar sesión</button>
-		</form>
-	</div>
+            <form th:action="@{/personajes/crear}" method="post"
+                  style="margin-top:16px; display:flex; flex-direction:column; gap:14px;">
+
+                <input type="hidden" name="usuarioId" th:value="${usuarioId}" />
+
+                <div>
+                    <label style="display:block; margin-bottom:6px;">Nombre</label>
+                    <input type="text" name="nombre" required
+                           style="width:100%; padding:10px; border-radius:8px;
+                                  border:1px solid var(--border);
+                                  background:rgba(255,255,255,.05);
+                                  color:var(--text);">
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:6px;">Raza</label>
+                    <select name="raza" required
+                            style="width:100%; padding:10px; border-radius:8px;
+                                   border:1px solid var(--border);
+                                   background:rgba(255,255,255,.05);
+                                   color:var(--text);">
+                        <option value="Mongol">Mongol</option>
+                        <option value="RapaNui">Rapa Nui</option>
+                        <option value="Troglodita">Troglodita</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn">
+                    <i class="bi bi-plus-circle"></i> Crear
+                </button>
+            </form>
+        </div>
+
+        <!-- Lista de personajes -->
+        <div class="grid" style="display:flex; flex-wrap:wrap; gap:20px;">
+
+            <div th:each="p : ${personajes}" class="card" style="width:260px;">
+                <h2 class="h2" th:text="${p.nombre}">Nombre</h2>
+
+                <p style="color:var(--muted); margin:6px 0;">
+                    Nivel: <span th:text="${p.nivel}">1</span>
+                </p>
+
+                <p style="color:var(--muted); margin:6px 0;">
+                    Raza: <span th:text="${p.razaTipo}"></span>
+                </p>
+
+                <a class="btn2" th:href="@{/home(pid=${p.id})}">
+                    <i class="bi bi-play-circle"></i> Seleccionar
+                </a>
+            </div>
+
+            <div th:if="${personajes.empty}" class="card" style="padding:20px;">
+                <p style="color:var(--muted);">No tienes personajes aún.</p>
+            </div>
+        </div>
+
+        <!-- Logout -->
+        <form th:action="@{/logout}" method="post" style="margin-top:20px;">
+            <button type="submit" class="btn2-logout">
+                <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+            </button>
+        </form>
+
+    </main>
+
+</div>
+
 </body>
-
 </html>
