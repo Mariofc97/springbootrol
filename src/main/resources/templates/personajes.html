@@ -49,7 +49,7 @@
 				<p>
 					Raza: <span th:text="${p.razaTipo}"></span>
 				</p>
-				<a th:href="@{/episodio/actual/{id}(id=${p.id})}" class="btn">Seleccionar</a>
+				<a class="btn2" th:href="@{/home(pid=${p.id})}">Seleccionar</a>
 			</div>
 
 			<div th:if="${personajes.empty}">

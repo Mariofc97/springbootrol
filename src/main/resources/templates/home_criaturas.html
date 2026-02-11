@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>Criaturas</title>
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script>
+	function toggleMenu() {
+		document.getElementById('sidebar').classList.toggle('open');
+	}
+</script>
+</head>
+
+<body>
+
+	<header class="topbar">
+		<div class="topbar-left">
+			<button class="iconbtn" onclick="toggleMenu()" type="button">
+				<i class="bi bi-list"></i>
+			</button>
+
+			<div class="brand">
+				<i class="bi bi-bug"></i> Criaturas
+			</div>
+		</div>
+
+		<div class="who">
+			<span>Personaje: <b
+				th:text="${personaje != null ? personaje.nombre : '—'}">—</b></span> <span
+				class="badge" sec:authentication="principal.authorities">ROL</span>
+		</div>
+	</header>
+
+	<div class="layout">
+
+		<aside class="sidebar" id="sidebar">
+			<div class="panel">
+				<div style="font-weight: 700; margin-bottom: 8px;">Navegación</div>
+
+				<div class="nav" th:if="${pid != null}">
+					<a th:href="@{/home(pid=${pid})}"> <i class="bi bi-house-door"></i>
+						Menú principal
+					</a> <a th:href="@{/home/criaturas(pid=${pid})}"> <i
+						class="bi bi-bug"></i> Criaturas
+					</a> <a th:href="@{/home/objetos(pid=${pid})}"> <i
+						class="bi bi-backpack"></i> Objetos
+					</a> <a th:href="@{/home/armas(pid=${pid})}"> <i
+						class="bi bi-crosshair"></i> Armas
+					</a> <a th:href="@{/home/escudos(pid=${pid})}"> <i
+						class="bi bi-shield"></i> Escudos
+					</a>
+				</div>
+			</div>
+		</aside>
+
+		<main class="main">
+			<div class="card">
+
+				<h2 class="h2">Lista de criaturas</h2>
+				<p class="sub">Criaturas asociadas a tu personaje.</p>
+
+				<p th:if="${#lists.isEmpty(criaturas)}" class="sub"
+					style="margin-top: 12px;">No hay criaturas.</p>
+
+				<div class="tablewrap" th:if="${!#lists.isEmpty(criaturas)}">
+					<table>
+						<thead>
+							<tr>
+								<th>Nombre</th>
+								<th>PV</th>
+								<th>ATK</th>
+								<th>Tipo ataque</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="c : ${criaturas}">
+								<td th:text="${c.nombre}">-</td>
+								<td th:text="${c.puntosVida}">-</td>
+								<td th:text="${c.puntosAtaque}">-</td>
+								<td th:text="${c.tipoAtaque}" class="muted">-</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="actions">
+					<a class="btn2" th:href="@{/home(pid=${pid})}">← Volver al menú</a>
+				</div>
+
+			</div>
+		</main>
+
+	</div>
+</body>
+</html>

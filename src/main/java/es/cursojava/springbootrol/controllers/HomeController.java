@@ -57,39 +57,6 @@ public class HomeController {
             return "registro";
         }
     }
-    
-    @GetMapping("/home")
-    public String homeUsuario(@RequestParam(value="pid", required=false) Long pid,
-                              Model model) {
-
-        if (pid != null) {
-            try {
-                Personaje p = personajeService.cargarParaJuego(pid);
-                model.addAttribute("personaje", p);
-                model.addAttribute("pid", pid);
-
-                model.addAttribute("armas", equipamientoService.listarArmas(pid));
-                model.addAttribute("escudos", equipamientoService.listarEscudos(pid));
-                model.addAttribute("objetos", equipamientoService.listarObjetos(pid));
-                model.addAttribute("criaturas", p.getCriaturas());
-
-            } catch (ReglaJuegoException e) {
-                model.addAttribute("error", e.getMessage());
-                model.addAttribute("criaturas", List.of());
-                model.addAttribute("armas", List.of());
-                model.addAttribute("escudos", List.of());
-                model.addAttribute("objetos", List.of());
-            }
-        } else {
-            // para que Thymeleaf no reviente con nulls si no hay personaje
-            model.addAttribute("criaturas", List.of());
-            model.addAttribute("armas", List.of());
-            model.addAttribute("escudos", List.of());
-            model.addAttribute("objetos", List.of());
-        }
-
-        return "home";
-    }
 
     
     @GetMapping("/personajes")
@@ -122,6 +89,65 @@ public class HomeController {
 
         return "redirect:/personajes";
     }
+    
+    @GetMapping("/home")
+    public String home(@RequestParam(value="pid", required=false) Long pid, Model model) {
+        cargarHome(pid, model);
+        return "home";
+    }
+
+    @GetMapping("/home/criaturas")
+    public String homeCriaturas(@RequestParam("pid") Long pid, Model model) {
+        cargarHome(pid, model);
+        return "home_criaturas";
+    }
+
+    @GetMapping("/home/objetos")
+    public String homeObjetos(@RequestParam("pid") Long pid, Model model) {
+        cargarHome(pid, model);
+        return "home_objetos";
+    }
+
+    @GetMapping("/home/armas")
+    public String homeArmas(@RequestParam("pid") Long pid, Model model) {
+        cargarHome(pid, model);
+        return "home_armas";
+    }
+
+    @GetMapping("/home/escudos")
+    public String homeEscudos(@RequestParam("pid") Long pid, Model model) {
+        cargarHome(pid, model);
+        return "home_escudos";
+    }
+
+    private void cargarHome(Long pid, Model model) {
+        if (pid == null) {
+            model.addAttribute("personaje", null);
+            model.addAttribute("pid", null);
+            model.addAttribute("criaturas", List.of());
+            model.addAttribute("armas", List.of());
+            model.addAttribute("escudos", List.of());
+            model.addAttribute("objetos", List.of());
+            return;
+        }
+
+        try {
+            Personaje p = personajeService.cargarParaJuego(pid);
+            model.addAttribute("personaje", p);
+            model.addAttribute("pid", pid);
+            model.addAttribute("criaturas", p.getCriaturas());
+            model.addAttribute("armas", equipamientoService.listarArmas(pid));
+            model.addAttribute("escudos", equipamientoService.listarEscudos(pid));
+            model.addAttribute("objetos", equipamientoService.listarObjetos(pid));
+        } catch (ReglaJuegoException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("criaturas", List.of());
+            model.addAttribute("armas", List.of());
+            model.addAttribute("escudos", List.of());
+            model.addAttribute("objetos", List.of());
+        }
+    }
+
     
 //    @GetMapping("/personaje/{id}")
 //    public String verPersonaje(@PathVariable Long id, Model model) {
