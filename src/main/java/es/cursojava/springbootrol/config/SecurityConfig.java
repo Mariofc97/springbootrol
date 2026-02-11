@@ -2,55 +2,74 @@ package es.cursojava.springbootrol.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-@EnableMethodSecurity
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
-	
+
+	private final RoleBasedAuthSuccessHandler successHandler;
 	private final CustomAuthFailureHandler customAuthFailureHandler;
 
-	public SecurityConfig(CustomAuthFailureHandler customAuthFailureHandler) {
-	    this.customAuthFailureHandler = customAuthFailureHandler;
+	public SecurityConfig(RoleBasedAuthSuccessHandler successHandler,
+			CustomAuthFailureHandler customAuthFailureHandler) {
+		this.successHandler = successHandler;
+		this.customAuthFailureHandler = customAuthFailureHandler;
 	}
 
-	// Deshabilitar la seguridad para permitir el acceso sin autenticación
-	// Esto es útil para desarrollo o aplicaciones públicas
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http,
+	                                       AuthenticationManager authenticationManager) throws Exception {
 
-        http
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-        	    .requestMatchers("/", "/login", "/registro", "/css/**").permitAll()
-        	    .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
-        	    .anyRequest().authenticated()
-        	)
-        .formLogin(form -> form
-        	    .loginPage("/")
-        	    .loginProcessingUrl("/login")
-        	    .defaultSuccessUrl("/home", true)
-        	    .failureHandler(customAuthFailureHandler)   // 👈
-        	    .permitAll()
-        	)
-        .logout(logout -> logout
-            .logoutUrl("/logout")        // POST /logout
-            .logoutSuccessUrl("/")       // vuelve al login
-            .invalidateHttpSession(true)
-            .clearAuthentication(true)
-            .permitAll()
-        );
+	    http.authenticationManager(authenticationManager);
 
-      return http.build();
-    }
+	    http.csrf(csrf -> csrf.disable())
+	       .authorizeHttpRequests(auth -> auth
+	           .requestMatchers("/", "/login", "/registro", "/css/**").permitAll()
+	           .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
+	           .anyRequest().authenticated()
+	       )
+	       .formLogin(form -> form
+	           .loginPage("/")
+	           .loginProcessingUrl("/login")
+	           .successHandler(successHandler)
+	           .failureHandler(customAuthFailureHandler)
+	           .permitAll()
+	       )
+	       .logout(logout -> logout
+	           .logoutUrl("/logout")
+	           .logoutSuccessUrl("/")
+	           .invalidateHttpSession(true)
+	           .clearAuthentication(true)
+	           .permitAll()
+	       );
 
-    
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	    return http.build();
+	}
+	
+	@Bean
+	public DaoAuthenticationProvider authProvider(UserDetailsService userDetailsService,
+	                                             PasswordEncoder passwordEncoder) {
+	    DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
+	    provider.setPasswordEncoder(passwordEncoder);
+	    return provider;
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+	
+	@Bean
+	public AuthenticationManager authenticationManager(DaoAuthenticationProvider authProvider) {
+	    return new ProviderManager(authProvider);
+	}
 }

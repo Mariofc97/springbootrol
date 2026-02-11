@@ -56,6 +56,13 @@
 				<div class="nav" th:if="${pid == null}">
 					<a th:href="@{/personajes}">Crear / Seleccionar personaje</a>
 				</div>
+
+				<div class="nav" sec:authorize="hasRole('ADMINISTRADOR')"
+					style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, .12);">
+					<a th:href="@{/admin}"> <i class="bi bi-gear"></i> Panel de
+						administración
+					</a>
+				</div>
 			</div>
 		</aside>
 
