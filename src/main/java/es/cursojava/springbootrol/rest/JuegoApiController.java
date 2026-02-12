@@ -28,7 +28,18 @@ public class JuegoApiController {
         this.equipamientoService = equipamientoService;
     }
 
+//    POSTMAN: Authorization → Basic Auth
+    
+    
+//METODO PARA CREAR
+    
     //http://localhost:8085/api/personajes
+//    Pasarle parametros:
+//    {
+//    	"usuarioId":ID DE UN USUARIO QUE EXISTA EN LA BASE DE DATOS,
+//    	"nombre":"Manueee",
+//    	"raza": "MONGOL"
+//    }
     // CREATE -> 201
     @PostMapping("/personajes")
     public ResponseEntity<PersonajeApiDto> crear(@Valid @RequestBody CrearPersonajeRequest req) {
@@ -36,13 +47,32 @@ public class JuegoApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(toDto(creado));
     }
 
-    // READ -> 200
+ 
+// METODOS PARA LEER (READ)
+    
+    // obtenemos el personaje despues de crearlo en el paso anterior
+//    http://localhost:8085/api/personajes/{personajeId}
+    // READ -> 200 LISTA PERSONAJE CON JSON
     @GetMapping("/personajes/{id}")
     public PersonajeApiDto ver(@PathVariable Long id) throws ReglaJuegoException {
         Personaje p = personajeService.cargarParaJuego(id);
         return toDto(p);
     }
+    
+    // READ inventario -> 200 LISTA INVENTARIO CON JSON
+    @GetMapping("/personajes/{pid}/inventario")
+    public List<EquipamientoDto> inventario(@PathVariable Long pid) {
+        return equipamientoService.listarPorPersonaje(pid);
+    }
+    
 
+// METODO PARA UPDATE
+
+//    http://localhost:8085/api/personajes/{personajeId}/nivel
+//    {
+//    	  "nivel": 5
+//    }
+//    Todo ok: 200, si ponemos nivel 0 nos dara un 400
     // UPDATE -> 200
     @PatchMapping("/personajes/{id}/nivel")
     public PersonajeApiDto cambiarNivel(@PathVariable Long id, @Valid @RequestBody UpdateNivelRequest req)
@@ -50,6 +80,15 @@ public class JuegoApiController {
         Personaje p = personajeService.actualizarNivel(id, req.nivel);
         return toDto(p);
     }
+    
+    
+// METODO PARA DELETE
+    
+//    	http://localhost:8085/api/personajes/261/inventario/999
+//
+//    		Si 999 existe → 204
+//
+//    		Si no existe → 404 (por el int borrados == 0)
 
     // DELETE -> 204 / 404
     @DeleteMapping("/personajes/{pid}/inventario/{equipId}")
@@ -57,12 +96,6 @@ public class JuegoApiController {
             throws ReglaJuegoException {
         equipamientoService.eliminarDeInventario(pid, equipId);
         return ResponseEntity.noContent().build();
-    }
-
-    // (extra útil) READ inventario -> 200
-    @GetMapping("/personajes/{pid}/inventario")
-    public List<EquipamientoDto> inventario(@PathVariable Long pid) {
-        return equipamientoService.listarPorPersonaje(pid);
     }
 
     private PersonajeApiDto toDto(Personaje p) {

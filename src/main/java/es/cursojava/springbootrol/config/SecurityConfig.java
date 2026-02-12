@@ -35,6 +35,7 @@ public class SecurityConfig {
 	       .authorizeHttpRequests(auth -> auth
 	           .requestMatchers("/", "/login", "/registro", "/css/**").permitAll()
 	           .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
+	           .requestMatchers("/api/**").authenticated()
 	           .anyRequest().authenticated()
 	       )
 	       .formLogin(form -> form
@@ -44,6 +45,10 @@ public class SecurityConfig {
 	           .failureHandler(customAuthFailureHandler)
 	           .permitAll()
 	       )
+	       
+	    // API (Postman)
+	       .httpBasic(basic -> {})
+	       
 	       .logout(logout -> logout
 	           .logoutUrl("/logout")
 	           .logoutSuccessUrl("/")
