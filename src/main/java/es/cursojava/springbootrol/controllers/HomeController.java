@@ -144,6 +144,17 @@ public class HomeController {
     @GetMapping("/home/criaturas")
     public String homeCriaturas(@RequestParam("pid") Long pid, Model model) {
         cargarHome(pid, model);
+        var criaturaIcono = new java.util.HashMap<String, String>();
+        criaturaIcono.put("mosquito", "/icons/mosquito.png");
+        criaturaIcono.put("raton", "/icons/raton.png");
+        criaturaIcono.put("lobo", "/icons/lobo.png");
+        criaturaIcono.put("jabali", "/icons/jabali.png");
+        criaturaIcono.put("gusano", "/icons/gusano.png");
+        criaturaIcono.put("pezprehistoricogigante", "/icons/pezPrehistoricoGigante.png");
+        criaturaIcono.put("siluro", "/icons/siluro.png");
+
+        model.addAttribute("criaturaIcono", criaturaIcono);
+        
         return "home_criaturas";
     }
 
@@ -179,6 +190,7 @@ public class HomeController {
         try {
             Personaje p = personajeService.cargarParaJuego(pid);
             model.addAttribute("personaje", p);
+            model.addAttribute("razaIcon", iconoPorRaza(p.getRazaTipo()));
             model.addAttribute("pid", pid);
             model.addAttribute("criaturas", p.getCriaturas());
             model.addAttribute("armas", equipamientoService.listarArmas(pid));
@@ -192,6 +204,19 @@ public class HomeController {
             model.addAttribute("objetos", List.of());
         }
     }
+    
+    private String iconoPorRaza(String razaTipo) {
+        if (razaTipo == null) return null;
+        String rt = razaTipo.trim().toUpperCase();
+
+        if (rt.contains("MONGOL")) return "/icons/mongol.png";
+        if (rt.contains("RAPA")) return "/icons/rapa-nui.png";
+        if (rt.contains("TROGLODITA") || rt.contains("TROGODITA")) return "/icons/troglodita.png";
+
+        return null;
+    }
+    
+    
 
     
 //    @GetMapping("/personaje/{id}")
