@@ -146,6 +146,7 @@ public class HomeController {
         cargarHome(pid, model);
         var criaturaIcono = new java.util.HashMap<String, String>();
         criaturaIcono.put("mosquito", "/icons/mosquito.png");
+        criaturaIcono.put("conejo", "/icons/conejo.png");
         criaturaIcono.put("raton", "/icons/raton.png");
         criaturaIcono.put("lobo", "/icons/lobo.png");
         criaturaIcono.put("jabali", "/icons/jabali.png");
