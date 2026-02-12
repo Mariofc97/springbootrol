@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import es.cursojava.springbootrol.entities.Personaje;
+import es.cursojava.springbootrol.entities.raza.Mongol;
+import es.cursojava.springbootrol.entities.raza.RapaNui;
+import es.cursojava.springbootrol.entities.raza.Troglodita;
 import es.cursojava.springbootrol.exceptions.ReglaJuegoException;
 import es.cursojava.springbootrol.model.EquipamientoDto;
 import es.cursojava.springbootrol.model.UsuarioDto;
@@ -74,6 +77,48 @@ public class HomeController {
         model.addAttribute("usuarioId", usuario.getId());
         model.addAttribute("personajes", personajes);
 
+        var razaCatalogo = new java.util.LinkedHashMap<String, java.util.Map<String, Object>>();
+
+        razaCatalogo.put("MONGOL", java.util.Map.of(
+                "label", "Mongol",
+                "icon", "/icons/mongol.png",
+                "desc", new Mongol().descripcionRasgos(),
+                "nivel", 1,
+                "experiencia", 0,
+                "puntosVida", 100,
+                "puntosVidaMax", 100,
+                "puntosAtaque", 7,      // base 5 + fuerza 2
+                "inteligencia", 5,      // base 2 + int 3
+                "suerte", 8             // base 2 + suerte 6
+        ));
+
+        razaCatalogo.put("RAPA NUI", java.util.Map.of(
+                "label", "Rapa Nui",
+                "icon", "/icons/rapa-nui.png",
+                "desc", new RapaNui().descripcionRasgos(),
+                "nivel", 1,
+                "experiencia", 0,
+                "puntosVida", 100,
+                "puntosVidaMax", 100,
+                "puntosAtaque", 6,      // 5 + 1
+                "inteligencia", 8,      // 2 + 6
+                "suerte", 4             // 2 + 2
+        ));
+
+        razaCatalogo.put("TROGLODITA", java.util.Map.of(
+                "label", "Troglodita",
+                "icon", "/icons/troglodita.png",
+                "desc", new Troglodita().descripcionRasgos(),
+                "nivel", 1,
+                "experiencia", 0,
+                "puntosVida", 100,
+                "puntosVidaMax", 100,
+                "puntosAtaque", 13,     // 5 + 8
+                "inteligencia", 4,      // 2 + 2
+                "suerte", 3             // 2 + 1
+        ));
+
+        model.addAttribute("razaCatalogo", razaCatalogo);
         return "personajes";
     }
     
