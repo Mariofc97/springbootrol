@@ -584,7 +584,7 @@ public class JuegoActions {
 	        acciones.add("Has invocado correctamente a un jabalí.");
 
 	        Jabali nuevo = new Jabali();
-	        nuevo.setNombre("Jabalí");
+	        nuevo.setNombre("Jabali");
 	        person.addCriatura(nuevo);   // ← CORREGIDO: respeta la FK
 
 	        acciones.add("Tu nuevo compañero jabalí se llama: Jabalí");

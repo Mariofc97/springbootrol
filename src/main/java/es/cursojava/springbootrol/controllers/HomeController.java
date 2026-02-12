@@ -149,7 +149,7 @@ public class HomeController {
         criaturaIcono.put("conejo", "/icons/conejo.png");
         criaturaIcono.put("raton", "/icons/raton.png");
         criaturaIcono.put("lobo", "/icons/lobo.png");
-        criaturaIcono.put("jabali", "/icons/jabali.png");
+        criaturaIcono.put("Jabali", "/icons/jabali.png");
         criaturaIcono.put("gusano", "/icons/gusano.png");
         criaturaIcono.put("pezprehistoricogigante", "/icons/pezPrehistoricoGigante.png");
         criaturaIcono.put("siluro", "/icons/siluro.png");
