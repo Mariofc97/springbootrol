@@ -428,15 +428,13 @@ public class EquipamientoServiceImpl implements EquipamientoService {
 	        throw new ReglaJuegoException("Ids inválidos.");
 	    }
 
-	    // This calls the custom Delete query in Repository
-	    equipamientoRepository.deleteByIdAndPersonajeId(equipamientoId, personajeId);
-	    
-	    // Verify if needed? The repository method is void.
-	    // If I want to throw exception if not found, I might need to check existence first or capture the result if using @Modifying
-	    // The original code returned int (rows affected).
-	    // I'll assume if it fails it throws exception or I can check count first.
-	    // But for cleaner migration, let's keep it simple. If it's gone, it's gone.
+	    int borrados = equipamientoRepository.deleteByIdAndPersonajeId(equipamientoId, personajeId);
+
+	    if (borrados == 0) {
+	        throw new ReglaJuegoException("No existe ese equipamiento en el inventario del personaje.");
+	    }
 	}
+
 
 	@Override
 	@Transactional(readOnly = true)

@@ -152,4 +152,18 @@ public class PersonajeServiceImpl implements PersonajeService {
 	    return p; // Transactional will save changes
 	}
 
+	@Override
+	@Transactional
+	public Personaje actualizarNivel(Long personajeId, int nuevoNivel) throws ReglaJuegoException {
+	    if (personajeId == null) throw new ReglaJuegoException("ID personaje obligatorio");
+	    if (nuevoNivel < 1) throw new ReglaJuegoException("El nivel debe ser >= 1");
+
+	    Personaje p = personajeRepository.findById(personajeId)
+	            .orElseThrow(() -> new ReglaJuegoException("No existe personaje con ID=" + personajeId));
+
+	    p.setNivel(nuevoNivel);
+	    return personajeRepository.save(p);
+	}
+
+
 }

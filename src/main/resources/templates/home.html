@@ -56,6 +56,13 @@
 				<div class="nav" th:if="${pid == null}">
 					<a th:href="@{/personajes}">Crear / Seleccionar personaje</a>
 				</div>
+
+				<div class="nav" sec:authorize="hasRole('ADMINISTRADOR')"
+					style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, .12);">
+					<a th:href="@{/admin}"> <i class="bi bi-gear"></i> Panel de
+						administración
+					</a>
+				</div>
 			</div>
 		</aside>
 
@@ -71,23 +78,75 @@
 
 					<div th:if="${personaje != null}">
 						<div
-							style="display: flex; gap: 16px; flex-wrap: wrap; color: var(--muted);">
+							style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+							<img th:if="${razaIcon != null}" th:src="${razaIcon}"
+								alt="Icono raza"
+								style="width: 54px; height: 54px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 0, 0, .35));">
+
 							<div>
-								<b style="color: var(--text);">Nombre:</b> <span
-									th:text="${personaje.nombre}"></span>
+								<div class="h2" th:text="${personaje.nombre}" style="margin: 0;">Nombre</div>
+								<div style="color: var(--muted); margin-top: 4px;">
+									Raza: <span th:text="${personaje.razaTipo}"></span>
+								</div>
 							</div>
-							<div>
-								<b style="color: var(--text);">Nivel:</b> <span
-									th:text="${personaje.nivel}"></span>
-							</div>
-							<div>
-								<b style="color: var(--text);">Episodio:</b> <span
-									th:text="${personaje.episodioActual}"></span>
-							</div>
-							<div th:if="${personaje.puntosVida != null}">
-								<b style="color: var(--text);">PV:</b> <span
-									th:text="${personaje.puntosVida}"></span>
-							</div>
+						</div>
+
+						<!-- Tabla stats actuales (BD) -->
+						<div
+							style="border: 1px solid var(--border); border-radius: 10px; overflow: hidden;">
+							<table
+								style="width: 100%; border-collapse: collapse; min-width: 0;">
+								<thead>
+									<tr style="background: rgba(255, 255, 255, .04);">
+										<th
+											style="text-align: left; padding: 10px; color: var(--muted); font-weight: 600;">Atributo</th>
+										<th
+											style="text-align: right; padding: 10px; color: var(--muted); font-weight: 600; width: 140px;">Valor</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td style="padding: 10px;">Nivel</td>
+										<td style="padding: 10px; text-align: right;"
+											th:text="${personaje.nivel}"></td>
+									</tr>
+									<tr>
+										<td style="padding: 10px;">Experiencia</td>
+										<td style="padding: 10px; text-align: right;"
+											th:text="${personaje.experiencia}"></td>
+									</tr>
+									<tr>
+										<td style="padding: 10px;">Episodio</td>
+										<td style="padding: 10px; text-align: right;"
+											th:text="${personaje.episodioActual}"></td>
+									</tr>
+									<tr>
+										<td style="padding: 10px;">PV</td>
+										<td style="padding: 10px; text-align: right;"
+											th:text="${personaje.puntosVida}"></td>
+									</tr>
+									<tr>
+										<td style="padding: 10px;">PV Máx.</td>
+										<td style="padding: 10px; text-align: right;"
+											th:text="${personaje.puntosVidaMax}"></td>
+									</tr>
+									<tr>
+										<td style="padding: 10px;">Ataque</td>
+										<td style="padding: 10px; text-align: right;"
+											th:text="${personaje.puntosAtaque}"></td>
+									</tr>
+									<tr>
+										<td style="padding: 10px;">Inteligencia</td>
+										<td style="padding: 10px; text-align: right;"
+											th:text="${personaje.inteligencia}"></td>
+									</tr>
+									<tr>
+										<td style="padding: 10px;">Suerte</td>
+										<td style="padding: 10px; text-align: right;"
+											th:text="${personaje.suerte}"></td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
 
 						<div class="actions">
@@ -99,11 +158,6 @@
 							<!-- Jugar (solo aquí) -->
 							<a class="btn" th:href="@{/episodio/actual/{id}(id=${pid})}">▶
 								Jugar</a>
-
-							<!-- Ver personaje -->
-							<a class="btn2" th:href="@{/personaje_usuario/{id}(id=${pid})}">
-								<i class="bi bi-file-earmark-text"></i> Ver personaje
-							</a>
 						</div>
 					</div>
 				</div>

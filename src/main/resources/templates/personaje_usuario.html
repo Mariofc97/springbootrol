@@ -49,27 +49,88 @@
     <!-- Main -->
     <main class="main">
 
-        <div class="card" style="max-width:600px;">
-            <h2 class="h2" th:text="${personaje.nombre}">Personaje</h2>
+        <div class="card" style="max-width:700px; margin: 0 auto;">
 
-            <p class="sub" style="margin-top:10px;">
+            <!-- Cabecera (icono opcional + nombre + raza) -->
+            <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
+                <img th:if="${razaIcon != null}" th:src="${razaIcon}" alt="Icono raza"
+                     style="width:54px; height:54px; object-fit:contain;
+                            filter: drop-shadow(0 0 10px rgba(0,0,0,.35));">
+
+                <div>
+                    <h2 class="h2" th:text="${personaje.nombre}" style="margin:0;">Personaje</h2>
+                    <div style="color:var(--muted); margin-top:4px;">
+                        Raza: <span th:text="${personaje.razaTipo}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="sub" style="margin-top:0;">
                 Información general del personaje
             </p>
 
-            <div style="margin-top:16px; color:var(--muted); display:flex; flex-direction:column; gap:8px;">
-
-                <div>
-                    <b style="color:var(--text);">Nivel:</b>
-                    <span th:text="${personaje.nivel}"></span>
-                </div>
-
-                <div>
-                    <b style="color:var(--text);">Puntos de Vida:</b>
-                    <span th:text="${personaje.puntosVida}"></span> /
-                    <span th:text="${personaje.puntosVidaMax}"></span>
-                </div>
-
+            <!-- Tabla stats actuales (BD) -->
+            <div style="margin-top:14px; border:1px solid var(--border); border-radius:10px; overflow:hidden;">
+                <table style="width:100%; border-collapse:collapse; min-width:0;">
+                    <thead>
+                    <tr style="background: rgba(255,255,255,.04);">
+                        <th style="text-align:left; padding:10px; color:var(--muted); font-weight:600;">Atributo</th>
+                        <th style="text-align:right; padding:10px; color:var(--muted); font-weight:600; width:140px;">Valor</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td style="padding:10px;">Nivel</td>
+                        <td style="padding:10px; text-align:right;" th:text="${personaje.nivel}"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px;">Experiencia</td>
+                        <td style="padding:10px; text-align:right;" th:text="${personaje.experiencia}"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px;">Episodio actual</td>
+                        <td style="padding:10px; text-align:right;" th:text="${personaje.episodioActual}"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px;">PV</td>
+                        <td style="padding:10px; text-align:right;" th:text="${personaje.puntosVida}"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px;">PV Máx.</td>
+                        <td style="padding:10px; text-align:right;" th:text="${personaje.puntosVidaMax}"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px;">Ataque</td>
+                        <td style="padding:10px; text-align:right;" th:text="${personaje.puntosAtaque}"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px;">Inteligencia</td>
+                        <td style="padding:10px; text-align:right;" th:text="${personaje.inteligencia}"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px;">Suerte</td>
+                        <td style="padding:10px; text-align:right;" th:text="${personaje.suerte}"></td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <div style="margin-top:20px;">
+            <!-- Botones -->
+            <div class="actions" style="margin-top:20px;">
                 <a class="btn2" th:href="@{/home(pid=${personaje.id})}">
+                    <i class="bi bi-arrow-left"></i> Volver al menú
+                </a>
+
+                <a class="btn" th:href="@{/episodio/actual/{id}(id=${personaje.id})}">
+                    <i class="bi bi-play-circle"></i> Continuar
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

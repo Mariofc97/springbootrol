@@ -1,40 +1,116 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-<meta charset="UTF-8">
-<title>Gestión Juego Rol - Login</title>
-<link rel="stylesheet" href="/css/style.css">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-	<div class="container">
-		<h1>Bienvenido al Juego de Rol</h1>
+  <meta charset="UTF-8">
+  <title>UNGA BUGHA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-		<div class="login-box">
-			<h2>Iniciar Sesión</h2>
-			<form action="/login" method="post">
-				<div class="form-group">
-					<label>Usuario:</label> <input type="text" name="username" required>
-				</div>
-				<div class="form-group">
-					<label>Contraseña:</label> <input type="password" name="password"
-						required>
-				</div>
-				<!-- Simple hack for demo: list existing users to copy-paste -->
-				<div class="hint" th:if="${usuarios}">
-					<p>Usuarios disponibles (para test):</p>
-					<ul>
-						<li th:each="u : ${usuarios}" th:text="${u.username}">User</li>
-					</ul>
-				</div>
-				<button type="submit">Entrar</button>
-				<a th:href="@{/registro}">Crear cuenta</a>
-			</form>
-			<div th:if="${param.errorMsg}"
-				style="margin: 14px auto 0; padding: 10px 14px; max-width: 520px; border-radius: 10px; background: rgba(220, 38, 38, .12); border: 1px solid rgba(220, 38, 38, .35); color: #dc2626; font-weight: 700; text-align: center;">
-				<span th:text="${param.errorMsg}">Usuario no dado de alta</span>
-			</div>
-		</div>
-	</div>
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+<body>
+
+  <!-- TOPBAR igual que el resto -->
+  <header class="topbar">
+    <div style="display:flex; gap:10px; align-items:center;">
+      <div class="brand">
+        <i class="bi bi-controller"></i> Juego de Rol
+      </div>
+    </div>
+
+    <div class="who">
+      <span>Acceso</span>
+      <span class="badge">LOGIN</span>
+    </div>
+  </header>
+
+  <div class="layout" style="grid-template-columns: 280px 1fr;">
+
+    <!-- SIDEBAR (simple) -->
+    <aside class="sidebar">
+      <div class="panel">
+        <div class="panel-title">Navegación</div>
+
+        <div class="nav">
+          <a th:href="@{/registro}">
+            <i class="bi bi-person-plus"></i> Crear cuenta
+          </a>
+        </div>
+
+        <div style="margin-top:12px; color:var(--muted); font-size:.95rem;">
+          Inicia sesión para continuar.
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="card" style="max-width: 620px;">
+
+        <h2 class="h2" style="display:flex; align-items:center; gap:10px;">
+          <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+        </h2>
+        <p class="sub">Introduce tus credenciales</p>
+
+        <div th:if="${param.errorMsg}"
+             style="margin: 14px 0 0; padding: 10px 14px; border-radius: 10px;
+                    background: rgba(220, 38, 38, .12);
+                    border: 1px solid rgba(220, 38, 38, .35);
+                    color: #dc2626; font-weight: 700; text-align: center;">
+          <span th:text="${param.errorMsg}">Usuario no dado de alta</span>
+        </div>
+
+        <form action="/login" method="post"
+              style="margin-top:16px; display:flex; flex-direction:column; gap:14px;">
+
+          <div>
+            <label style="display:block; margin-bottom:6px;">Usuario</label>
+            <div style="display:flex; align-items:center; gap:10px;
+                        padding:10px 12px; border-radius:10px;
+                        border:1px solid var(--border);
+                        background: rgba(255,255,255,.05);">
+              <i class="bi bi-person" style="color:var(--muted);"></i>
+              <input type="text" name="username" required
+                     style="flex:1; border:0; outline:none; background:transparent; color:var(--text);">
+            </div>
+          </div>
+
+          <div>
+            <label style="display:block; margin-bottom:6px;">Contraseña</label>
+            <div style="display:flex; align-items:center; gap:10px;
+                        padding:10px 12px; border-radius:10px;
+                        border:1px solid var(--border);
+                        background: rgba(255,255,255,.05);">
+              <i class="bi bi-lock" style="color:var(--muted);"></i>
+              <input type="password" name="password" required
+                     style="flex:1; border:0; outline:none; background:transparent; color:var(--text);">
+            </div>
+          </div>
+
+          <div class="hint" th:if="${usuarios}"
+               style="margin-top:6px; color:var(--muted);">
+            <p style="margin:0 0 6px;">Usuarios disponibles:</p>
+            <ul style="margin:0; padding-left:18px;">
+              <li th:each="u : ${usuarios}" th:text="${u.username}">User</li>
+            </ul>
+          </div>
+
+          <div class="actions" style="margin-top:6px;">
+            <button type="submit" class="btn" style="cursor:pointer;">
+              <i class="bi bi-box-arrow-in-right"></i> Entrar
+            </button>
+
+            <a class="btn2" th:href="@{/registro}">
+              <i class="bi bi-person-plus"></i> Crear cuenta
+            </a>
+          </div>
+        </form>
+
+      </div>
+    </main>
+  </div>
+
 </body>
 </html>

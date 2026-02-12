@@ -2,134 +2,211 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Mis Personajes</title>
+<meta charset="UTF-8">
+<title>Mis Personajes</title>
 
-    <link rel="stylesheet" href="/css/app.css">
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <script>
-        function toggleMenu() {
-            const sb = document.getElementById('sidebar');
-            sb.classList.toggle('open');
+<script th:inline="javascript">
+	function toggleMenu() {
+		const sb = document.getElementById('sidebar');
+		sb.classList.toggle('open');
+	}
+	const RACE_PREVIEW = /*[[${razaCatalogo}]]*/ {};
+
+    function renderRacePreview(raceKey) {
+        const data = RACE_PREVIEW[raceKey];
+        if (!data) return;
+
+        document.getElementById("raceIcon").src = data.icon;
+        document.getElementById("raceTitle").textContent = data.label;
+        document.getElementById("raceDesc").textContent = data.desc;
+
+        const tbody = document.getElementById("raceTableBody");
+        tbody.innerHTML = "";
+
+        const rows = [
+            ["Nivel", data.nivel],
+            ["Exp", data.experiencia],
+            ["Puntos de Vida", data.puntosVida],
+            ["Vida Maxima", data.puntosVidaMax],
+            ["Ataque", data.puntosAtaque],
+            ["Inteligencia", data.inteligencia],
+            ["Suerte", data.suerte]
+        ];
+
+        for (const [k, v] of rows) {
+            const tr = document.createElement("tr");
+            tr.style.borderTop = "1px solid var(--border)";
+
+            const td1 = document.createElement("td");
+            td1.style.padding = "10px";
+            td1.style.color = "var(--text)";
+            td1.textContent = k;
+
+            const td2 = document.createElement("td");
+            td2.style.padding = "10px";
+            td2.style.textAlign = "right";
+            td2.style.color = "var(--text)";
+            td2.style.width = "140px";
+            td2.style.whiteSpace = "nowrap";
+            td2.textContent = String(v);
+            
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tbody.appendChild(tr);
         }
-    </script>
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const select = document.getElementById("razaSelect");
+        if (!select) return;
+
+        renderRacePreview(select.value);
+        select.addEventListener("change", (e) => renderRacePreview(e.target.value));
+    });
+</script>
 </head>
 
 <body>
 
-<header class="topbar">
-    <div style="display:flex; gap:10px; align-items:center;">
-        <button class="iconbtn" onclick="toggleMenu()" type="button">
-            <i class="bi bi-list"></i>
-        </button>
-        <div class="brand">Mis Personajes</div>
-    </div>
+	<header class="topbar">
+		<div style="display: flex; gap: 10px; align-items: center;">
+			<button class="iconbtn" onclick="toggleMenu()" type="button">
+				<i class="bi bi-list"></i>
+			</button>
+			<div class="brand">Mis Personajes</div>
+		</div>
 
-    <div class="who">
-        <span th:if="${usuario != null}">
-            Bienvenido, <b th:text="${usuario.username}">User</b>
-        </span>
-    </div>
-</header>
+		<div class="who">
+			<span th:if="${usuario != null}"> Bienvenido, <b
+				th:text="${usuario.username}">User</b>
+			</span>
+		</div>
+	</header>
 
-<div class="layout">
+	<div class="layout">
 
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="panel">
-            <div class="panel-title">Navegación</div>
+		<!-- Sidebar -->
+		<aside class="sidebar" id="sidebar">
+			<div class="panel">
+				<div class="panel-title">Navegación</div>
 
-            <div class="nav">
-                <a th:href="@{/}">
-                    <i class="bi bi-house-door"></i> Inicio
-                </a>
-                <a th:href="@{/logout}" onclick="event.preventDefault(); this.closest('form').submit();">
-                    <i class="bi bi-box-arrow-right"></i> Cerrar sesión
-                </a>
-                <form th:action="@{/logout}" method="post"></form>
-            </div>
-        </div>
-    </aside>
+				<div class="nav">
+					<a th:href="@{/}"> <i class="bi bi-house-door"></i> Inicio
+					</a> <a th:href="@{/logout}"
+						onclick="event.preventDefault(); this.closest('form').submit();">
+						<i class="bi bi-box-arrow-right"></i> Cerrar sesión
+					</a>
+					<form th:action="@{/logout}" method="post"></form>
+				</div>
+			</div>
+		</aside>
 
-    <!-- Main -->
-    <main class="main">
+		<!-- Main -->
+		<main class="main">
 
-        <!-- Crear personaje -->
-        <div class="card" style="max-width: 600px; margin-bottom: 20px;">
-            <h2 class="h2">Crear personaje</h2>
-            <p class="sub">Completa los datos para crear un nuevo personaje</p>
+			<!-- Crear personaje -->
+			<div class="card" style="max-width: 600px; margin-bottom: 20px;">
+				<h2 class="h2">Crear personaje</h2>
+				<p class="sub">Completa los datos para crear un nuevo personaje</p>
 
-            <p th:if="${error}" th:text="${error}" style="color:#ff6b6b; margin-top:10px;"></p>
+				<p th:if="${error}" th:text="${error}"
+					style="color: #ff6b6b; margin-top: 10px;"></p>
 
-            <form th:action="@{/personajes/crear}" method="post"
-                  style="margin-top:16px; display:flex; flex-direction:column; gap:14px;">
+				<form th:action="@{/personajes/crear}" method="post"
+					style="margin-top: 16px; display: flex; flex-direction: column; gap: 14px;">
 
-                <input type="hidden" name="usuarioId" th:value="${usuarioId}" />
+					<input type="hidden" name="usuarioId" th:value="${usuarioId}" />
 
-                <div>
-                    <label style="display:block; margin-bottom:6px;">Nombre</label>
-                    <input type="text" name="nombre" required
-                           style="width:100%; padding:10px; border-radius:8px;
-                                  border:1px solid var(--border);
-                                  background:rgba(255,255,255,.05);
-                                  color:var(--text);">
-                </div>
+					<div>
+						<label style="display: block; margin-bottom: 6px;">Nombre</label>
+						<input type="text" name="nombre" required
+							style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255, 255, 255, .05); color: var(--text);">
+					</div>
 
-                <div>
-                    <label style="display:block; margin-bottom:6px;">Raza</label>
-                    <select name="raza" required
-                            style="width:100%; padding:10px; border-radius:8px;
-                                   border:1px solid var(--border);
-                                   background:rgba(255,255,255,.05);
-                                   color:var(--text);">
-                        <option value="Mongol">Mongol</option>
-                        <option value="RapaNui">Rapa Nui</option>
-                        <option value="Troglodita">Troglodita</option>
-                    </select>
-                </div>
+					<div>
+						<label style="display: block; margin-bottom: 6px;">Raza</label> <select
+							id="razaSelect" name="raza" required
+							style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255, 255, 255, .05); color: var(--text);">
+							<option value="MONGOL">Mongol</option>
+							<option value="RAPA NUI">Rapa Nui</option>
+							<option value="TROGLODITA">Troglodita</option>
+						</select>
+					</div>
+					<div id="racePreview" class="card"
+						style="padding: 14px; margin-top: 6px; background: rgba(255, 255, 255, .03);">
+						<div
+							style="display: flex; gap: 12px; align-items: center; margin-bottom: 10px;">
+							<img id="raceIcon" alt="Icono raza"
+								style="width: 44px; height: 44px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 0, 0, .35));">
+							<div>
+								<div class="h2" id="raceTitle" style="margin: 0;"></div>
+								<div id="raceDesc"
+									style="color: var(--muted); font-size: .95rem;"></div>
+							</div>
+						</div>
 
-                <button type="submit" class="btn">
-                    <i class="bi bi-plus-circle"></i> Crear
-                </button>
-            </form>
-        </div>
+						<div
+							style="border: 1px solid var(--border); border-radius: 10px; overflow: hidden;">
+							<table id="racePreviewTable" style="width:100%; border-collapse:collapse;">
+								<thead>
+									<tr style="background: rgba(255, 255, 255, .04);">
+										<th
+											style="text-align: left; padding: 10px; color: var(--muted); font-weight: 600;">Atributo</th>
+										<th
+											style="text-align: right; padding: 10px; color: var(--muted); font-weight: 600; width: 140px;">Valor
+											inicial</th>
+									</tr>
+								</thead>
+								<tbody id="raceTableBody"></tbody>
+							</table>
+						</div>
+					</div>
 
-        <!-- Lista de personajes -->
-        <div class="grid" style="display:flex; flex-wrap:wrap; gap:20px;">
 
-            <div th:each="p : ${personajes}" class="card" style="width:260px;">
-                <h2 class="h2" th:text="${p.nombre}">Nombre</h2>
+					<button type="submit" class="btn">
+						<i class="bi bi-plus-circle"></i> Crear
+					</button>
+				</form>
+			</div>
 
-                <p style="color:var(--muted); margin:6px 0;">
-                    Nivel: <span th:text="${p.nivel}">1</span>
-                </p>
+			<!-- Lista de personajes -->
+			<div class="grid" style="display: flex; flex-wrap: wrap; gap: 20px;">
 
-                <p style="color:var(--muted); margin:6px 0;">
-                    Raza: <span th:text="${p.razaTipo}"></span>
-                </p>
+				<div th:each="p : ${personajes}" class="card" style="width: 260px;">
+					<h2 class="h2" th:text="${p.nombre}">Nombre</h2>
 
-                <a class="btn2" th:href="@{/home(pid=${p.id})}">
-                    <i class="bi bi-play-circle"></i> Seleccionar
-                </a>
-            </div>
+					<p style="color: var(--muted); margin: 6px 0;">
+						Nivel: <span th:text="${p.nivel}">1</span>
+					</p>
 
-            <div th:if="${personajes.empty}" class="card" style="padding:20px;">
-                <p style="color:var(--muted);">No tienes personajes aún.</p>
-            </div>
-        </div>
+					<p style="color: var(--muted); margin: 6px 0;">
+						Raza: <span th:text="${p.razaTipo}"></span>
+					</p>
 
-        <!-- Logout -->
-        <form th:action="@{/logout}" method="post" style="margin-top:20px;">
-            <button type="submit" class="btn2-logout">
-                <i class="bi bi-box-arrow-right"></i> Cerrar sesión
-            </button>
-        </form>
+					<a class="btn2" th:href="@{/home(pid=${p.id})}"> <i
+						class="bi bi-play-circle"></i> Seleccionar
+					</a>
+				</div>
 
-    </main>
+				<div th:if="${personajes.empty}" class="card" style="padding: 20px;">
+					<p style="color: var(--muted);">No tienes personajes aún.</p>
+				</div>
+			</div>
 
-</div>
+			<!-- Logout -->
+			<form th:action="@{/logout}" method="post" style="margin-top: 20px;">
+				<button type="submit" class="btn2-logout">
+					<i class="bi bi-box-arrow-right"></i> Cerrar sesión
+				</button>
+			</form>
+
+		</main>
+
+	</div>
 
 </body>
 </html>

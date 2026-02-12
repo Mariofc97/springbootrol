@@ -242,6 +242,15 @@ td.muted{ color: var(--muted2); }
   line-height: 1;
 }
 
+#racePreviewTable{
+  min-width: 0 !important;     /* anula el 980px global */
+  width: 100% !important;
+}
+#racePreviewTable th,
+#racePreviewTable td{
+  white-space: normal;         /* opcional: evita forzar ancho */
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 900px){
   .layout{ grid-template-columns: 1fr; }
@@ -253,4 +262,6 @@ td.muted{ color: var(--muted2); }
     border-bottom:1px solid var(--border);
   }
   table{ min-width: 820px; }
+  
+  
 }
