@@ -1,11 +1,8 @@
 package es.cursojava.springbootrol.utilidades;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import es.cursojava.springbootrol.entities.Personaje;
@@ -36,12 +33,7 @@ import es.cursojava.springbootrol.entities.equipo.objetos.HojaParaLimpiar;
 import es.cursojava.springbootrol.entities.equipo.objetos.MojonSeco;
 import es.cursojava.springbootrol.entities.equipo.objetos.Palo;
 import es.cursojava.springbootrol.entities.equipo.objetos.Piedra;
-import es.cursojava.springbootrol.entities.equipo.objetos.Pocion;
 import es.cursojava.springbootrol.exceptions.ReglaJuegoException;
-import es.cursojava.springbootrol.model.CriaturaDto;
-import es.cursojava.springbootrol.model.EquipamientoDto;
-import es.cursojava.springbootrol.service.EquipamientoService;
-import es.cursojava.springbootrol.service.impl.EquipamientoServiceImpl;
 
 
 public class JuegoActions {
@@ -165,7 +157,6 @@ public class JuegoActions {
 	    compi.setNombre(nombre);
 	    compi.setAlias(nombre);
 
-	    // IMPORTANTÍSIMO: usar helper del personaje
 	    person.addCriatura(compi);
 
 	    return compi;
@@ -183,8 +174,6 @@ public class JuegoActions {
 		return contador;
 	}
 
-	// este random solo esta hecho con 4 criaturas, habrá que meter mas si se
-	// generan mas
 	public static Criatura randomizarCriatura() {
 
 		int tirada = ThreadLocalRandom.current().nextInt(1, 5);
@@ -211,9 +200,7 @@ public class JuegoActions {
 		return c;
 	}
 
-	/**
-	 * @return devuelve int resultado tirada
-	 */
+
 	public static int dadoDiez() {
 		int tirada = dadoNumeroDefine(10);
 		return tirada;
@@ -225,8 +212,6 @@ public class JuegoActions {
 		StackTraceElement[] st = Thread.currentThread().getStackTrace();
 		String callerMethod = "desconocido";
 
-		// 0=getStackTrace, 1=dadoNumeroDefine, 2=dadoDiez (si viene de ahí), 3=llamador
-		// real
 		if (st.length > 3) {
 			callerMethod = st[3].getMethodName(); // SOLO el nombre del método
 		}
@@ -235,7 +220,6 @@ public class JuegoActions {
 		return tirada;
 	}
 
-	// metodo nuevo.
 	public static String desgraciaAleatorio() {
 		String[] nombres = { "Hay tormenta y te cae un rayo, hueles a pelo quemado.",
 				"Hay ventisca tropiezas y te caes por el acantilado de al lado de la cueva, te partes dos costillas.",
@@ -266,15 +250,6 @@ public class JuegoActions {
 		}
 	}
 
-	private static void syncPersonaje(Personaje person, Personaje source) {
-		person.setExperiencia(source.getExperiencia());
-		person.setNivel(source.getNivel());
-		person.setPuntosVidaMax(source.getPuntosVidaMax());
-		person.setPuntosAtaque(source.getPuntosAtaque());
-		person.setPuntosVida(source.getPuntosVida());
-		person.setEquipo(source.getEquipo());
-		person.setCriaturas(source.getCriaturas());
-	}
 
 //	public static boolean combate(Personaje person, Criatura enemigo) {
 //
@@ -520,7 +495,7 @@ public class JuegoActions {
 //		}
 //	}
 
-	private static void pausa(long ms) {
+	public static void pausa(long ms) {
 		try {
 			Thread.sleep(ms);
 		} catch (InterruptedException ex) {
@@ -1034,7 +1009,6 @@ public class JuegoActions {
 			System.out.println("Error general " + e.getMessage());
 			System.out.println("El dato introducido debe ser un número decimal (ej: 1234.56)");
 
-			// Volvemos a preguntar recursivamente
 			return pideDatoBigDecimal(texto);
 		}
 	}
@@ -1341,7 +1315,6 @@ public class JuegoActions {
 	        }
 	    }
 
-	    // si llega aquí, no ha podido fabricar
 	    acciones.add("Intentaste fabricar, pero no tienes nivel/materiales suficientes para ninguna receta.");
 	}
 	
@@ -1358,7 +1331,6 @@ public class JuegoActions {
 	    };
 	}
 
-	// ======= HELPERS FABRICACIÓN (SOLO MEMORIA) =======
 
 	private static class Receta {
 	    final int nivelReq;

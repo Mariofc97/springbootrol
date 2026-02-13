@@ -17,90 +17,71 @@ import es.cursojava.springbootrol.service.UsuarioService;
 @PreAuthorize("hasRole('ADMINISTRADOR')")
 public class AdminController {
 
-    private final UsuarioService usuarioService;
+	private final UsuarioService usuarioService;
 
-    public AdminController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
-    }
+	public AdminController(UsuarioService usuarioService) {
+		this.usuarioService = usuarioService;
+	}
 
-    /**
-     * Panel admin
-     * GET /admin
-     * Opcional: ?soloActivos=true/false
-     */
-    @GetMapping("/admin")
-    public String panelAdmin(@RequestParam(value = "soloActivos", required = false) Boolean soloActivos,
-                             @RequestParam(value = "ok", required = false) String ok,
-                             @RequestParam(value = "error", required = false) String error,
-                             Model model) {
+	@GetMapping("/admin")
+	public String panelAdmin(@RequestParam(value = "soloActivos", required = false) Boolean soloActivos,
+			@RequestParam(value = "ok", required = false) String ok,
+			@RequestParam(value = "error", required = false) String error, Model model) {
 
-        List<UsuarioDto> usuarios = usuarioService.listar();
+		List<UsuarioDto> usuarios = usuarioService.listar();
 
-        // Si no tienes listarPorActivo en service, filtramos aquí (rápido y simple)
-        if (soloActivos != null) {
-            usuarios = usuarios.stream()
-                .filter(u -> Boolean.TRUE.equals(u.getActivo()) == soloActivos.booleanValue())
-                .toList();
-        }
+		// Si no tienes listarPorActivo en service, filtramos aquí (rápido y simple)
+		if (soloActivos != null) {
+			usuarios = usuarios.stream().filter(u -> Boolean.TRUE.equals(u.getActivo()) == soloActivos.booleanValue())
+					.toList();
+		}
 
-        model.addAttribute("usuarios", usuarios);
+		model.addAttribute("usuarios", usuarios);
 
-        if (ok != null) model.addAttribute("ok", ok);
-        if (error != null) model.addAttribute("error", error);
+		if (ok != null)
+			model.addAttribute("ok", ok);
+		if (error != null)
+			model.addAttribute("error", error);
 
-        return "admin_panel";
-    }
+		return "admin_panel";
+	}
 
-    /**
-     * Crear usuario desde el panel
-     * POST /admin/usuarios
-     */
-    @PostMapping("/admin/usuarios")
-    public String crearUsuario(@RequestParam String username,
-                               @RequestParam String email,
-                               @RequestParam String password,
-                               @RequestParam String rol) {
+	@PostMapping("/admin/usuarios")
+	public String crearUsuario(@RequestParam String username, @RequestParam String email, @RequestParam String password,
+			@RequestParam String rol) {
 
-        try {
-            usuarioService.registrar(username, email, password, rol);
-            return "redirect:/admin?ok=Usuario creado correctamente";
-        } catch (Exception e) {
-            return "redirect:/admin?error=" + urlEncode(e.getMessage());
-        }
-    }
+		try {
+			usuarioService.registrar(username, email, password, rol);
+			return "redirect:/admin?ok=Usuario creado correctamente";
+		} catch (Exception e) {
+			return "redirect:/admin?error=" + urlEncode(e.getMessage());
+		}
+	}
 
-    /**
-     * Activar/Desactivar usuario
-     * POST /admin/usuarios/{id}/toggle
-     */
-    @PostMapping("/admin/usuarios/{id}/toggle")
-    public String toggleActivo(@PathVariable("id") Long id) {
-        try {
-            usuarioService.toggleActivo(id);
-            return "redirect:/admin?ok=Estado del usuario actualizado";
-        } catch (Exception e) {
-            return "redirect:/admin?error=" + urlEncode(e.getMessage());
-        }
-    }
+	@PostMapping("/admin/usuarios/{id}/toggle")
+	public String toggleActivo(@PathVariable("id") Long id) {
+		try {
+			usuarioService.toggleActivo(id);
+			return "redirect:/admin?ok=Estado del usuario actualizado";
+		} catch (Exception e) {
+			return "redirect:/admin?error=" + urlEncode(e.getMessage());
+		}
+	}
 
-    /**
-     * Cambiar rol usuario
-     * POST /admin/usuarios/{id}/rol
-     */
-    @PostMapping("/admin/usuarios/{id}/rol")
-    public String cambiarRol(@PathVariable("id") Long id,
-                             @RequestParam String rol) {
-        try {
-            usuarioService.cambiarRol(id, rol);
-            return "redirect:/admin?ok=Rol actualizado";
-        } catch (Exception e) {
-            return "redirect:/admin?error=" + urlEncode(e.getMessage());
-        }
-    }
+	@PostMapping("/admin/usuarios/{id}/rol")
+	public String cambiarRol(@PathVariable("id") Long id, @RequestParam String rol) {
+		try {
+			usuarioService.cambiarRol(id, rol);
+			return "redirect:/admin?ok=Rol actualizado";
+		} catch (Exception e) {
+			return "redirect:/admin?error=" + urlEncode(e.getMessage());
+		}
+	}
 
-    // Helper simple para evitar que el redirect rompa por espacios
-    private String urlEncode(String s) {
-        if (s == null) return "";
-        return s.replace(" ", "%20");
-    }
+	// Helper simple para evitar que el redirect rompa por espacios
+	private String urlEncode(String s) {
+		if (s == null)
+			return "";
+		return s.replace(" ", "%20");
+	}
 }

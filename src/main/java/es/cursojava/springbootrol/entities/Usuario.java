@@ -77,9 +77,7 @@ public class Usuario implements Serializable {
     private List<Personaje> personajes = new ArrayList<>();
 
 
-    // ======== CONSTRUCTORES ========
     public Usuario() {
-        // Constructor vacío para JPA
     }
 
     public Usuario(Long id, String username, String email, String password, String rol) {
@@ -106,7 +104,6 @@ public class Usuario implements Serializable {
 		this.activo = activo;
 	}
 
-	// Constructor completo (sin id)
     public Usuario(String username, String email, String password, String rol,
                    Boolean activo) {
         this.username = username;
@@ -117,7 +114,6 @@ public class Usuario implements Serializable {
     }
 
 
-    // ======== GETTERS Y SETTERS ========
     
     
     public List<Personaje> getPersonajes() {
@@ -150,7 +146,6 @@ public class Usuario implements Serializable {
     public void setActivo(Boolean activo) { this.activo = activo; }
 
 
-    // ======== PRE-PERSIST ========
     @PrePersist
     private void prePersist() {
         if (fechaAlta == null) {
@@ -161,7 +156,6 @@ public class Usuario implements Serializable {
         }
     }
 
-    // ======== EQUALS & HASHCODE ========
     @Override
     public int hashCode() {
         return (username == null) ? 0 : username.hashCode();
@@ -186,7 +180,6 @@ public class Usuario implements Serializable {
     }
 
 
-    // ======== TO STRING ========
     @Override
     public String toString() {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");

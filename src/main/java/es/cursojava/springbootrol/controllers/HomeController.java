@@ -3,6 +3,7 @@ package es.cursojava.springbootrol.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,7 +54,7 @@ public class HomeController {
                             @RequestParam String rol,
                             Model model) {
         try {
-            usuarioService.registrar(username, email, password, rol); // lo creas en el service
+            usuarioService.registrar(username, email, password, rol); 
             return "redirect:/?registroOk";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
@@ -63,12 +64,10 @@ public class HomeController {
 
     
     @GetMapping("/personajes")
-    public String personajes(org.springframework.security.core.Authentication auth, Model model) {
+    public String personajes(Authentication auth, Model model) {
 
-        // username del usuario autenticado
         String username = auth.getName();
 
-        // aquí necesitas un método en UsuarioService que busque por username
         UsuarioDto usuario = usuarioService.buscarPorUsername(username);
 
         List<Personaje> personajes = personajeService.listarPorUsuario(usuario.getId());

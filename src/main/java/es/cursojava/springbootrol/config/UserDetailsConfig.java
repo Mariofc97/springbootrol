@@ -23,7 +23,7 @@ public class UserDetailsConfig {
             return User.withUsername(u.getUsername())
                     .password(u.getPassword())
                     .roles(u.getRol()) // "ADMINISTRADOR" o "JUGADOR" -> genera ROLE_...
-                    .disabled(!enabled) // ✅ si está desactivado, Spring lanza DisabledException
+                    .disabled(!enabled) // si está desactivado, Spring lanza DisabledException
                     .build();
         };
     }

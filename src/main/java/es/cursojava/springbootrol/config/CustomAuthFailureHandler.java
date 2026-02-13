@@ -27,7 +27,6 @@ public class CustomAuthFailureHandler implements AuthenticationFailureHandler {
         if (exception instanceof DisabledException) {
             msg = "Usuario desactivado. Contacta con un administrador.";
         } else {
-            // Aquí entran usuario no existente / password mal, etc.
             msg = "Usuario no dado de alta o credenciales incorrectas.";
         }
 
