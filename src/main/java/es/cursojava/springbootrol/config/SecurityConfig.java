@@ -31,31 +31,32 @@ public class SecurityConfig {
 
 	    http.authenticationManager(authenticationManager);
 
-	    http.csrf(csrf -> csrf.disable())
-	       .authorizeHttpRequests(auth -> auth
-	           .requestMatchers("/", "/login", "/registro", "/css/**").permitAll()
-	           .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
-	           .requestMatchers("/api/**").authenticated()
-	           .anyRequest().authenticated()
-	       )
-	       .formLogin(form -> form
-	           .loginPage("/")
-	           .loginProcessingUrl("/login")
-	           .successHandler(successHandler)
-	           .failureHandler(customAuthFailureHandler)
-	           .permitAll()
-	       )
-	       
-	    // API (Postman)
-	       .httpBasic(basic -> {})
-	       
-	       .logout(logout -> logout
-	           .logoutUrl("/logout")
-	           .logoutSuccessUrl("/")
-	           .invalidateHttpSession(true)
-	           .clearAuthentication(true)
-	           .permitAll()
-	       );
+	    http
+	    .csrf(csrf -> csrf.disable())
+	    .authorizeHttpRequests(auth -> auth
+	        .requestMatchers(
+	            "/", "/login", "/registro", "/css/**",
+	            "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**"
+	        ).permitAll()
+	        .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
+	        .requestMatchers("/api/**").authenticated()
+	        .anyRequest().authenticated()
+	    )
+	    .formLogin(form -> form
+	        .loginPage("/")
+	        .loginProcessingUrl("/login")
+	        .successHandler(successHandler)
+	        .failureHandler(customAuthFailureHandler)
+	        .permitAll()
+	    )
+	    .httpBasic(basic -> {})   // POSTMAN
+	    .logout(logout -> logout
+	        .logoutUrl("/logout")
+	        .logoutSuccessUrl("/")
+	        .invalidateHttpSession(true)
+	        .clearAuthentication(true)
+	        .permitAll()
+	    );
 
 	    return http.build();
 	}

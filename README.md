@@ -132,7 +132,7 @@ Estructura principal (según proyecto actual):
   - `ControllerEpisodios`
   - `AdminController`
 
-- `rest/` (API REST)
+- `api/` (API REST)
   - `JuegoApiController`
 
 - `service/` + `service/impl/`
@@ -227,7 +227,7 @@ Estos endpoints están confirmados por el código actual (`HomeController`):
 
 ## API REST (Postman) – endpoints y pruebas
 
-Controlador: `es.cursojava.springbootrol.rest.JuegoApiController`  
+Controlador: `es.cursojava.springbootrol.api.JuegoApiController`  
 Base path: `/api`
 
 ### Autenticación en Postman
@@ -275,53 +275,122 @@ Body:
 
 ## Ejemplos Postman (listas para demo)
 
-### A) Sin credenciales → 401 Unauthorized
-1. En Postman, NO pongas Authorization.
-2. Lanza un POST a `/api/personajes`.
+> Base URL de la API: `http://localhost:8085/api`  
+> Autenticación: **Authorization → Basic Auth** (usuario/password que existan en BD)
 
-Resultado esperado: **401 Unauthorized**
+### 0) Probar sin auth (401)
+- En Postman **NO pongas Authorization**
+- Lanza: `GET http://localhost:8085/api/personajes/1`
 
-![401 Unauthorized](docs/images/postman-401-unauthorized.png)
+Esperado: **401 Unauthorized**
+
+**cURL equivalente**
+```bash
+curl -i http://localhost:8085/api/personajes/1
+```
 
 ---
 
-### B) CREATE personaje → 201 Created
-1. Authorization → **Basic Auth**
-2. Endpoint: `POST http://localhost:8085/api/personajes`
-3. Body JSON (raw):
+### 1) CREATE → 201 (crear personaje)
+**POST** `http://localhost:8085/api/personajes`  
+Body → raw → JSON:
 
 ```json
 {
-  "usuarioId": 301,
+  "usuarioId": 1,
   "nombre": "Pepe",
   "raza": "MONGOL"
 }
 ```
 
-Resultado esperado: **201 Created** + JSON del personaje
+Esperado: **201 Created** + JSON del personaje.
 
-![201 Created](docs/images/postman-201-created-personaje.png)
+**cURL**
+```bash
+curl -i -u usuario:password   -H "Content-Type: application/json"   -d '{"usuarioId":1,"nombre":"Pepe","raza":"MONGOL"}'   http://localhost:8085/api/personajes
+```
 
 ---
 
-### C) Caso típico de error por validación → 400 Bad Request
-1. Authorization → **Basic Auth**
-2. `PATCH /api/personajes/{id}/nivel`
-3. Body:
+### 2) READ → 200 (ver personaje)
+**GET** `http://localhost:8085/api/personajes/{personajeId}`
 
+**cURL**
+```bash
+curl -i -u usuario:password   http://localhost:8085/api/personajes/123
+```
+
+---
+
+### 3) READ → 200 (ver inventario)
+**GET** `http://localhost:8085/api/personajes/{personajeId}/inventario`
+
+**cURL**
+```bash
+curl -i -u usuario:password   http://localhost:8085/api/personajes/123/inventario
+```
+
+---
+
+### 4) UPDATE → 200 / 400 (cambiar nivel)
+**PATCH** `http://localhost:8085/api/personajes/{personajeId}/nivel`  
+Body:
+
+```json
+{ "nivel": 5 }
+```
+
+Esperado: **200 OK**.
+
+**Para forzar 400**:  
 ```json
 { "nivel": 0 }
 ```
 
-Resultado esperado: **400 Bad Request** (si `UpdateNivelRequest` valida mínimo 1)
+**cURL**
+```bash
+curl -i -u usuario:password   -X PATCH   -H "Content-Type: application/json"   -d '{"nivel":5}'   http://localhost:8085/api/personajes/123/nivel
+```
 
 ---
 
-### D) Forbidden (403) por rol (demo)
-- Intentar acceder a `/admin/**` con un usuario **JUGADOR**  
-Resultado esperado: **403 Forbidden**
+### 5) DELETE → 204 (tirar objeto del inventario)
+**DELETE** `http://localhost:8085/api/personajes/{personajeId}/inventario/{equipId}`
+
+**cURL**
+```bash
+curl -i -u usuario:password   -X DELETE   http://localhost:8085/api/personajes/123/inventario/999
+```
+
+> Nota: con el repo actual `deleteByIdAndPersonajeId(...)` devuelve `void`.  
+> Si el item no existe, normalmente NO falla y seguirá siendo 204 (según implementación).  
+> Si necesitas DEMO de 404, añade una comprobación previa de existencia y lanza una excepción.
 
 ---
+
+### 6) DEMO de 403 (rol)
+Con un usuario rol **JUGADOR**, intenta:
+
+`GET http://localhost:8085/admin`
+
+Esperado: **403 Forbidden**
+
+---
+
+### 7) DEMO de 500 (técnico)
+Si no hay un `@ControllerAdvice` que traduzca excepciones a 4xx, puedes forzar 500 así:
+- `POST /api/personajes` con `usuarioId` inexistente (p.ej. 999999)
+
+```json
+{
+  "usuarioId": 999999,
+  "nombre": "Error",
+  "raza": "MONGOL"
+}
+```
+
+---
+
 
 ## Swagger / OpenAPI (documentación)
 
@@ -334,11 +403,48 @@ Resultado esperado: **403 Forbidden**
 </dependency>
 ```
 
-### URL
-- `http://localhost:8085/swagger-ui/index.html`
+### Endpoints de Swagger
+- **Swagger UI**: `http://localhost:8085/swagger-ui/index.html`
+- **OpenAPI JSON**: `http://localhost:8085/v3/api-docs`
+
+### Requisitos de seguridad para Swagger y Postman (por qué lo hacemos)
+
+En esta aplicación conviven **dos formas de autenticación**:
+
+1) **Form Login (Web/Thymeleaf)**  
+   - Es el login típico del navegador con sesión/cookies.
+   - Se usa para la parte web: `/home`, `/personajes`, `/admin`, etc.
+
+2) **HTTP Basic (API / Swagger / Postman)**  
+   - Se envía un header `Authorization: Basic ...` con `usuario:password`.
+   - Es lo más simple para probar los endpoints `/api/**` desde Postman y también desde Swagger UI.
+
+Si no habilitas **HTTP Basic**, Postman/Swagger no “heredan” tu sesión del navegador y te devolverán **401** al llamar a `/api/**`.  
+Por eso en `SecurityConfig` se añadió:
+
+```java
+.httpBasic(basic -> {})
+```
+
+y se permitió el acceso a Swagger UI y al JSON de OpenAPI:
+
+```java
+.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+```
+
+Además, en `OpenApiConfig` se declaró el esquema `basicAuth` para que Swagger UI muestre el botón **Authorize**.
+
+### Cómo probar Swagger paso a paso (como un usuario “cero”)
+
+1. Arranca la app ejecutando `SpringBootRolApplication` (puerto **8085**).
+2. Abre en el navegador:  
+   `http://localhost:8085/swagger-ui/index.html`
+3. Pulsa **Authorize** (arriba a la derecha).
+4. Escribe un **usuario existente** y su **password** (los mismos que en tu login web).
+5. Abre un endpoint (ej. `POST /api/personajes`) → **Try it out** → rellena el JSON → **Execute**.
+6. Verás el **status code** y el **response body**.
 
 ---
-
 ## Problema de la migración (Consola → Web) y simplificación del juego
 
 En el proyecto original (consola), cada episodio tenía muchas decisiones mediante un menú (8-9 acciones), lo que en web se traduciría en **muchísimas rutas/pantallas** y gestión compleja del estado.
