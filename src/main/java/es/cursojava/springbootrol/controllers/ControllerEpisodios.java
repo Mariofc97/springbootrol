@@ -29,28 +29,53 @@ public class ControllerEpisodios {
 	                                Model model) throws ReglaJuegoException {
 
 	    Personaje p = personajeService.cargarParaJuego(id);
+
+	    
+	    if (p.getEpisodioActual() > 5) {
+	        model.addAttribute("personaje", p);
+	        model.addAttribute("uid", uid);
+	        model.addAttribute("pid", id);
+	        return "historia_finalizada";  
+	    }
+
 	    model.addAttribute("personaje", p);
 	    model.addAttribute("uid", uid);
 
 	    int ep = p.getEpisodioActual();
-	    return "episodio" + ep; // episodio1, episodio2, episodio3...
+	    return "episodio" + ep;
 	}
+
 	@PostMapping("/episodio/actual/{id}/jugar")
 	public String jugarEpisodioActual(@PathVariable Long id,
 	                                  @RequestParam(required=false) Long uid,
 	                                  Model model) throws ReglaJuegoException {
 
-	    AccionesEpisodio acciones = episodioService.jugarEpisodioActual(id);
-	    Personaje p = personajeService.cargarParaJuego(id);
+	    Personaje pAntes = personajeService.cargarParaJuego(id);
 
-	    model.addAttribute("personaje", p);
+	    // Si ya está finalizada la historia, no dejamos jugar
+	    if (pAntes.getEpisodioActual() > 5) {
+	        model.addAttribute("personaje", pAntes);
+	        model.addAttribute("uid", uid);
+	        model.addAttribute("pid", id);
+	        return "historia_finalizada";
+	    }
+
+	    // ✅ El episodio que se juega es el que había ANTES de ejecutar
+	    int episodioJugado = pAntes.getEpisodioActual();
+
+	    AccionesEpisodio acciones = episodioService.jugarEpisodioActual(id);
+	    Personaje pDespues = personajeService.cargarParaJuego(id);
+
+	    model.addAttribute("personaje", pDespues);
 	    model.addAttribute("acciones", acciones.getLog());
 	    model.addAttribute("uid", uid);
-	    model.addAttribute("pid", id); // ✅
+	    model.addAttribute("pid", id);
 
-	    int episodioJugado = Math.max(1, p.getEpisodioActual() - 1);
+	    // ✅ Siempre devolvemos el resultado del episodio REAL que se jugó
 	    return "episodio" + episodioJugado + "_resultado";
 	}
+
+
 
 
 }
