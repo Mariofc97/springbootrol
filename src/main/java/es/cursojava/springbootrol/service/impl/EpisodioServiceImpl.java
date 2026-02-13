@@ -14,42 +14,44 @@ import es.cursojava.springbootrol.service.juego.EpisodioRunner;
 @Service
 public class EpisodioServiceImpl implements EpisodioService {
 
-    private final PersonajeRepository personajeRepository;
-    private final AccionesEpisodioRepository accionesEpisodioRepository;
-    private final EpisodioRegistry registry = new EpisodioRegistry();
+	private final PersonajeRepository personajeRepository;
+	private final AccionesEpisodioRepository accionesEpisodioRepository;
+	private final EpisodioRegistry registry = new EpisodioRegistry();
 
-    public EpisodioServiceImpl(PersonajeRepository personajeRepository,
-                               AccionesEpisodioRepository accionesEpisodioRepository) {
-        this.personajeRepository = personajeRepository;
-        this.accionesEpisodioRepository = accionesEpisodioRepository;
-    }
+	public EpisodioServiceImpl(PersonajeRepository personajeRepository,
+			AccionesEpisodioRepository accionesEpisodioRepository) {
+		this.personajeRepository = personajeRepository;
+		this.accionesEpisodioRepository = accionesEpisodioRepository;
+	}
 
-    @Override
-    @Transactional
-    public AccionesEpisodio jugarEpisodioActual(Long personajeId) {
+	@Override
+	@Transactional
+	public AccionesEpisodio jugarEpisodioActual(Long personajeId) {
 
-        if (personajeId == null) throw new RuntimeException("El Id del personaje es obligatorio");
+		if (personajeId == null)
+			throw new RuntimeException("El Id del personaje es obligatorio");
 
-        Personaje p = personajeRepository.findByIdFetchAll(personajeId)
-                .orElseThrow(() -> new RuntimeException("No existe personaje con id=" + personajeId));
+		Personaje p = personajeRepository.findByIdFetchAll(personajeId)
+				.orElseThrow(() -> new RuntimeException("No existe personaje con id=" + personajeId));
 
-        AccionesEpisodio acciones = new AccionesEpisodio(p);
-        acciones.add("Inicio episodio " + p.getEpisodioActual());
+		AccionesEpisodio acciones = new AccionesEpisodio(p);
+		acciones.add("Inicio episodio " + p.getEpisodioActual());
 
-        int actual = p.getEpisodioActual();
+		int actual = p.getEpisodioActual();
 
-        EpisodioRunner runner = registry.get(actual);
-        if (runner == null) throw new RuntimeException("No existe runner para episodio " + actual);
+		EpisodioRunner runner = registry.get(actual);
+		if (runner == null)
+			throw new RuntimeException("No existe runner para episodio " + actual);
 
-        int siguiente = runner.ejecutar(p, acciones);
+		int siguiente = runner.ejecutar(p, acciones);
 
-        p.setEpisodioActual(siguiente);
+		p.setEpisodioActual(siguiente);
 
-        // Persistimos TODO al final (una sola vez):
-        personajeRepository.save(p);
-        accionesEpisodioRepository.save(acciones);
+		// Persistimos TODO al final (una sola vez):
+		personajeRepository.save(p);
+		accionesEpisodioRepository.save(acciones);
 
-        return acciones;
-    }
+		return acciones;
+	}
+
 }
-
